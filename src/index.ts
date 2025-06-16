@@ -16,17 +16,20 @@ const gridfinity = {
   baseplateHeight: 5,
 };
 
-function pattern({ cells, cellSize }: { cells: Vector2; cellSize: Vector2 }, geometry: Geom3) {
+function pattern(
+  { cells, cellSize, center = [0, 0, 0] }: { cells: Vector2; cellSize: Vector2; center?: Vector3 },
+  geometry: Geom3
+) {
   const [x, y] = cells;
 
   return Array.from({ length: x }, (_, i) =>
     Array.from({ length: y }, (_, j) => {
       const offset = [
-        (-cells[0] / 2 + i + 0.5) * cellSize[0],
-        (-cells[1] / 2 + j + 0.5) * cellSize[1],
+        center[0] + (-cells[0] / 2 + i + 0.5) * cellSize[0],
+        center[1] + (-cells[1] / 2 + j + 0.5) * cellSize[1],
       ] as const;
 
-      return translate([...offset, 0], geometry);
+      return translate([...offset, center[2]], geometry);
     })
   ).flat();
 }
@@ -90,14 +93,21 @@ function gridfinityBaseplate({ grid, size: _size }: { grid: Vector2; size?: Vect
       ),
 
       // Cutout for the baseplate
-      translateZ(
-        height - 4.65, // Cutout height -> align with the top of the baseplate
-        pattern({ cells: grid, cellSize: gridfinity.baseplateDimensions }, cutout)
+      pattern(
+        {
+          cells: grid,
+          cellSize: gridfinity.baseplateDimensions,
+
+          // 4.65 = Cutout height -> align with the top of the baseplate
+          // NOTE: We could use the first two elements to move the cutouts on the plate
+          center: [0, 0, height - 4.65],
+        },
+        cutout
       )
     )
   );
 }
 
 export function main() {
-  return [gridfinityBaseplate({ grid: [2, 3], size: [90, 150] })];
+  return gridfinityBaseplate({ grid: [1, 1] });
 }
