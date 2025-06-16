@@ -16,12 +16,12 @@ const gridfinity = {
   baseplateHeight: 5,
 };
 
-function pattern(x: number, y: number, callback: (x: number, y: number) => Geom3) {
-  return union(
-    ...Array.from({ length: x }, (_, i) =>
-      Array.from({ length: y }, (_, j) => callback(i, j))
-    ).flat()
-  );
+function pattern(cells: Vector2, callback: (x: number, y: number) => Geom3) {
+  const [x, y] = cells;
+
+  return Array.from({ length: x }, (_, i) =>
+    Array.from({ length: y }, (_, j) => callback(i, j))
+  ).flat();
 }
 
 const baseplateCutout = union(
@@ -75,12 +75,12 @@ function gridfinityBaseplate({ grid, size: _size }: { grid: Vector2; size?: Vect
         roundedRectangle({
           size: [width, depth],
           center: [0, 0],
-          roundRadius: 7.5 / 2,
+          roundRadius: 8 / 2,
         })
       ),
 
       // Cutout for the baseplate
-      pattern(grid[0], grid[1], (x, y) => {
+      pattern(grid, (x, y) => {
         const offset = [
           (-grid[0] / 2 + x + 0.5) * gridfinity.baseplateDimensions[0],
           (-grid[1] / 2 + y + 0.5) * gridfinity.baseplateDimensions[1],
