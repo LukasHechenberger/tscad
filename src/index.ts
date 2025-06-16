@@ -1,6 +1,7 @@
 import { primitives, transforms, colors, booleans, extrusions } from '@jscad/modeling';
 import type { Geom3 } from '@jscad/modeling/src/geometries/types';
 import { slopedCuboid } from './lib/sloped-cuboid';
+import { mapVector, type Vector2 } from './lib/vectors';
 
 // Specs: https://gridfinity.xyz/specification/
 
@@ -11,7 +12,7 @@ const { subtract, union } = booleans;
 const { extrudeLinear } = extrusions;
 
 const gridfinity = {
-  baseplateDimensions: [42, 42] as [number, number],
+  baseplateDimensions: [42, 42] as Vector2,
   baseplateHeight: 5,
 };
 
@@ -28,17 +29,18 @@ const baseplateCutout = union(
   translateZ(
     0 + 0.35, // height so far + half height
     slopedCuboid({
-      size: [...(gridfinity.baseplateDimensions.map((d) => d - 2.15 * 2) as [number, number]), 0.7],
+      size: [...mapVector(gridfinity.baseplateDimensions, (d) => d - 2.15 * 2), 0.7],
       radius: 1.85,
     })
   ),
+
   // Middle
   translateZ(
     0.7,
     extrudeLinear(
       { height: 1.8 },
       roundedRectangle({
-        size: gridfinity.baseplateDimensions.map((d) => d - 2.15 * 2) as [number, number],
+        size: mapVector(gridfinity.baseplateDimensions, (d) => d - 2.15 * 2),
         roundRadius: 1.85,
       })
     )
@@ -63,10 +65,7 @@ function gridfinityBaseplate({ grid }: { grid: [number, number] }) {
       extrudeLinear(
         { height: gridfinity.baseplateHeight },
         roundedRectangle({
-          size: gridfinity.baseplateDimensions.map((dim, index) => dim * grid[index]) as [
-            number,
-            number
-          ],
+          size: mapVector(gridfinity.baseplateDimensions, (dim, index) => dim * grid[index]),
           center: [0, 0],
           roundRadius: 7.5 / 2,
         })
