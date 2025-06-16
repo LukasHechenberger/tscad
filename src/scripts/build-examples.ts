@@ -9,7 +9,6 @@ const prepareDir = (path: string) =>
 
 async function buildExamples() {
   // Cleanup
-  await prepareDir('examples');
   await prepareDir('out/examples');
 
   const { examples } = await import('../examples');
@@ -34,7 +33,7 @@ module.exports = { main };`
     );
 
     // await exec(`pnpm jscad ./${filename} -o examples/${slug}.jscad.json`);
-    const command = exec(`pnpm jscad ./${filename}  -o examples/${slug}.stl`);
+    const command = exec(`pnpm jscad ./${filename} -o out/examples/${slug}.stl`);
     command.child.stdout?.pipe(process.stdout);
 
     await command;
