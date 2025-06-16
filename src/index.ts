@@ -16,45 +16,53 @@ const gridfinity = {
   baseplateHeight: 5,
 };
 
-function pattern(cells: Vector2, callback: (x: number, y: number) => Geom3) {
+function pattern({ cells, cellSize }: { cells: Vector2; cellSize: Vector2 }, geometry: Geom3) {
   const [x, y] = cells;
 
   return Array.from({ length: x }, (_, i) =>
-    Array.from({ length: y }, (_, j) => callback(i, j))
+    Array.from({ length: y }, (_, j) => {
+      const offset = [
+        (-cells[0] / 2 + i + 0.5) * cellSize[0],
+        (-cells[1] / 2 + j + 0.5) * cellSize[1],
+      ] as const;
+
+      return translate([...offset, 0], geometry);
+    })
   ).flat();
 }
 
-const baseplateCutout = union(
-  // Lowest level
-  translateZ(
-    0 + 0.35, // height so far + half height
-    slopedCuboid({
-      size: [...mapVector(gridfinity.baseplateDimensions, (d) => d - 2.15 * 2), 0.7],
-      radius: 1.85,
-    })
-  ),
+const baseplateCutout = () =>
+  union(
+    // Lowest level
+    translateZ(
+      0 + 0.35, // height so far + half height
+      slopedCuboid({
+        size: [...mapVector(gridfinity.baseplateDimensions, (d) => d - 2.15 * 2), 0.7],
+        radius: 1.85,
+      })
+    ),
 
-  // Middle
-  translateZ(
-    0.7,
-    extrudeLinear(
-      { height: 1.8 },
-      roundedRectangle({
-        size: mapVector(gridfinity.baseplateDimensions, (d) => d - 2.15 * 2),
-        roundRadius: 1.85,
+    // Middle
+    translateZ(
+      0.7,
+      extrudeLinear(
+        { height: 1.8 },
+        roundedRectangle({
+          size: mapVector(gridfinity.baseplateDimensions, (d) => d - 2.15 * 2),
+          roundRadius: 1.85,
+        })
+      )
+    ),
+
+    // Top level
+    translateZ(
+      2.5 + 2.15 / 2,
+      slopedCuboid({
+        size: [...gridfinity.baseplateDimensions, 2.15],
+        radius: 4,
       })
     )
-  ),
-
-  // Top level
-  translateZ(
-    2.5 + 2.15 / 2,
-    slopedCuboid({
-      size: [...gridfinity.baseplateDimensions, 2.15],
-      radius: 4,
-    })
-  )
-);
+  );
 
 function gridfinityBaseplate({ grid, size: _size }: { grid: Vector2; size?: Vector2 | Vector3 }) {
   const size = _size
@@ -64,6 +72,8 @@ function gridfinityBaseplate({ grid, size: _size }: { grid: Vector2; size?: Vect
         gridfinity.baseplateHeight,
       ];
   const [width, depth, height] = size;
+
+  const cutout = baseplateCutout();
 
   return colorize(
     [1, 0, 0], // Red
@@ -80,17 +90,10 @@ function gridfinityBaseplate({ grid, size: _size }: { grid: Vector2; size?: Vect
       ),
 
       // Cutout for the baseplate
-      pattern(grid, (x, y) => {
-        const offset = [
-          (-grid[0] / 2 + x + 0.5) * gridfinity.baseplateDimensions[0],
-          (-grid[1] / 2 + y + 0.5) * gridfinity.baseplateDimensions[1],
-        ] as const;
-
-        return translate(
-          [...offset, height - 4.65], // Coutout height
-          baseplateCutout
-        );
-      })
+      translateZ(
+        height - 4.65, // Cutout height -> align with the top of the baseplate
+        pattern({ cells: grid, cellSize: gridfinity.baseplateDimensions }, cutout)
+      )
     )
   );
 }
