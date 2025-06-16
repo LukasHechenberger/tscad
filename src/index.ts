@@ -59,7 +59,24 @@ type GridfinityBaseplateOptions = {
   outerPadding?: boolean;
 };
 
-function gridfinityBaseplate({
+// Tree:
+//
+// colorize
+//   subtract
+//     extrudeLinear
+//       roundedRectangle
+//     pattern
+//       cutout (Component/Option ?)
+//         union
+//           translateZ
+//             slopedCuboid
+//           translateZ
+//             extrudeLinear
+//               roundedRectangle
+//           translateZ
+//             slopedCuboid
+
+export function gridfinityBaseplate({
   grid,
   size: _size,
   outerPadding = true,
@@ -104,8 +121,4 @@ function gridfinityBaseplate({
       )
     )
   );
-}
-
-export function main() {
-  return gridfinityBaseplate({ grid: [2, 3] });
 }
