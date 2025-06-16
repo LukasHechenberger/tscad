@@ -6,7 +6,7 @@ import { pattern } from './lib/modeling';
 // Specs: https://gridfinity.xyz/specification/
 
 const { roundedRectangle } = primitives;
-const { translate, translateZ } = transforms;
+const { translateZ } = transforms;
 const { colorize } = colors;
 const { subtract, union } = booleans;
 const { extrudeLinear } = extrusions;
