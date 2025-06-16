@@ -7,5 +7,6 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: false,
-  onSuccess: 'pnpm jscad out/index.js -o out/index.jscad.json',
+  onSuccess:
+    'pnpm jscad out/index.js -o out/index.jscad.json && pnpm jscad out/index.js -o out/index.stl',
 });

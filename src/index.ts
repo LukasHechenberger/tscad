@@ -1,10 +1,14 @@
-import { primitives, transforms, colors, booleans } from '@jscad/modeling';
+import { primitives, transforms, colors, booleans, extrusions } from '@jscad/modeling';
 import type { Geom3 } from '@jscad/modeling/src/geometries/types';
+import { slopedCuboid } from './lib/sloped-cuboid';
 
-const { cube, cuboid } = primitives;
-const { rotateZ, translate } = transforms;
+// Specs: https://gridfinity.xyz/specification/
+
+const { roundedRectangle } = primitives;
+const { translate, translateZ } = transforms;
 const { colorize } = colors;
 const { subtract, union } = booleans;
+const { extrudeLinear } = extrusions;
 
 const gridfinity = {
   baseplateDimensions: [42, 42] as [number, number],
@@ -19,23 +23,56 @@ function pattern(x: number, y: number, callback: (x: number, y: number) => Geom3
   );
 }
 
+const baseplateCutout = union(
+  // Lowest level
+  translateZ(
+    0 + 0.35, // height so far + half height
+    slopedCuboid({
+      size: [...(gridfinity.baseplateDimensions.map((d) => d - 2.15 * 2) as [number, number]), 0.7],
+      radius: 1.85,
+    })
+  ),
+  // Middle
+  translateZ(
+    0.7,
+    extrudeLinear(
+      { height: 1.8 },
+      roundedRectangle({
+        size: gridfinity.baseplateDimensions.map((d) => d - 2.15 * 2) as [number, number],
+        roundRadius: 1.85,
+      })
+    )
+  ),
+
+  // Top level
+  translateZ(
+    2.5 + 2.15 / 2,
+    slopedCuboid({
+      size: [...gridfinity.baseplateDimensions, 2.15],
+      radius: 4,
+    })
+  )
+);
+
 function gridfinityBaseplate({ grid }: { grid: [number, number] }) {
-  const height = gridfinity.baseplateHeight;
-
-  // const offset = grid.map((g) => (g * gridfinity.baseplateDimensions[0]) / 2);
-
   return colorize(
     [1, 0, 0], // Red
 
-    // Baseplate itself
     subtract(
-      cuboid({
-        size: [
-          ...(gridfinity.baseplateDimensions.map((base, i) => grid[i] * base) as [number, number]),
-          height,
-        ],
-      }),
+      // Baseplate itself
+      extrudeLinear(
+        { height: gridfinity.baseplateHeight },
+        roundedRectangle({
+          size: gridfinity.baseplateDimensions.map((dim, index) => dim * grid[index]) as [
+            number,
+            number
+          ],
+          center: [0, 0],
+          roundRadius: 7.5 / 2,
+        })
+      ),
 
+      // Cutout for the baseplate
       pattern(grid[0], grid[1], (x, y) => {
         const offset = [
           (-grid[0] / 2 + x + 0.5) * gridfinity.baseplateDimensions[0],
@@ -43,11 +80,8 @@ function gridfinityBaseplate({ grid }: { grid: [number, number] }) {
         ] as const;
 
         return translate(
-          [...offset, 0],
-
-          cuboid({
-            size: [gridfinity.baseplateDimensions[0] - 5, gridfinity.baseplateDimensions[1] - 5, 5],
-          })
+          [...offset, gridfinity.baseplateHeight - 4.65], // Adjust for height
+          baseplateCutout
         );
       })
     )
@@ -55,5 +89,5 @@ function gridfinityBaseplate({ grid }: { grid: [number, number] }) {
 }
 
 export function main() {
-  return gridfinityBaseplate({ grid: [2, 3] });
+  return [gridfinityBaseplate({ grid: [2, 3] })];
 }
