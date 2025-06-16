@@ -14,6 +14,8 @@ const { extrudeLinear } = extrusions;
 const gridfinity = {
   baseplateDimensions: [42, 42] as Vector2,
   baseplateHeight: 5,
+  baseplatePadding: 2.15,
+  baseplateRadius: 4,
 };
 
 function pattern(
@@ -67,11 +69,25 @@ const baseplateCutout = () =>
     )
   );
 
-function gridfinityBaseplate({ grid, size: _size }: { grid: Vector2; size?: Vector2 | Vector3 }) {
+type GridfinityBaseplateOptions = {
+  grid: Vector2;
+  /** Override the allover size */
+  size?: Vector2 | Vector3;
+  /** Add a padding around the gridfinity cutouts. Ignored if `size` is set */
+  outerPadding?: boolean;
+};
+
+function gridfinityBaseplate({
+  grid,
+  size: _size,
+  outerPadding = true,
+}: GridfinityBaseplateOptions) {
+  const padding = outerPadding ? gridfinity.baseplatePadding : 0;
+
   const size = _size
     ? [_size[0], _size[1], _size[2] ?? gridfinity.baseplateHeight]
     : [
-        ...mapVector(gridfinity.baseplateDimensions, (dim, index) => dim * grid[index]),
+        ...mapVector(gridfinity.baseplateDimensions, (dim, index) => dim * grid[index] + padding),
         gridfinity.baseplateHeight,
       ];
   const [width, depth, height] = size;
@@ -88,7 +104,7 @@ function gridfinityBaseplate({ grid, size: _size }: { grid: Vector2; size?: Vect
         roundedRectangle({
           size: [width, depth],
           center: [0, 0],
-          roundRadius: 8 / 2,
+          roundRadius: gridfinity.baseplateRadius + padding / 2,
         })
       ),
 
@@ -109,5 +125,5 @@ function gridfinityBaseplate({ grid, size: _size }: { grid: Vector2; size?: Vect
 }
 
 export function main() {
-  return gridfinityBaseplate({ grid: [1, 1] });
+  return gridfinityBaseplate({ grid: [2, 3] });
 }
