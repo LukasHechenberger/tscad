@@ -1,0 +1,3 @@
+onlyBuiltDependencies:
+  - '@jscad/cli'
+  - esbuild

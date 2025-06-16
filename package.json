@@ -1,0 +1,25 @@
+{
+  "name": "tscad",
+  "version": "0.0.0",
+  "main": "out/index.js",
+  "type": "commonjs",
+  "private": true,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Lukas Hechenberger <npm@ls-age.com> (https://ls-age.com/)",
+  "license": "UNLICENSED",
+  "description": "",
+  "packageManager": "pnpm@10.12.1",
+  "devDependencies": {
+    "@jscad/cli": "^2.3.5",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@jscad/modeling": "^2.12.5"
+  }
+}
