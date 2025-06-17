@@ -12,8 +12,8 @@ importers:
         specifier: ^2.29.4
         version: 2.29.4
       '@toolsync/builtin':
-        specifier: ^0.1.4
-        version: 0.1.4(ignore-sync@8.0.0)(prettier@3.5.3)
+        specifier: ^0.2.2
+        version: 0.2.2(ignore-sync@8.0.0)(prettier@3.5.3)
       '@toolsync/cli':
         specifier: 0.2.3
         version: 0.2.3
@@ -668,8 +668,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@toolsync/builtin@0.1.4':
-    resolution: {integrity: sha512-3kyfTL/G84ch41AZrRWFnl1y+RWbI8DiyO3cbr0nrpyAxvkot3B1mlitxKggWbYxJC8byVVmHxFQ6o/YpRJzEw==}
+  '@toolsync/builtin@0.2.2':
+    resolution: {integrity: sha512-hoa5cJz0qaylurDtBbzmQe7RYR3OLJ9ZuaMAHdGF+Gi/SEBQhkQMvZ7INRdc+K2iSZzK7Y2CWgRZSc94GFSeoA==}
     engines: {node: '>=20.6.0'}
     peerDependencies:
       ignore-sync: ^8.0.0
@@ -3284,7 +3284,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.43.0':
     optional: true
 
-  '@toolsync/builtin@0.1.4(ignore-sync@8.0.0)(prettier@3.5.3)':
+  '@toolsync/builtin@0.2.2(ignore-sync@8.0.0)(prettier@3.5.3)':
     dependencies:
       '@toolsync/core': 0.1.2
       '@toolsync/template': 0.1.0
