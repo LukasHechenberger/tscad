@@ -8,8 +8,18 @@ Run development server:
 pnpm dev
 ```
 
-Open in Prusa Slicer (on Mac)
+Open an example (on Mac)
 
 ```shell
-open -a PrusaSlicer out/index.stl
+# Preview in VScode
+open -a "Visual Studio Code" out/examples/defaults-2x3.jscad.json
+
+# In prusa slicer
+open -a PrusaSlicer out/examples/defaults-2x3.stl
 ```
+
+## Todo
+
+- Create tree from geometries, transforms etc.
+- React app that renders raw polygons via react-tree-fiber and displays tree
+- We could even create react components for primitives etc.

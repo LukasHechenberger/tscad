@@ -7,9 +7,11 @@ const exec = promisify(_exec);
 const prepareDir = (path: string) =>
   rm(path, { recursive: true, force: true }).then(() => mkdir(path, { recursive: true }));
 
-async function buildExamples() {
+async function buildExamples(args = process.argv.slice(2)) {
   // Cleanup
-  await prepareDir('out/examples');
+  if (args.includes('--clean')) {
+    await prepareDir('out/examples');
+  }
 
   const { examples } = await import('../examples');
 
@@ -32,7 +34,7 @@ const main = () => gridfinityBaseplate(${inspect(example.options)});
 module.exports = { main };`
     );
 
-    // await exec(`pnpm jscad ./${filename} -o examples/${slug}.jscad.json`);
+    await exec(`pnpm jscad ./${filename} -o out/examples/${slug}.jscad.json`);
     const command = exec(`pnpm jscad ./${filename} -o out/examples/${slug}.stl`);
     command.child.stdout?.pipe(process.stdout);
 
