@@ -3,7 +3,7 @@ import path from 'node:path';
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts', 'src/*/*.ts'],
+  entry: ['src/*.ts', 'src/*/index.ts', 'src/scripts/*.ts'],
   format: ['esm', 'cjs'],
   outDir: 'out',
   dts: true,
@@ -22,7 +22,7 @@ export default defineConfig({
 
           for (const file of outputFiles) {
             // Only handle esm files to just do it once
-            if (file.path.endsWith('.js')) {
+            if (file.path.endsWith('.js') && !file.path.includes('/scripts/')) {
               const relativePath = `./${path.relative(process.cwd(), file.path)}`;
               let exportPath = path.dirname(path.relative('out', relativePath));
 
@@ -49,4 +49,5 @@ export default defineConfig({
       },
     },
   ],
+  onSuccess: 'node ./out/scripts/update-readme.js',
 });

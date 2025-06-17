@@ -23,3 +23,36 @@ Just replace your `@jscad/modeling` import with `@tscad/modeling` like this:
    cube({size: [1, 2, 3]})
  }
 ```
+
+## State
+
+<!-- #region state -->
+<!-- This section is generated. Do not edit manually! -->
+
+Currently, 1 of 21 JSCAD primitives are re-exported in `@tscad/modeling`.
+
+| Primitive        | Re-exported |
+| ---------------- | ----------- |
+| arc              | ❌           |
+| circle           | ❌           |
+| cube             | ✅           |
+| cuboid           | ❌           |
+| cylinder         | ❌           |
+| cylinderElliptic | ❌           |
+| ellipse          | ❌           |
+| ellipsoid        | ❌           |
+| geodesicSphere   | ❌           |
+| line             | ❌           |
+| polygon          | ❌           |
+| polyhedron       | ❌           |
+| rectangle        | ❌           |
+| roundedCuboid    | ❌           |
+| roundedCylinder  | ❌           |
+| roundedRectangle | ❌           |
+| sphere           | ❌           |
+| square           | ❌           |
+| star             | ❌           |
+| torus            | ❌           |
+| triangle         | ❌           |
+
+<!-- #endregion state -->
