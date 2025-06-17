@@ -31,7 +31,7 @@ async function buildExamples(args = process.argv.slice(2)) {
 
 const main = () => gridfinityBaseplate(${inspect(example.options)});
 
-module.exports = { main };`
+module.exports = { main };`,
     );
 
     await exec(`pnpm jscad ./${filename} -o out/examples/${slug}.jscad.json`);

@@ -8,7 +8,7 @@ const { translate } = transforms;
 
 export function pattern(
   { cells, cellSize, center = [0, 0, 0] }: { cells: Vector2; cellSize: Vector2; center?: Vector3 },
-  geometry: Geom3
+  geometry: Geom3,
 ) {
   const [x, y] = cells;
 
@@ -20,6 +20,6 @@ export function pattern(
       ] as const;
 
       return translate([...offset, center[2]], geometry);
-    })
+    }),
   ).flat();
 }

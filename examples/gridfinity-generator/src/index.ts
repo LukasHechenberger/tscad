@@ -26,7 +26,7 @@ const baseplateCutout = () =>
       slopedCuboid({
         size: [...mapVector(gridfinity.baseplateDimensions, (d) => d - 2.15 * 2), 0.7],
         radius: 1.85,
-      })
+      }),
     ),
 
     // Middle
@@ -37,8 +37,8 @@ const baseplateCutout = () =>
         roundedRectangle({
           size: mapVector(gridfinity.baseplateDimensions, (d) => d - 2.15 * 2),
           roundRadius: 1.85,
-        })
-      )
+        }),
+      ),
     ),
 
     // Top level
@@ -47,8 +47,8 @@ const baseplateCutout = () =>
       slopedCuboid({
         size: [...gridfinity.baseplateDimensions, 2.15],
         radius: 4,
-      })
-    )
+      }),
+    ),
   );
 
 type GridfinityBaseplateOptions = {
@@ -106,7 +106,7 @@ export function gridfinityBaseplate({
           size: [width, depth],
           center: [0, 0],
           roundRadius: gridfinity.baseplateRadius + padding / 2,
-        })
+        }),
       ),
 
       // Cutout for the baseplate
@@ -119,8 +119,8 @@ export function gridfinityBaseplate({
           // NOTE: We could use the first two elements to move the cutouts on the plate
           center: [0, 0, height - 4.65],
         },
-        cutout
-      )
-    )
+        cutout,
+      ),
+    ),
   );
 }

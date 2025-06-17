@@ -1,0 +1,17 @@
+{
+  "@toolsync/builtin/github-actions": {},
+  "@toolsync/builtin/ignore-sync": {},
+  "@toolsync/builtin/package-meta": {},
+  "@toolsync/builtin/package-readme": {},
+  "@toolsync/builtin/pnpm": {},
+  "@toolsync/builtin/prettier": {
+    "settings": {
+      "printWidth": 100,
+      "singleQuote": true,
+      "plugins": ["prettier-plugin-packagejson"]
+    }
+  },
+  "@toolsync/builtin/vscode": {
+    "recommendations": ["mtsmfm.vscode-jscad-preview"]
+  }
+}

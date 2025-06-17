@@ -1,0 +1,45 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    name: Code Quality
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    env:
+      DO_NOT_TRACK: '1'
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          lfs: true
+      - uses: pnpm/action-setup@v4
+      - id: setup-node
+        name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - id: install
+        name: Install dependencies
+        run: pnpm install
+      - name: Code Quality Checks
+        run: pnpm turbo check lint check-types test build
+      - name: Ensure there are no uncommitted changes
+        run: git diff --exit-code || (echo "There are uncommitted changes!" && exit 1)
+      - if: ${{ github.event_name == 'push' }}
+        name: Changesets
+        uses: changesets/action@v1
+        with:
+          commit: 'chore: Update versions'
+          title: 'chore: Update versions'
+          publish: pnpm changeset publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.CHANGESETS_GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

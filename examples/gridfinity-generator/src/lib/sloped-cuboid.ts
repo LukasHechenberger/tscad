@@ -47,8 +47,8 @@ export function slopedCuboid({
             height,
             startRadius: [bottomRadius, bottomRadius],
             endRadius: [topRadius, topRadius],
-          })
-        )
+          }),
+        ),
       ),
 
       // Connections between edges
@@ -73,12 +73,12 @@ export function slopedCuboid({
                     [topRadius, height],
                     [0, height],
                   ],
-                })
-              )
-            )
-          )
-        )
-      )
+                }),
+              ),
+            ),
+          ),
+        ),
+      ),
     ),
   ];
 }

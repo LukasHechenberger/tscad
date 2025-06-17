@@ -1,0 +1,5 @@
+[relative]
+.gitignore
+
+[inline]
+pnpm-lock.yaml
