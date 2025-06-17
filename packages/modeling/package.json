@@ -1,6 +1,6 @@
 {
   "name": "@tscad/modeling",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Typescript friendly re-exports of `@jscad/modeling`",
   "repository": {
     "type": "git",
