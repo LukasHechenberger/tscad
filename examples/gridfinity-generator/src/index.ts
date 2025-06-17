@@ -1,7 +1,8 @@
 import { booleans, colors, extrusions, primitives, transforms } from '@jscad/modeling';
+import { type Vector2, type Vector3 } from '@tscad/modeling';
 import { pattern } from './lib/modeling';
 import { slopedCuboid } from './lib/sloped-cuboid';
-import { mapVector, type Vector2, type Vector3 } from './lib/vectors';
+import { mapVector } from './lib/vectors';
 
 // Specs: https://gridfinity.xyz/specification/
 

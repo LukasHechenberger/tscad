@@ -35,6 +35,9 @@ importers:
       '@jscad/modeling':
         specifier: ^2.12.5
         version: 2.12.5
+      '@tscad/modeling':
+        specifier: workspace:*
+        version: link:../../packages/modeling
     devDependencies:
       '@jscad/cli':
         specifier: ^2.3.5
