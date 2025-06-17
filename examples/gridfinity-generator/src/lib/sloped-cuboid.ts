@@ -1,12 +1,11 @@
-import { primitives, transforms, colors, booleans, extrusions } from '@jscad/modeling';
+import { booleans, extrusions, primitives, transforms } from '@jscad/modeling';
 
 // Specs: https://gridfinity.xyz/specification/
 
-const { cube, cuboid, polygon, roundedRectangle, circle, triangle, cylinderElliptic } = primitives;
-const { rotateZ, rotateX, rotate, rotateY, translate, translateZ, mirror } = transforms;
-const { colorize } = colors;
-const { subtract, union } = booleans;
-const { extrudeLinear, extrudeHelical, extrudeRectangular, extrudeRotate } = extrusions;
+const { cuboid, polygon, cylinderElliptic } = primitives;
+const { rotateZ, rotateX, translate } = transforms;
+const { union } = booleans;
+const { extrudeLinear } = extrusions;
 
 /** A rounded Cuboid, that has a sloped */
 export function slopedCuboid({
@@ -41,8 +40,7 @@ export function slopedCuboid({
         [1, -1],
       ].map((offset) =>
         translate(
-          // [0, 0, 0],
-          offset.map((o, i) => (o * innerSize[i]) / 2) as [number, number],
+          offset.map((o, index) => (o * innerSize[index]) / 2) as [number, number],
           cylinderElliptic({
             height,
             startRadius: [bottomRadius, bottomRadius],

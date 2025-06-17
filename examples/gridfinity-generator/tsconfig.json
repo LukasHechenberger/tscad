@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "esnext",
     "target": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
     "strict": true,
     "lib": ["esnext"]

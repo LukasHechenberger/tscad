@@ -1,16 +1,16 @@
-import { mkdir, rm, writeFile } from 'fs/promises';
-import { join } from 'path';
-import { exec as _exec } from 'child_process';
-import { inspect, promisify } from 'util';
+import { exec as _exec } from 'node:child_process';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { inspect, promisify } from 'node:util';
 
 const exec = promisify(_exec);
-const prepareDir = (path: string) =>
+const prepareDirectory = (path: string) =>
   rm(path, { recursive: true, force: true }).then(() => mkdir(path, { recursive: true }));
 
-async function buildExamples(args = process.argv.slice(2)) {
+async function buildExamples(flags = process.argv.slice(2)) {
   // Cleanup
-  if (args.includes('--clean')) {
-    await prepareDir('out/examples');
+  if (flags.includes('--clean')) {
+    await prepareDirectory('out/examples');
   }
 
   const { examples } = await import('../examples');
@@ -19,11 +19,11 @@ async function buildExamples(args = process.argv.slice(2)) {
     console.log(`Example: ${example.title}`);
 
     const slug = example.title
-      .replace(/[\s()]+/g, ' ')
+      .replaceAll(/[\s()]+/g, ' ')
       .trim()
       .replaceAll(' ', '-')
       .toLowerCase();
-    const filename = join('out/examples', `${slug}.js`);
+    const filename = path.join('out/examples', `${slug}.js`);
 
     await writeFile(
       filename,
@@ -44,6 +44,7 @@ module.exports = { main };`,
 
 buildExamples()
   .then(() => console.log('Examples built successfully!'))
+  // eslint-disable-next-line unicorn/prefer-top-level-await -- because we build cjs as well
   .catch((error) => {
     console.error(error);
     process.exitCode = 1;
