@@ -2,7 +2,9 @@ import { MarkdownTemplate } from '@toolsync/template';
 import { markdownTable } from 'markdown-table';
 
 async function updateReadme() {
-  const { primitives: jsPrimitives } = (await import('@jscad/modeling')).default;
+  const {
+    default: { primitives: jsPrimitives },
+  } = await import('@jscad/modeling');
   const tsPrimitives = await import('../primitives/index.js');
 
   const primitives = Object.keys(jsPrimitives).map(
