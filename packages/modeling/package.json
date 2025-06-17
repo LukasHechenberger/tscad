@@ -1,18 +1,24 @@
 {
-  "name": "@tscad/gridfinity-generator",
+  "name": "@tscad/modeling",
   "version": "0.0.0",
-  "private": true,
-  "description": "Gridfinity generator example",
-  "keywords": [],
+  "description": "Typescript friendly re-exports of `@jscad/modeling`",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LukasHechenberger/tscad.git",
-    "directory": "examples/gridfinity-generator"
+    "directory": "packages/modeling"
   },
   "license": "MIT",
-  "author": "Lukas Hechenberger <npm@ls-age.com> (https://ls-age.com/)",
-  "type": "commonjs",
-  "main": "out/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./out/index.d.ts",
+      "default": "./out/index.js"
+    },
+    "./primitives": {
+      "types": "./out/primitives/index.d.ts",
+      "default": "./out/primitives/index.js"
+    }
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -22,13 +28,16 @@
     "@jscad/modeling": "^2.12.5"
   },
   "devDependencies": {
-    "@jscad/cli": "^2.3.5",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@toolsync/template": "^0.1.0",
     "@types/node": "^22.15.32",
     "eslint": "^9.29.0",
-    "picocolors": "^1.1.1",
+    "markdown-table": "^3.0.4",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -1,7 +1,11 @@
 {
   "@toolsync/builtin/github-actions": {},
   "@toolsync/builtin/ignore-sync": {},
-  "@toolsync/builtin/package-meta": {},
+  "@toolsync/builtin/package-meta": {
+    "publishConfig": {
+      "access": "public"
+    }
+  },
   "@toolsync/builtin/package-readme": {},
   "@toolsync/builtin/pnpm": {},
   "@toolsync/builtin/prettier": {
