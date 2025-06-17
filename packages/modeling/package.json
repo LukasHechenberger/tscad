@@ -37,6 +37,7 @@
   },
   "scripts": {
     "build": "tsup",
+    "check:exports": "publint",
     "dev": "tsup --watch",
     "lint": "eslint . --max-warnings 0"
   },
@@ -50,6 +51,7 @@
     "@types/node": "^22.15.32",
     "eslint": "^9.29.0",
     "markdown-table": "^3.0.4",
+    "publint": "^0.3.12",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },
