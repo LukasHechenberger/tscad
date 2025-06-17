@@ -91,6 +91,8 @@ export function gridfinityBaseplate({
       ];
   const [width, depth, height] = size;
 
+  console.log({ size });
+
   const cutout = baseplateCutout();
 
   return colorize(

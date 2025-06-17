@@ -11,7 +11,7 @@ pnpm dev
 Open an example (on Mac)
 
 ```shell
-# Preview in VScode
+# Preview in VScode (Make sure to install recommended extensions)
 open -a "Visual Studio Code" out/examples/defaults-2x3.jscad.json
 
 # In prusa slicer
