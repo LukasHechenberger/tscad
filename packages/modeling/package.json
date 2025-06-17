@@ -26,6 +26,14 @@
       "types": "./out/types.d.ts",
       "default": "./out/types.js"
     },
+    "./convert": {
+      "require": {
+        "types": "./out/convert/index.d.cts",
+        "default": "./out/convert/index.cjs"
+      },
+      "types": "./out/convert/index.d.ts",
+      "default": "./out/convert/index.js"
+    },
     "./primitives": {
       "require": {
         "types": "./out/primitives/index.d.cts",
@@ -42,13 +50,15 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "@jscad/modeling": "^2.12.5"
+    "@jscad/modeling": "^2.12.5",
+    "three": "^0.177.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@toolsync/template": "^0.1.0",
     "@types/node": "^22.15.32",
+    "@types/three": "^0.177.0",
     "eslint": "^9.29.0",
     "markdown-table": "^3.0.4",
     "publint": "^0.3.12",
