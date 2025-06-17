@@ -15,7 +15,7 @@ export const config = [
   js.configs.recommended,
   eslintConfigPrettier,
   {
-    rules: { 'object-shorthand': 'error' },
+    rules: { 'object-shorthand': 'error', 'prefer-template': 'error' },
   },
   {
     ...eslintPluginUnicorn.configs.recommended,
