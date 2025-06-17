@@ -4,12 +4,15 @@
   "tasks": {
     "//#check:format": {},
     "check": {
-      "dependsOn": ["//#check:format", "check-types"]
+      "dependsOn": ["//#check:format", "check-types", "check:exports"]
     },
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "out/**"]
+    },
+    "check:exports": {
+      "dependsOn": ["build"]
     },
     "lint": {
       "dependsOn": ["^lint"]

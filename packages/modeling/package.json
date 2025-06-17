@@ -11,16 +11,33 @@
   "type": "module",
   "exports": {
     ".": {
+      "require": {
+        "types": "./out/index.d.cts",
+        "default": "./out/index.cjs"
+      },
       "types": "./out/index.d.ts",
       "default": "./out/index.js"
     },
+    "./types": {
+      "require": {
+        "types": "./out/types.d.cts",
+        "default": "./out/types.cjs"
+      },
+      "types": "./out/types.d.ts",
+      "default": "./out/types.js"
+    },
     "./primitives": {
+      "require": {
+        "types": "./out/primitives/index.d.cts",
+        "default": "./out/primitives/index.cjs"
+      },
       "types": "./out/primitives/index.d.ts",
       "default": "./out/primitives/index.js"
     }
   },
   "scripts": {
     "build": "tsup",
+    "check:exports": "publint",
     "dev": "tsup --watch",
     "lint": "eslint . --max-warnings 0"
   },
@@ -34,6 +51,7 @@
     "@types/node": "^22.15.32",
     "eslint": "^9.29.0",
     "markdown-table": "^3.0.4",
+    "publint": "^0.3.12",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },

@@ -15,9 +15,16 @@ async function updateReadme() {
     section: 'state',
     insert: 'bottom',
     content: `
-Currently, ${primitives.filter(([, { reExported }]) => reExported).length} of ${
+**Primitives**
+
+<details>
+<summary>
+
+Currently, **${primitives.filter(([, { reExported }]) => reExported).length} of ${
       primitives.length
-    } JSCAD primitives are re-exported in \`@tscad/modeling\`.
+    }** JSCAD primitives are re-exported in \`@tscad/modeling\`.
+
+</summary>
 
 ${markdownTable([
   ['Primitive', 'Re-exported'],
@@ -25,6 +32,8 @@ ${markdownTable([
 ])
   // NOTE: Markdown Table does not support emojis well -> adjust some lines to match prettier formatting
   .replaceAll(/ {2}\|$/gm, ' |')}
+
+</details>
 `,
   });
 }

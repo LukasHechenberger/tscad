@@ -19,7 +19,8 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "@jscad/modeling": "^2.12.5"
+    "@jscad/modeling": "^2.12.5",
+    "@tscad/modeling": "workspace:*"
   },
   "devDependencies": {
     "@jscad/cli": "^2.3.5",
