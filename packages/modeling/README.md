@@ -29,7 +29,7 @@ Just replace your `@jscad/modeling` import with `@tscad/modeling` like this:
 <!-- #region state -->
 <!-- This section is generated. Do not edit manually! -->
 
-Currently, 1 of 21 JSCAD primitives are re-exported in `@tscad/modeling`.
+Currently, 2 of 21 JSCAD primitives are re-exported in `@tscad/modeling`.
 
 | Primitive        | Re-exported |
 | ---------------- | ----------- |
@@ -49,7 +49,7 @@ Currently, 1 of 21 JSCAD primitives are re-exported in `@tscad/modeling`.
 | roundedCuboid    | ❌          |
 | roundedCylinder  | ❌          |
 | roundedRectangle | ❌          |
-| sphere           | ❌          |
+| sphere           | ✅          |
 | square           | ❌          |
 | star             | ❌          |
 | torus            | ❌          |
