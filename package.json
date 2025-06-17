@@ -4,7 +4,6 @@
   "private": true,
   "description": "jscad, but for modern developers",
   "keywords": [],
-  "homepage": "https://tscad.vercel.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LukasHechenberger/tscad.git"

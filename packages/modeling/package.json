@@ -2,7 +2,6 @@
   "name": "@tscad/modeling",
   "version": "0.0.0",
   "description": "Typescript friendly re-exports of `@jscad/modeling`",
-  "homepage": "https://tscad.vercel.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LukasHechenberger/tscad.git",
