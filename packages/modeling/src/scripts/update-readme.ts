@@ -19,7 +19,12 @@ Currently, ${primitives.filter(([, { reExported }]) => reExported).length} of ${
       primitives.length
     } JSCAD primitives are re-exported in \`@tscad/modeling\`.
 
-${markdownTable([['Primitive', 'Re-exported'], ...primitives.map(([name, { reExported }]) => [name, reExported ? '✅' : '❌'])])}
+${markdownTable([
+  ['Primitive', 'Re-exported'],
+  ...primitives.map(([name, { reExported }]) => [name, reExported ? '✅' : '❌']),
+])
+  // NOTE: Markdown Table does not support emojis well -> adjust some lines to match prettier formatting
+  .replaceAll(/ {2}\|$/gm, ' |')}
 `,
   });
 }
