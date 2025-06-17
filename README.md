@@ -19,5 +19,6 @@ This repository contains the following packages:
 | [@repo/eslint-config](packages/eslint-config)                | Shared eslint configuration for the workspace.     |       |
 | [@repo/typescript-config](packages/typescript-config)        | Shared typescript configuration for the workspace. |       |
 | [@tscad/gridfinity-generator](examples/gridfinity-generator) | Gridfinity generator example                       |       |
+| [@tscad/modeling](packages/modeling)                         | _no description_                                   |       |
 
 <!-- #endregion packages -->
