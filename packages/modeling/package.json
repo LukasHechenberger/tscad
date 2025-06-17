@@ -1,8 +1,14 @@
 {
   "name": "@tscad/modeling",
   "version": "0.0.0",
-  "private": true,
   "description": "Typescript friendly re-exports of `@jscad/modeling`",
+  "homepage": "https://tscad.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasHechenberger/tscad.git",
+    "directory": "packages/modeling"
+  },
+  "license": "MIT",
   "type": "module",
   "exports": {
     ".": {
@@ -19,6 +25,9 @@
     "dev": "tsup --watch",
     "lint": "eslint . --max-warnings 0"
   },
+  "dependencies": {
+    "@jscad/modeling": "^2.12.5"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
@@ -26,9 +35,5 @@
     "eslint": "^9.29.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
-  },
-  "license": "UNLICENSED",
-  "dependencies": {
-    "@jscad/modeling": "^2.12.5"
   }
 }

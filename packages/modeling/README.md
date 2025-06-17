@@ -3,6 +3,8 @@
 
 # @tscad/modeling
 
+[![NPM Version](https://img.shields.io/npm/v/@tscad/modeling)](https://www.npmjs.com/package/@tscad/modeling)
+
 Typescript friendly re-exports of `@jscad/modeling`
 
 <!-- #endregion header -->

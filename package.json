@@ -4,7 +4,12 @@
   "private": true,
   "description": "jscad, but for modern developers",
   "keywords": [],
-  "license": "UNLICENSED",
+  "homepage": "https://tscad.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasHechenberger/tscad.git"
+  },
+  "license": "MIT",
   "author": "Lukas Hechenberger <npm@ls-age.com> (https://ls-age.com/)",
   "type": "module",
   "scripts": {

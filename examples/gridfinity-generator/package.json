@@ -4,7 +4,13 @@
   "private": true,
   "description": "Gridfinity generator example",
   "keywords": [],
-  "license": "UNLICENSED",
+  "homepage": "https://tscad.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasHechenberger/tscad.git",
+    "directory": "examples/gridfinity-generator"
+  },
+  "license": "MIT",
   "author": "Lukas Hechenberger <npm@ls-age.com> (https://ls-age.com/)",
   "type": "commonjs",
   "main": "out/index.js",
