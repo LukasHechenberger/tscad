@@ -2,8 +2,6 @@ import type { Geom3 } from '@jscad/modeling/src/geometries/types';
 import type { Vector2, Vector3 } from './vectors';
 import { transforms } from '@jscad/modeling';
 
-// Specs: https://gridfinity.xyz/specification/
-
 const { translate } = transforms;
 
 export function pattern(

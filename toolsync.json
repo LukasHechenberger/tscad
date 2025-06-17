@@ -12,6 +12,12 @@
     }
   },
   "@toolsync/builtin/vscode": {
-    "recommendations": ["mtsmfm.vscode-jscad-preview"]
+    "recommendations": ["mtsmfm.vscode-jscad-preview"],
+    "settings": {
+      "eslint.workingDirectories": ["examples/*", "apps/*", "packages/*"],
+      "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+      }
+    }
   }
 }
