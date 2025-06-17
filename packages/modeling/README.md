@@ -29,7 +29,14 @@ Just replace your `@jscad/modeling` import with `@tscad/modeling` like this:
 <!-- #region state -->
 <!-- This section is generated. Do not edit manually! -->
 
-Currently, 2 of 21 JSCAD primitives are re-exported in `@tscad/modeling`.
+**Primitives**
+
+<details>
+<summary>
+
+Currently, **2 of 21** JSCAD primitives are re-exported in `@tscad/modeling`.
+
+</summary>
 
 | Primitive        | Re-exported |
 | ---------------- | ----------- |
@@ -54,5 +61,7 @@ Currently, 2 of 21 JSCAD primitives are re-exported in `@tscad/modeling`.
 | star             | ❌          |
 | torus            | ❌          |
 | triangle         | ❌          |
+
+</details>
 
 <!-- #endregion state -->
