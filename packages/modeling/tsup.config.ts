@@ -24,13 +24,22 @@ export default defineConfig({
             // Only handle esm files to just do it once
             if (file.path.endsWith('.js') && !file.path.includes('/scripts/')) {
               const relativePath = `./${path.relative(process.cwd(), file.path)}`;
-              let exportPath = path.dirname(path.relative('out', relativePath));
+
+              let exportPath =
+                path
+                  .relative('out', relativePath)
+                  .replace(/(\/index)?.js$/, '')
+                  .replace('index', '') || '.';
 
               if (!exportPath.startsWith('.')) exportPath = `./${exportPath}`;
 
               exports.push([
                 exportPath,
                 {
+                  require: {
+                    types: relativePath.replace(/\.js$/, '.d.cts'),
+                    default: relativePath.replace(/\.js$/, '.cjs'),
+                  },
                   types: relativePath.replace(/\.js$/, '.d.ts'),
                   default: relativePath,
                 },
