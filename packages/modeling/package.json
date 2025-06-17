@@ -27,5 +27,8 @@
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@jscad/modeling": "^2.12.5"
+  }
 }

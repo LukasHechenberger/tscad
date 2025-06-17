@@ -113,6 +113,10 @@ importers:
         version: 8.34.1(eslint@9.29.0)(typescript@5.8.3)
 
   packages/modeling:
+    dependencies:
+      '@jscad/modeling':
+        specifier: ^2.12.5
+        version: 2.12.5
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*

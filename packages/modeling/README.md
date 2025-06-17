@@ -6,3 +6,18 @@
 Typescript friendly re-exports of `@jscad/modeling`
 
 <!-- #endregion header -->
+
+## Usage
+
+Just replace your `@jscad/modeling` import with `@tscad/modeling` like this:
+
+```diff
+-import { booleans, extrusions, primitives, transforms } from '@jscad/modeling';
+-
+-const { cube } = primitives;
++import { cube } from '@tscad/modeling/primitives'
+
+ export function main() {
+   cube({size: [1, 2, 3]})
+ }
+```
