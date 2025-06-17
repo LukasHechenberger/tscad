@@ -35,5 +35,8 @@
     "eslint": "^9.29.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
