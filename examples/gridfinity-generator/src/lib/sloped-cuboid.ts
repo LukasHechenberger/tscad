@@ -1,4 +1,5 @@
 import { booleans, extrusions, primitives, transforms } from '@jscad/modeling';
+import type { Vector2 } from './vectors';
 
 // Specs: https://gridfinity.xyz/specification/
 
@@ -21,8 +22,8 @@ export function slopedCuboid({
 }) {
   const height = size[2];
   const bottomRadius = _bottomRadius ?? topRadius - height;
-  const topSize = [size[0], size[1]];
-  const innerSize = [
+  const topSize: Vector2 = [size[0], size[1]];
+  const innerSize: Vector2 = [
     (_bottomSize?.[0] ?? topSize[0]) - topRadius * 2,
     (_bottomSize?.[1] ?? topSize[1]) - topRadius * 2,
   ];
@@ -40,7 +41,7 @@ export function slopedCuboid({
         [1, -1],
       ].map((offset) =>
         translate(
-          offset.map((o, index) => (o * innerSize[index]) / 2) as [number, number],
+          (offset as Vector2).map((o, index) => (o * innerSize[index]!) / 2) as Vector2,
           cylinderElliptic({
             height,
             startRadius: [bottomRadius, bottomRadius],

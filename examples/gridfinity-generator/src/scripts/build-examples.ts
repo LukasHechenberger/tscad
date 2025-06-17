@@ -2,6 +2,7 @@ import { exec as _exec } from 'node:child_process';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { inspect, promisify } from 'node:util';
+import { magenta } from 'picocolors';
 
 const exec = promisify(_exec);
 const prepareDirectory = (path: string) =>
@@ -16,7 +17,8 @@ async function buildExamples(flags = process.argv.slice(2)) {
   const { examples } = await import('../examples');
 
   for (const example of examples) {
-    console.log(`Example: ${example.title}`);
+    const timeLabel = `${magenta('EXP')} ${example.title}`;
+    console.time(timeLabel);
 
     const slug = example.title
       .replaceAll(/[\s()]+/g, ' ')
@@ -36,14 +38,15 @@ module.exports = { main };`,
 
     await exec(`pnpm jscad ./${filename} -o out/examples/${slug}.jscad.json`);
     const command = exec(`pnpm jscad ./${filename} -o out/examples/${slug}.stl`);
-    command.child.stdout?.pipe(process.stdout);
+    // command.child.stdout?.pipe(process.stdout);
 
     await command;
+
+    console.timeEnd(timeLabel);
   }
 }
 
 buildExamples()
-  .then(() => console.log('Examples built successfully!'))
   // eslint-disable-next-line unicorn/prefer-top-level-await -- because we build cjs as well
   .catch((error) => {
     console.error(error);

@@ -83,7 +83,7 @@ export function gridfinityBaseplate({
 }: GridfinityBaseplateOptions) {
   const padding = outerPadding ? gridfinity.baseplatePadding : 0;
 
-  const size = _size
+  const size: Vector3 = _size
     ? [_size[0], _size[1], _size[2] ?? gridfinity.baseplateHeight]
     : [
         ...mapVector(gridfinity.baseplateDimensions, (dim, index) => dim * grid[index] + padding),

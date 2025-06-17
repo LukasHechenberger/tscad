@@ -42,12 +42,18 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@types/node':
         specifier: ^22.15.32
         version: 22.15.32
       eslint:
         specifier: ^9.29.0
         version: 9.29.0
+      picocolors:
+        specifier: ^1.1.1
+        version: 1.1.1
       tsup:
         specifier: ^8.5.0
         version: 8.5.0(typescript@5.8.3)(yaml@2.8.0)
@@ -102,6 +108,8 @@ importers:
       typescript-eslint:
         specifier: ^8.33.1
         version: 8.34.1(eslint@9.29.0)(typescript@5.8.3)
+
+  packages/typescript-config: {}
 
 packages:
 

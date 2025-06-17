@@ -3,8 +3,7 @@ export type Vector3 = [number, number, number];
 
 export function mapVector<V extends Vector2 | Vector3>(
   vector: V,
-  callback: (value: number, index: number) => number,
+  callback: (value: number, index: V extends Vector2 ? 0 | 1 : 0 | 1 | 2) => number,
 ): V {
-  // eslint-disable-next-line unicorn/no-array-callback-reference -- it's just a typing helper
-  return vector.map(callback) as V;
+  return vector.map((v, index) => callback(v, index as V extends Vector2 ? 0 | 1 : 0 | 1 | 2)) as V;
 }
