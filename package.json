@@ -2,7 +2,7 @@
   "name": "tscad",
   "version": "0.0.0",
   "private": true,
-  "description": "",
+  "description": "jscad, but for modern developers",
   "keywords": [],
   "license": "UNLICENSED",
   "author": "Lukas Hechenberger <npm@ls-age.com> (https://ls-age.com/)",

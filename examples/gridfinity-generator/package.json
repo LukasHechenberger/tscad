@@ -10,8 +10,7 @@
   "main": "out/index.js",
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsup --watch"
   },
   "dependencies": {
     "@jscad/modeling": "^2.12.5"

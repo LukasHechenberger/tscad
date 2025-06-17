@@ -3,6 +3,8 @@
 
 # tscad
 
+jscad, but for modern developers
+
 <!-- #endregion header -->
 
 <!-- #region packages -->
