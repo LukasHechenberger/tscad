@@ -3,4 +3,6 @@
 
 # @tscad/modeling
 
+Typescript friendly re-exports of `@jscad/modeling`
+
 <!-- #endregion header -->

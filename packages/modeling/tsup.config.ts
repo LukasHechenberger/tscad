@@ -43,7 +43,7 @@ export default defineConfig({
             manifest.exports = Object.fromEntries(exports);
             console.log('EXPORTS', manifest.exports);
 
-            await writeFile('package.json', `${JSON.stringify(manifest, null, 2)}\n`);
+            await writeFile('package.json', `${JSON.stringify(manifest, undefined, 2)}\n`);
           }
         });
       },

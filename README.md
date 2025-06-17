@@ -14,11 +14,11 @@ jscad, but for modern developers
 
 This repository contains the following packages:
 
-| Name                                                         | Description                                        | Links |
-| ------------------------------------------------------------ | -------------------------------------------------- | ----- |
-| [@repo/eslint-config](packages/eslint-config)                | Shared eslint configuration for the workspace.     |       |
-| [@repo/typescript-config](packages/typescript-config)        | Shared typescript configuration for the workspace. |       |
-| [@tscad/gridfinity-generator](examples/gridfinity-generator) | Gridfinity generator example                       |       |
-| [@tscad/modeling](packages/modeling)                         | _no description_                                   |       |
+| Name                                                         | Description                                         | Links |
+| ------------------------------------------------------------ | --------------------------------------------------- | ----- |
+| [@repo/eslint-config](packages/eslint-config)                | Shared eslint configuration for the workspace.      |       |
+| [@repo/typescript-config](packages/typescript-config)        | Shared typescript configuration for the workspace.  |       |
+| [@tscad/gridfinity-generator](examples/gridfinity-generator) | Gridfinity generator example                        |       |
+| [@tscad/modeling](packages/modeling)                         | Typescript friendly re-exports of `@jscad/modeling` |       |
 
 <!-- #endregion packages -->
