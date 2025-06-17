@@ -3,6 +3,11 @@ packages:
   - packages/*
   - apps/*
 
+gitBranchLockfile: true
+mergeGitBranchLockfilesBranchPattern:
+  - main
+  - changeset-release/*
+
 onlyBuiltDependencies:
   - '@jscad/cli'
   - esbuild

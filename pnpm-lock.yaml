@@ -73,13 +73,13 @@ importers:
         specifier: ^15.3.3
         version: 15.3.3
       '@typescript-eslint/eslint-plugin':
-        specifier: ^8.33.1
+        specifier: ^8.34.1
         version: 8.34.1(@typescript-eslint/parser@8.34.1(eslint@9.29.0)(typescript@5.8.3))(eslint@9.29.0)(typescript@5.8.3)
       '@typescript-eslint/parser':
-        specifier: ^8.33.1
+        specifier: ^8.34.1
         version: 8.34.1(eslint@9.29.0)(typescript@5.8.3)
       eslint:
-        specifier: ^9.28.0
+        specifier: ^9.29.0
         version: 9.29.0
       eslint-config-prettier:
         specifier: ^10.1.5
@@ -109,7 +109,7 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
       typescript-eslint:
-        specifier: ^8.33.1
+        specifier: ^8.34.1
         version: 8.34.1(eslint@9.29.0)(typescript@5.8.3)
 
   packages/modeling:
