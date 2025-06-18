@@ -15,7 +15,6 @@ apps/docs/out/
 apps/docs/build
 apps/docs/**/*.tsbuildinfo
 
-
 # others
 apps/docs/**/.env*.local
 apps/docs/**/.vercel
