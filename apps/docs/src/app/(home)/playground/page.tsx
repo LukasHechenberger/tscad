@@ -26,7 +26,7 @@ class WorkerError extends Error {
 }
 
 async function runInSandbox(tsCode: string): Promise<Model> {
-  worker ??= worker = new Worker(new URL('worker.ts', import.meta.url), { type: 'module' });
+  worker ??= new Worker(new URL('worker.ts', import.meta.url), { type: 'module' });
 
   let jsCode: string;
 
