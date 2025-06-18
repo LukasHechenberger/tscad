@@ -55,7 +55,7 @@ const resolveImports: esbuild.Plugin = {
       // console.log('resolving:', path);
 
       return {
-        path: new URL(path, 'http://localhost:3000/playground/resources/modules/').toString(),
+        path: new URL(path, new URL('/playground/resources/modules/', location.href)).toString(),
         namespace: 'http-url',
       };
     });
