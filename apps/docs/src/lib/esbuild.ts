@@ -55,7 +55,10 @@ const resolveImports: esbuild.Plugin = {
       // console.log('resolving:', path);
 
       return {
-        path: new URL(path, new URL('/playground/resources/modules/', location.href)).toString(),
+        path: new URL(
+          path.replace('@tscad/', ''),
+          new URL('/playground/resources/modules/', location.href),
+        ).toString(),
         namespace: 'http-url',
       };
     });
