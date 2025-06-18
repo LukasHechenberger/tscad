@@ -22,7 +22,7 @@ export async function bundleCode(
       write: false,
       format: 'cjs',
       platform: 'browser',
-      // sourcemap: 'inline', // FIXME: Enable and track error locations
+      // sourcemap: 'inline', // FIXME [>=1.0.0]: Enable and track error locations
       banner: {
         js: 'const module = {}; // This is where the module exports will be stored',
       },
@@ -64,10 +64,7 @@ const resolveImports: esbuild.Plugin = {
     // esbuild doesn't attempt to map them to a file system location.
     // Tag them with the "http-url" namespace to associate them with
     // this plugin.
-    build.onResolve({ filter: /^https?:\/\// }, (args) => ({
-      path: args.path,
-      namespace: 'http-url',
-    }));
+    build.onResolve({ filter: /^https?:\/\// }, ({ path }) => ({ path, namespace: 'http-url' }));
 
     build.onResolve({ filter: /./ }, ({ path }) => {
       throw new Error(
@@ -80,8 +77,8 @@ const resolveImports: esbuild.Plugin = {
     // files will be in the "http-url" namespace. Make sure to keep
     // the newly resolved URL in the "http-url" namespace so imports
     // inside it will also be resolved as URLs recursively.
-    build.onResolve({ filter: /.*/, namespace: 'http-url' }, (args) => ({
-      path: new URL(args.path, args.importer).toString(),
+    build.onResolve({ filter: /.*/, namespace: 'http-url' }, ({ path, importer }) => ({
+      path: new URL(path, importer).toString(),
       namespace: 'http-url',
     }));
 
@@ -89,12 +86,12 @@ const resolveImports: esbuild.Plugin = {
     // from the internet. This has just enough logic to be able to
     // handle the example import from unpkg.com but in reality this
     // would probably need to be more complex.
-    build.onLoad({ filter: /.*/, namespace: 'http-url' }, async (args) => {
-      console.log('Downloading:', args.path);
-      const response = await fetch(args.path);
+    build.onLoad({ filter: /.*/, namespace: 'http-url' }, async ({ path }) => {
+      console.log('Downloading:', path);
+      const response = await fetch(path);
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch ${args.path}: ${response.statusText}`);
+        throw new Error(`Failed to fetch ${path}: ${response.statusText}`);
       }
 
       const contents = await response.text();
