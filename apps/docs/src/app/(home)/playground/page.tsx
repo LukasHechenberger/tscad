@@ -1,32 +1,58 @@
 'use client';
 
-import { GizmoHelper, GizmoViewcube, Grid, OrbitControls, Stage } from '@react-three/drei';
+import { GizmoHelper, GizmoViewcube, OrbitControls, Stage } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { solidToTHREE } from '@tscad/modeling/convert';
-import { cube } from '@tscad/modeling/primitives';
-import Editor, { Monaco, useMonaco } from '@monaco-editor/react';
+import Editor, { type Monaco, useMonaco, OnMount } from '@monaco-editor/react';
 import { useTheme } from 'next-themes';
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { bundleCode } from '@/lib/esbuild';
+import type * as esbuild from 'esbuild-wasm';
 
 let worker: Worker;
 
+class WorkerError extends Error {
+  constructor(
+    message: string,
+    public stack?: string,
+  ) {
+    super(message);
+    this.name = 'WorkerError';
+  }
+}
+
 async function runInSandbox(tsCode: string): Promise<any> {
   worker ??= worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
-  const jsCode = await bundleCode(tsCode);
+
+  let jsCode: string;
+
+  const result = await bundleCode(tsCode);
+  if (result.text) jsCode = result.text;
+  else throw result;
 
   return new Promise((resolve, reject) => {
     worker.onmessage = (e) => {
-      console.log('Worker message:', e);
       const { result, error } = e.data;
-      error ? reject(new Error(error)) : resolve(result);
+
+      if (result) resolve(result);
+      else if (error) {
+        const remoteError = new WorkerError(error.message, error.stack);
+
+        reject(remoteError);
+      } else {
+        reject(new Error(`Unexpected response: ${JSON.stringify(e.data)}`));
+      }
     };
     worker.postMessage({ code: jsCode });
   });
 }
 
-function Entities({ geometries }: { geometries: any[] }) {
-  return geometries.map((entity, index) => (
+function Entities() {
+  const { geometries } = useContext(PlaygroundContext);
+  // FIXME: Catch + report errors
+  const rendered = useMemo(() => geometries.map(solidToTHREE), [geometries]);
+
+  return rendered.map((entity, index) => (
     <mesh key={index} castShadow geometry={entity}>
       <meshStandardMaterial color="orange" />
     </mesh>
@@ -71,7 +97,6 @@ function PlaygroundProvider({ children }: { children: ReactNode }) {
         } else console.info('Skipping state update, component is outdated');
       } catch (error) {
         if (!outdated) {
-          console.error('Error updating geometries:', typeof error, error);
           setError(error as Error);
           setBuilding(false);
         }
@@ -85,8 +110,6 @@ function PlaygroundProvider({ children }: { children: ReactNode }) {
     };
   }, [code]);
 
-  useEffect(() => console.log({ geometries }), [geometries]);
-
   return (
     <PlaygroundContext.Provider value={{ code, setCode, geometries, building, error }}>
       {children}
@@ -95,9 +118,6 @@ function PlaygroundProvider({ children }: { children: ReactNode }) {
 }
 
 function PlaygroundPreview() {
-  const { geometries } = useContext(PlaygroundContext);
-  const rendered = useMemo(() => geometries.map(solidToTHREE), [geometries]);
-
   return (
     <Canvas shadows camera={{ position: [5, 5, 5], fov: 50 }}>
       <Stage
@@ -106,7 +126,7 @@ function PlaygroundPreview() {
         preset="rembrandt"
         shadows={{ type: 'accumulative', color: 'skyblue', colorBlend: 2, opacity: 1 }}
       >
-        <Entities geometries={rendered} />
+        <Entities />
       </Stage>
 
       <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
@@ -120,10 +140,24 @@ function PlaygroundPreview() {
 
 function PlaygroundEditor() {
   const { resolvedTheme } = useTheme();
-  const { code, setCode } = useContext(PlaygroundContext);
+  const { code, setCode, error } = useContext(PlaygroundContext);
+  const modelRef = useRef<any | undefined>(undefined);
+  const monaco = useMonaco();
 
   // Setup monaco
   function beforeMount(monaco: Monaco) {
+    // validation settings
+    monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: true,
+      noSyntaxValidation: true,
+    });
+
+    // compiler options
+    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.ES2015,
+      allowNonTsExtensions: true,
+    });
+
     // extra libraries
     const libSource = `
         declare module '@tscad/modeling/primitives' {
@@ -143,7 +177,7 @@ function PlaygroundEditor() {
      */
     export function cube(options: CubeOptions): void;
 
-    /** @deprecated Not typed yet... */
+    /** @deprecated Not typed yet.... */
     export function sphere(options: any): void
   }
   `;
@@ -152,8 +186,42 @@ function PlaygroundEditor() {
     monaco.languages.typescript.javascriptDefaults.addExtraLib(libSource, libUri.toString());
     // When resolving definitions and references, the editor will try to use created models.
     // Creating a model for the library allows "peek definition/references" commands to work with the library.
+
+    // Dispose of the old model if it exists to support live updates
+    monaco.editor.getModel(libUri)?.dispose();
     monaco.editor.createModel(libSource, 'typescript', libUri);
   }
+
+  useEffect(() => {
+    if (!monaco || !modelRef.current) return;
+
+    monaco.editor.setModelMarkers(modelRef.current, 'owner', [
+      ...((error as esbuild.BuildFailure)?.errors ?? []).map((err) => ({
+        message: err.text,
+        severity: monaco.MarkerSeverity.Error,
+        startLineNumber: err.location?.line ?? 1,
+        startColumn: err.location?.column ?? 1,
+        endLineNumber: err.location?.line ?? 1,
+        endColumn: err.location?.column ?? 1,
+        source: 'esbuild',
+      })),
+      ...((error as esbuild.BuildFailure)?.warnings ?? []).map((err) => ({
+        message: err.text,
+        source: 'esbuild',
+        severity: monaco.MarkerSeverity.Warning,
+        startLineNumber: err.location?.line ?? 1,
+        startColumn: err.location?.column ?? 1,
+        endLineNumber: err.location?.line ?? 1,
+        endColumn: err.location?.column ?? 1,
+      })),
+    ]);
+  }, [error, monaco, modelRef]);
+
+  const onMount: OnMount = (editor) => {
+    const model = editor.getModel();
+
+    modelRef.current = model;
+  };
 
   return (
     <Editor
@@ -163,6 +231,7 @@ function PlaygroundEditor() {
       defaultValue={code}
       onChange={(e) => setCode(e ?? '')}
       beforeMount={beforeMount}
+      onMount={onMount}
     />
   );
 }
@@ -189,9 +258,12 @@ function Toast({
 function State() {
   const { building, error } = useContext(PlaygroundContext);
 
-  console.dir({ building, error });
-
   if (error) {
+    const buildErrors = (error as esbuild.BuildFailure).errors;
+
+    if (buildErrors?.length) {
+      return <Toast variant="error">{buildErrors[0].text}</Toast>;
+    }
     return <Toast variant="error">{error.message}</Toast>;
   }
 

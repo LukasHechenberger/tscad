@@ -3,7 +3,11 @@ import * as esbuild from 'esbuild-wasm';
 
 let initialized = false;
 
-export async function bundleCode(userCode: string): Promise<string> {
+export async function bundleCode(
+  userCode: string,
+): Promise<
+  Partial<esbuild.OutputFile> & { warnings: esbuild.Message[]; errors: esbuild.Message[] }
+> {
   if (!initialized) {
     await esbuild.initialize({
       wasmURL: '/playground/resources/esbuild.wasm',
@@ -12,49 +16,43 @@ export async function bundleCode(userCode: string): Promise<string> {
     initialized = true;
   }
 
-  const result = await esbuild.build({
-    // entryPoints: ['input.ts'],
-    bundle: true,
-    write: false,
-    format: 'cjs',
-    platform: 'browser',
-    stdin: {
-      contents: userCode,
-      resolveDir: '/',
-      sourcefile: 'input.ts',
-      loader: 'ts',
-    },
-    plugins: [/* injectApi(), */ httpPlugin],
-  });
-
-  return result.outputFiles[0].text;
-}
-
-function injectApi(): esbuild.Plugin {
-  return {
-    name: 'tscad-api-plugin',
-    setup(build) {
-      build.onResolve({ filter: /^@tscad\/*$/ }, ({ path }) => ({
-        path: new URL(
-          path.slice(1),
-          'http://localhost:3000/playground/resources/modules/',
-        ).toString(),
-        namespace: 'virtual',
-      }));
-
-      build.onLoad({ filter: /.*/, namespace: 'virtual' }, async () => ({
-        contents: `export function cube() {}`,
+  try {
+    const result = await esbuild.build({
+      bundle: true,
+      write: false,
+      format: 'cjs',
+      platform: 'browser',
+      // sourcemap: 'inline', // FIXME: Enable and track error locations
+      banner: {
+        js: 'const module = {}; // This is where the module exports will be stored',
+      },
+      footer: {
+        js: 'return module.exports;',
+      },
+      stdin: {
+        contents: userCode,
+        resolveDir: '/',
+        sourcefile: 'input.ts',
         loader: 'ts',
-      }));
-    },
-  };
+      },
+      plugins: [resolveImports],
+    });
+
+    return {
+      ...result.outputFiles[0],
+      warnings: result.warnings,
+      errors: result.errors,
+    };
+  } catch (error) {
+    return error as esbuild.BuildFailure;
+  }
 }
 
-let httpPlugin = {
-  name: 'http',
+const resolveImports: esbuild.Plugin = {
+  name: 'resolve-imports',
   setup(build) {
     build.onResolve({ filter: /^@tscad\/.*$/ }, ({ path }) => {
-      console.log('resolving:', path);
+      // console.log('resolving:', path);
 
       return {
         path: new URL(path, 'http://localhost:3000/playground/resources/modules/').toString(),
@@ -70,6 +68,12 @@ let httpPlugin = {
       path: args.path,
       namespace: 'http-url',
     }));
+
+    build.onResolve({ filter: /./ }, ({ path }) => {
+      throw new Error(
+        `Cannot import ${path} in the playground. Only @tscad modules are supported.`,
+      );
+    });
 
     // We also want to intercept all import paths inside downloaded
     // files and resolve them against the original URL. All of these
@@ -95,31 +99,6 @@ let httpPlugin = {
 
       const contents = await response.text();
 
-      // let contents = await new Promise((resolve, reject) => {
-      //   async function fetch(url) {
-      //     console.log(`Downloading: ${url}`);
-      //     const response = await fetch(url);
-      //     const text = await response.text();
-
-      //     resolve(text)
-      //     let lib = url.startsWith('https') ? https : http;
-      //     let req = lib
-      //       .get(url, (res) => {
-      //         if ([301, 302, 307].includes(res.statusCode)) {
-      //           fetch(new URL(res.headers.location, url).toString());
-      //           req.abort();
-      //         } else if (res.statusCode === 200) {
-      //           let chunks = [];
-      //           res.on('data', (chunk) => chunks.push(chunk));
-      //           res.on('end', () => resolve(Buffer.concat(chunks)));
-      //         } else {
-      //           reject(new Error(`GET ${url} failed: status ${res.statusCode}`));
-      //         }
-      //       })
-      //       .on('error', reject);
-      //   }
-      //   fetch(args.path);
-      // });
       return { contents, loader: 'js' };
     });
   },
