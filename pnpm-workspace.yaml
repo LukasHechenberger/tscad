@@ -3,6 +3,14 @@ packages:
   - packages/*
   - apps/*
 
+gitBranchLockfile: true
+
+mergeGitBranchLockfilesBranchPattern:
+  - main
+  - changeset-release/*
+
 onlyBuiltDependencies:
   - '@jscad/cli'
+  - '@tailwindcss/oxide'
   - esbuild
+  - sharp
