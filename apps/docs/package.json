@@ -21,6 +21,7 @@
     "@react-three/drei": "^10.3.0",
     "@react-three/fiber": "^9.1.2",
     "@tscad/modeling": "workspace:*",
+    "esbuild-wasm": "^0.25.5",
     "fumadocs-core": "15.5.3",
     "fumadocs-mdx": "11.6.9",
     "fumadocs-ui": "15.5.3",

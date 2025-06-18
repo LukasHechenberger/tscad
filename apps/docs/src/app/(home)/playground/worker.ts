@@ -1,25 +1,25 @@
-import { cube, sphere } from '@tscad/modeling/primitives';
-
 self.onmessage = async (event) => {
   const { code } = event.data;
 
   try {
     // Build the function with injected API
-    const fn = new Function(
-      'cube',
-      'sphere',
-
+    const loadModule = new Function(
       `
-      let result;
+      const module = {}
+
       ${code}
-      if (typeof main === 'function') result = main();
-      return result;
+
+      return module.exports;
     `,
     );
 
-    const result = fn(cube, sphere);
+    const exports = loadModule();
+    const result = exports.main();
+
+    console.log({ result });
     self.postMessage({ result });
   } catch (err) {
+    console.error(err);
     self.postMessage({ error: err.message });
   }
 };

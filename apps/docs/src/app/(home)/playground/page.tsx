@@ -7,15 +7,17 @@ import { cube } from '@tscad/modeling/primitives';
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
+import { bundleCode } from '@/lib/esbuild';
 
 let worker: Worker;
 
 async function runInSandbox(tsCode: string): Promise<any> {
   worker ??= worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
-  const jsCode = tsCode; // transpileTS(tsCode);
+  const jsCode = await bundleCode(tsCode); // transpileTS(tsCode);
 
   return new Promise((resolve, reject) => {
     worker.onmessage = (e) => {
+      console.log('Worker message:', e);
       const { result, error } = e.data;
       error ? reject(error) : resolve(result);
     };
@@ -56,27 +58,38 @@ export default function PlaygroundPage() {
         target: monaco.languages.typescript.ScriptTarget.ESNext,
         allowNonTsExtensions: true,
         moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+        // typeRoots: ['node_modules/@types'],
+        // paths: {
+        //   '@tscad/modeling/primitives': ['file:///node_modules/@tscad/modeling/primitives.d.ts'],
+        // },
       });
 
       // extra libraries
-      const libSource = `type Vector3 = [number, number, number];
+      const libSource = `
+      declare module '@tscad/modeling/primitives' {
 
-/** Options used in the {@link cube} method. */
-interface CubeOptions {
-  /** Center of the cube @default [0, 0, 0] */
-  center?: Vector3;
-  /** Size of the cube @default 2 */
-  size?: number;
+    
+  export type Vector3 = [number, number, number];
+
+  /** Options used in the {@link cube} method. */
+  interface CubeOptions {
+    /** Center of the cube @default [0, 0, 0] */
+    center?: Vector3;
+    /** Size of the cube @default 2 */
+    size?: number;
+  }
+  /**
+   * Construct an axis-aligned solid cube in three dimensional space with six square faces.
+   * @see https://tscad.vercel.app/docs/primitives/cube
+   */
+  export function cube(options: CubeOptions): void;
+
+  /** @deprecated */
+  export function sphere(options: any): void
 }
-/**
- * Construct an axis-aligned solid cube in three dimensional space with six square faces.
- * @see https://tscad.vercel.app/docs/primitives/cube
- */
-declare function cube(options: CubeOptions): void;
-
 `;
 
-      const libUri = 'ts:modeling/primitives.d.ts';
+      const libUri = 'file:///node_modules/@tscad/modeling/primitives.d.ts';
       monaco.languages.typescript.javascriptDefaults.addExtraLib(libSource, libUri);
       // When resolving definitions and references, the editor will try to use created models.
       // Creating a model for the library allows "peek definition/references" commands to work with the library.
@@ -103,11 +116,12 @@ declare function cube(options: CubeOptions): void;
           height="100%"
           theme={resolvedTheme ? (resolvedTheme === 'dark' ? 'vs-dark' : 'light') : undefined}
           defaultLanguage="typescript"
-          defaultValue={`
+          defaultValue={`import { cube, sphere } from '@tscad/modeling/primitives';
+            
 
 /** Use this method to create your model */
-function main() {
-  return cube({ size: 10 });
+export function main() {
+  return [cube({ size: 1.5 }), sphere({})];
 }`}
           onChange={handleCodeChange}
         />
@@ -120,11 +134,6 @@ function main() {
             preset="rembrandt"
             shadows={{ type: 'accumulative', color: 'skyblue', colorBlend: 2, opacity: 1 }}
           >
-            <mesh castShadow>
-              <boxGeometry />
-              <meshStandardMaterial />
-            </mesh>
-
             <Entities geometries={geometries} />
           </Stage>
 
