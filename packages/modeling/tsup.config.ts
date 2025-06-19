@@ -15,7 +15,7 @@ export default defineConfig([
         baseUrl: 'https://tscad.vercel.app/docs/modeling/',
         getPathname: (source, name) => {
           if (!source.includes('/primitives/')) return;
-          return path.join(path.relative('src', path.dirname(source)), name);
+          return `${path.relative('src', path.dirname(source))}#${name}`;
         },
       }),
       {

@@ -8,6 +8,9 @@ import type * as esbuild from 'esbuild-wasm';
 import { useTheme } from 'next-themes';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { bundleCode } from '@/lib/esbuild';
+import { homepage } from '../../../../package.json';
+
+const documentationOrigin = new URL(homepage).host;
 
 let worker: Worker;
 
@@ -168,6 +171,15 @@ export function PlaygroundEditor({
     monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
       noSemanticValidation: true,
       noSyntaxValidation: true,
+    });
+
+    monaco.editor.registerLinkOpener({
+      open(uri) {
+        if (uri.authority !== documentationOrigin) return false;
+
+        // TODO [>=1.0.0]: Open the url to the side in a panel and return true
+        return window.open(uri.toString(), 'documentation') !== null;
+      },
     });
 
     // compiler options

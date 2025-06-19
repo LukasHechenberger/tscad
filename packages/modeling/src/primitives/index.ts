@@ -13,7 +13,7 @@ export interface CubeOptions {
 
 /**
  * Construct an axis-aligned solid cube in three dimensional space with six square faces.
- * @see {@link https://tscad.vercel.app/docs/modeling/primitives/cube}
+ * @see {@link https://tscad.vercel.app/docs/modeling/primitives#cube}
  */
 export function cube(options: CubeOptions) {
   return primitives.cube(options);
@@ -21,7 +21,7 @@ export function cube(options: CubeOptions) {
 
 /**
  * Construct a sphere in three dimensional space where all points are at the same distance from the center.
- * @see {@link https://tscad.vercel.app/docs/modeling/primitives/sphere}
+ * @see {@link https://tscad.vercel.app/docs/modeling/primitives#sphere}
  */
 export function sphere(options: primitives.SphereOptions) {
   return primitives.sphere(options);
