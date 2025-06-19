@@ -205,6 +205,7 @@ export function PlaygroundPreview() {
       <div className="z-1 absolute w-[300px] top-4 right-4">
         <Leva
           fill
+          hideCopyButton
           theme={{
             colors: {
               elevation1: 'var(--card)',
