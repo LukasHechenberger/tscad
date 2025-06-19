@@ -3,6 +3,8 @@
 
 # @repo/eslint-config
 
+[![Homepage](https://img.shields.io/badge/docs-default)](https://tscad.vercel.app)
+
 Shared eslint configuration for the workspace.
 
 <!-- #endregion header -->

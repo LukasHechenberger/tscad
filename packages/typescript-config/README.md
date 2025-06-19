@@ -3,6 +3,8 @@
 
 # @repo/typescript-config
 
+[![Homepage](https://img.shields.io/badge/docs-default)](https://tscad.vercel.app)
+
 Shared typescript configuration for the workspace.
 
 <!-- #endregion header -->

@@ -3,6 +3,8 @@
 
 # tscad
 
+[![Homepage](https://img.shields.io/badge/docs-default)](https://tscad.vercel.app)
+
 jscad, but for modern developers
 
 <!-- #endregion header -->

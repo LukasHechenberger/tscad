@@ -3,6 +3,8 @@
 
 # @tscad/gridfinity-generator
 
+[![Homepage](https://img.shields.io/badge/docs-default)](https://tscad.vercel.app)
+
 Gridfinity generator example
 
 <!-- #endregion header -->
