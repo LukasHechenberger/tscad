@@ -100,9 +100,17 @@ export function main() {
   return [cube({ size: 1.5 }), sphere({})];
 }`;
 
+const code$ = observable(defaultCode);
+syncObservable(code$, {
+  persist: {
+    name: 'playground.code',
+    plugin: ObservablePersistLocalStorage,
+  },
+});
+
 export function PlaygroundProvider({ children }: { children: ReactNode }) {
   const [geometries, setGeometries] = useState<Model>([]);
-  const [code, setCode] = useState<string>(defaultCode);
+  const code = use$(code$);
   const [building, setBuilding] = useState(false);
   const [error, setError] = useState<Error | undefined>();
 
@@ -136,17 +144,17 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
   }, [code]);
 
   return (
-    <PlaygroundContext.Provider value={{ code, setCode, geometries, building, error }}>
+    <PlaygroundContext.Provider value={{ code, setCode: code$.set, geometries, building, error }}>
       {children}
     </PlaygroundContext.Provider>
   );
 }
 
 const defaultSettings = { grid: { enabled: true } };
-const store$ = observable(defaultSettings);
+const settings$ = observable(defaultSettings);
 
 // Persist the observable to the named key of the global persist plugin
-syncObservable(store$, {
+syncObservable(settings$, {
   persist: {
     name: 'playground.settings',
     plugin: ObservablePersistLocalStorage,
@@ -155,7 +163,7 @@ syncObservable(store$, {
 
 export function PlaygroundPreview() {
   const { resolvedTheme } = useTheme();
-  const values = use$(store$);
+  const values = use$(settings$);
 
   useControls(
     Object.fromEntries(
@@ -167,7 +175,7 @@ export function PlaygroundPreview() {
               key,
               {
                 value,
-                onChange: (value) => (store$ as Observable)[folderName][key].set(value),
+                onChange: (value) => (settings$ as Observable)[folderName][key].set(value),
               },
             ]),
           ),
