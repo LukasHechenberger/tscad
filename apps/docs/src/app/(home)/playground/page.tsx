@@ -17,7 +17,7 @@ export default async function PlaygroundPage() {
         <div className="flex-1">
           <PlaygroundEditor moduleTypes={moduleTypes} />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 relative">
           <PlaygroundPreview />
         </div>
       </div>

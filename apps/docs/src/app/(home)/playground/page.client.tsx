@@ -1,13 +1,16 @@
 'use client';
 
 import Editor, { type Monaco, OnMount, useMonaco } from '@monaco-editor/react';
-import { GizmoHelper, GizmoViewcube, OrbitControls, Stage } from '@react-three/drei';
+import { GizmoHelper, GizmoViewcube, Grid, OrbitControls, Stage } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
+import { Vector2 } from '@tscad/modeling';
 import { solidToTHREE } from '@tscad/modeling/convert';
 import type * as esbuild from 'esbuild-wasm';
+import { Leva, useControls } from 'leva';
 import { useTheme } from 'next-themes';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { bundleCode } from '@/lib/esbuild';
+import { storage } from '@/lib/hooks/leva';
 import { homepage } from '../../../../package.json';
 
 const documentationOrigin = new URL(homepage).host;
@@ -67,6 +70,10 @@ function Entities() {
     // eslint-disable-next-line react/no-unknown-property
     <mesh key={index} castShadow geometry={entity}>
       <meshStandardMaterial color="orange" />
+
+      {/* FIXME [>=1.0.0]: Optionally enable (one of both) */}
+      {/* <Wireframe geometry={entity} /> */}
+      {/* <Outlines thickness={0.06} color="aquamarine" /> */}
     </mesh>
   ));
 }
@@ -132,24 +139,83 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
   );
 }
 
+const defaultSettings = { enabled: true };
+
 export function PlaygroundPreview() {
+  const { resolvedTheme } = useTheme();
+  const [values, setValues] = useState(storage.get(defaultSettings));
+
+  useControls(
+    'Grid',
+    Object.fromEntries(
+      Object.entries(defaultSettings).map(([key, value]) => [
+        key,
+        {
+          value,
+          onChange(value: any) {
+            const combined = { ...defaultSettings, ...values, [key]: value };
+            console.log('Grid :', { combined, key, value });
+            storage.set(combined); // Persist the setting
+            setValues(combined); // Update the control value
+          },
+          //   setValues((previous) => ({ ...previous, [key]: value }));
+          // },
+        },
+      ]),
+    ),
+    { collapsed: false },
+    [values],
+  );
+
+  const { enabled: gridEnabled } = values;
+
+  const gridSize = [10, 10] as Vector2; // TODO [>=1.0.0]: Make this configurable
+  const gridConfig = {
+    infiniteGrid: true,
+    cellSize: 1,
+    sectionSize: 10,
+    followCamera: true,
+    // FIXME: Colors from theme
+  };
   return (
-    <Canvas shadows camera={{ position: [5, 5, 5], fov: 50 }}>
-      <Stage
-        adjustCamera
-        intensity={0.5}
-        preset="rembrandt"
-        shadows={{ type: 'accumulative', color: 'skyblue', colorBlend: 2, opacity: 1 }}
-      >
-        <Entities />
-      </Stage>
+    <>
+      <div className="z-1 absolute w-[300px] top-4 right-4">
+        <Leva
+          fill
+          // TODO [>=1.0.0]: Use a custom theme
+          // theme={{}}
+          collapsed
+          oneLineLabels
+          titleBar={{ drag: false, title: 'View Options' }}
+        />
+      </div>
 
-      <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
-        <GizmoViewcube />
-      </GizmoHelper>
+      <Canvas shadows camera={{ position: [5, 5, 5], fov: 50 }}>
+        <Stage
+          adjustCamera
+          intensity={0.5}
+          preset="rembrandt"
+          shadows={{
+            type: 'contact',
+            color: '#555',
+            colorBlend: 1,
+            opacity: 0.8,
+            intensity: 0.5,
+            position: [0, 0, 0],
+          }}
+        >
+          <Entities />
 
-      <OrbitControls makeDefault />
-    </Canvas>
+          {gridEnabled && <Grid side={2} position={[0, 0, 0]} args={gridSize} {...gridConfig} />}
+        </Stage>
+
+        <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
+          <GizmoViewcube />
+        </GizmoHelper>
+
+        <OrbitControls makeDefault />
+      </Canvas>
+    </>
   );
 }
 
