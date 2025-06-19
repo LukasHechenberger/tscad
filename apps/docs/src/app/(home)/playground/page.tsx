@@ -1,26 +1,11 @@
+import { readFile } from 'node:fs/promises';
 import { PlaygroundEditor, PlaygroundPreview, PlaygroundProvider, State } from './page.client';
 
-export default function PlaygroundPage() {
+export default async function PlaygroundPage() {
   const moduleTypes = [
     {
       moduleName: '@tscad/modeling/primitives',
-      source: `export type Vector3 = [number, number, number];
-
-    /** Options used in the {@link cube} method. */
-    interface CubeOptions {
-      /** Center of the cube @default [0, 0, 0] */
-      center?: Vector3;
-      /** Size of the cube @default 2 */
-      size?: number;
-    }
-    /**
-     * Construct an axis-aligned solid cube in three dimensional space with six square faces.
-     * @see https://tscad.vercel.app/docs/primitives/cube
-     */
-    export function cube(options: CubeOptions): void;
-
-    /** @deprecated Not typed yet.... */
-    export function sphere(options: any): void`,
+      source: await readFile('./node_modules/@tscad/modeling/out/primitives/index.d.ts', 'utf8'),
     },
   ];
 
