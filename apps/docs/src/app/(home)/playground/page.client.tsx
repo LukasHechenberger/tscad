@@ -151,6 +151,7 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
 }
 
 const defaultSettings = { grid: { enabled: true } };
+const folderNames = { grid: 'Grid' } satisfies { [K in keyof typeof defaultSettings]: string };
 const settings$ = observable(defaultSettings);
 
 // Persist the observable to the named key of the global persist plugin
@@ -162,20 +163,20 @@ syncObservable(settings$, {
 });
 
 export function PlaygroundPreview() {
-  const { resolvedTheme } = useTheme();
+  // const { resolvedTheme } = useTheme();
   const values = use$(settings$);
 
   useControls(
     Object.fromEntries(
-      Object.entries(values).map(([folderName, settings]) => [
-        folderName,
+      Object.entries(values).map(([folderKey, settings]) => [
+        folderNames[folderKey as keyof typeof folderNames],
         folder(
           Object.fromEntries(
             Object.entries(settings).map(([key, value]) => [
               key,
               {
                 value,
-                onChange: (value) => (settings$ as Observable)[folderName][key].set(value),
+                onChange: (value) => (settings$ as Observable)[folderKey][key].set(value),
               },
             ]),
           ),
@@ -197,7 +198,7 @@ export function PlaygroundPreview() {
     cellSize: 1,
     sectionSize: 10,
     followCamera: true,
-    // FIXME: Colors from theme
+    // FIXME [>=1.0.0]: Colors from theme
   };
   return (
     <>
@@ -207,7 +208,6 @@ export function PlaygroundPreview() {
           // TODO [>=1.0.0]: Use a custom theme
           // theme={{}}
           collapsed
-          oneLineLabels
           titleBar={{ drag: false, title: 'View Options' }}
         />
       </div>

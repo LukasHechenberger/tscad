@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { PlaygroundEditor, PlaygroundPreview, PlaygroundProvider, State } from './page.client';
 
 export default async function PlaygroundPage() {
@@ -13,13 +14,19 @@ export default async function PlaygroundPage() {
     <PlaygroundProvider>
       <State />
 
-      <div className="h-[calc(100vh-var(--fd-nav-height))] flex">
-        <div className="flex-1">
-          <PlaygroundEditor moduleTypes={moduleTypes} />
-        </div>
-        <div className="flex-1 relative">
-          <PlaygroundPreview />
-        </div>
+      <div className="h-[calc(100vh-var(--fd-nav-height))]">
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="relative !h-[calc(100vh-var(--fd-nav-height))]"
+        >
+          <ResizablePanel>
+            <PlaygroundEditor moduleTypes={moduleTypes} />
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel>
+            <PlaygroundPreview />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </div>
     </PlaygroundProvider>
   );
