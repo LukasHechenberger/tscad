@@ -167,13 +167,13 @@ export function PlaygroundPreview() {
               key,
               {
                 value,
-                onChange(value) {
-                  console.log('CHANGE', folderName, key, value);
-                  (store$ as Observable)[folderName][key].set(value);
-                },
+                onChange: (value) => (store$ as Observable)[folderName][key].set(value),
               },
             ]),
           ),
+          {
+            collapsed: false,
+          },
         ),
       ]),
     ),
