@@ -1,16 +1,19 @@
 'use client';
 
+import { Observable, observable } from '@legendapp/state';
+import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/local-storage';
+import { use$ } from '@legendapp/state/react';
+import { syncObservable } from '@legendapp/state/sync';
 import Editor, { type Monaco, OnMount, useMonaco } from '@monaco-editor/react';
 import { GizmoHelper, GizmoViewcube, Grid, OrbitControls, Stage } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Vector2 } from '@tscad/modeling';
 import { solidToTHREE } from '@tscad/modeling/convert';
 import type * as esbuild from 'esbuild-wasm';
-import { Leva, useControls } from 'leva';
+import { folder, Leva, useControls } from 'leva';
 import { useTheme } from 'next-themes';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { bundleCode } from '@/lib/esbuild';
-import { storage } from '@/lib/hooks/leva';
 import { homepage } from '../../../../package.json';
 
 const documentationOrigin = new URL(homepage).host;
@@ -139,35 +142,46 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
   );
 }
 
-const defaultSettings = { enabled: true };
+const defaultSettings = { grid: { enabled: true } };
+const store$ = observable(defaultSettings);
+
+// Persist the observable to the named key of the global persist plugin
+syncObservable(store$, {
+  persist: {
+    name: 'playground.settings',
+    plugin: ObservablePersistLocalStorage,
+  },
+});
 
 export function PlaygroundPreview() {
   const { resolvedTheme } = useTheme();
-  const [values, setValues] = useState(storage.get(defaultSettings));
+  const values = use$(store$);
 
   useControls(
-    'Grid',
     Object.fromEntries(
-      Object.entries(defaultSettings).map(([key, value]) => [
-        key,
-        {
-          value,
-          onChange(value: any) {
-            const combined = { ...defaultSettings, ...values, [key]: value };
-            console.log('Grid :', { combined, key, value });
-            storage.set(combined); // Persist the setting
-            setValues(combined); // Update the control value
-          },
-          //   setValues((previous) => ({ ...previous, [key]: value }));
-          // },
-        },
+      Object.entries(values).map(([folderName, settings]) => [
+        folderName,
+        folder(
+          Object.fromEntries(
+            Object.entries(settings).map(([key, value]) => [
+              key,
+              {
+                value,
+                onChange(value) {
+                  console.log('CHANGE', folderName, key, value);
+                  (store$ as Observable)[folderName][key].set(value);
+                },
+              },
+            ]),
+          ),
+        ),
       ]),
     ),
     { collapsed: false },
     [values],
   );
 
-  const { enabled: gridEnabled } = values;
+  const { enabled: gridEnabled } = values.grid;
 
   const gridSize = [10, 10] as Vector2; // TODO [>=1.0.0]: Make this configurable
   const gridConfig = {
