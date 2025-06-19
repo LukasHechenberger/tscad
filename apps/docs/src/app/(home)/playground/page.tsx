@@ -173,10 +173,10 @@ function PlaygroundEditor() {
     });
 
     // extra libraries
-    const librarySource = `
-        declare module '@tscad/modeling/primitives' {
-
-    export type Vector3 = [number, number, number];
+    const libaries: { moduleName: string; source: string }[] = [
+      {
+        moduleName: '@tscad/modeling/primitives',
+        source: `export type Vector3 = [number, number, number];
 
     /** Options used in the {@link cube} method. */
     interface CubeOptions {
@@ -192,21 +192,29 @@ function PlaygroundEditor() {
     export function cube(options: CubeOptions): void;
 
     /** @deprecated Not typed yet.... */
-    export function sphere(options: any): void
-  }
-  `;
+    export function sphere(options: any): void`,
+      },
+    ];
 
-    const libraryUri = monaco.Uri.file('/node_modules/@tscad/modeling/primitives.d.ts');
-    monaco.languages.typescript.javascriptDefaults.addExtraLib(
-      librarySource,
-      libraryUri.toString(),
-    );
-    // When resolving definitions and references, the editor will try to use created models.
-    // Creating a model for the library allows "peek definition/references" commands to work with the library.
+    declare module '@tscad/modeling/primitives' {}
+    for (const { moduleName, source } of libaries) {
+      const librarySource = `declare module '${moduleName}' {
+${source}
+  }`;
+      const libraryUri = monaco.Uri.file(`/node_modules/${moduleName}/primitives.d.ts`);
 
-    // Dispose of the old model if it exists to support live updates
-    monaco.editor.getModel(libraryUri)?.dispose();
-    monaco.editor.createModel(librarySource, 'typescript', libraryUri);
+      monaco.languages.typescript.javascriptDefaults.addExtraLib(
+        librarySource,
+        libraryUri.toString(),
+      );
+
+      // When resolving definitions and references, the editor will try to use created models.
+      // Creating a model for the library allows "peek definition/references" commands to work with the library.
+
+      // Dispose of the old model if it exists to support live updates
+      monaco.editor.getModel(libraryUri)?.dispose();
+      monaco.editor.createModel(librarySource, 'typescript', libraryUri);
+    }
   }
 
   useEffect(() => {
