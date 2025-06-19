@@ -205,8 +205,21 @@ export function PlaygroundPreview() {
       <div className="z-1 absolute w-[300px] top-4 right-4">
         <Leva
           fill
-          // TODO [>=1.0.0]: Use a custom theme
-          // theme={{}}
+          theme={{
+            colors: {
+              elevation1: 'var(--card)',
+              elevation2: 'var(--muted)',
+              folderTextColor: 'var(--card-foreground)',
+              highlight1: 'var(--card-foreground)',
+              highlight2: 'var(--muted-foreground)',
+              highlight3: 'var(--foreground)',
+            },
+            radii: {
+              xs: 'var(--radius-sm)',
+              sm: 'var(--radius-sm)',
+              lg: 'var(--radius-md)',
+            },
+          }}
           collapsed
           titleBar={{ drag: false, title: 'View Options' }}
         />
