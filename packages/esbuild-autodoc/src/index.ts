@@ -1,6 +1,6 @@
+import path from 'node:path';
 import type { Plugin } from 'esbuild';
 import { Project } from 'ts-morph';
-import path, { relative } from 'node:path';
 
 export function addSeeTagPlugin({
   baseUrl: DOCS_BASE_URL,
@@ -27,22 +27,22 @@ export function addSeeTagPlugin({
 
           const functions = sourceFile.getFunctions();
 
-          for (const fn of functions) {
-            if (!fn.isExported()) continue;
+          for (const function_ of functions) {
+            if (!function_.isExported()) continue;
 
-            const name = fn.getName();
+            const name = function_.getName();
             if (!name) continue;
 
-            const jsDoc = fn.getJsDocs()[0] || fn.addJsDoc({ description: '' });
-            const existingSee = jsDoc.getTags().find((tag) => tag.getTagName() === 'see');
+            const jsDocument = function_.getJsDocs()[0] || function_.addJsDoc({ description: '' });
+            const existingSee = jsDocument.getTags().find((tag) => tag.getTagName() === 'see');
 
-            const docPath = getPathname(relativePath, name);
-            if (!docPath) {
+            const documentPath = getPathname(relativePath, name);
+            if (!documentPath) {
               console.log(`DOC @see for ${relativePath}#${name}`);
               continue;
             }
-            const docUrl = new URL(docPath, DOCS_BASE_URL).toString();
-            const seeText = `@see {@link ${docUrl}}`;
+            const documentUrl = new URL(documentPath, DOCS_BASE_URL).toString();
+            const seeText = `@see {@link ${documentUrl}}`;
 
             if (existingSee) {
               if (existingSee.getText() !== seeText) {
@@ -50,7 +50,7 @@ export function addSeeTagPlugin({
                 modified = true;
               }
             } else {
-              jsDoc.addTag({ tagName: 'see', text: docUrl });
+              jsDocument.addTag({ tagName: 'see', text: documentUrl });
               modified = true;
             }
           }
