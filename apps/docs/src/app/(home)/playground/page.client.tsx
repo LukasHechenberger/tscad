@@ -1,18 +1,26 @@
 'use client';
 
-import { Observable, observable } from '@legendapp/state';
+import { type Observable, observable } from '@legendapp/state';
 import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/local-storage';
 import { use$ } from '@legendapp/state/react';
 import { syncObservable } from '@legendapp/state/sync';
-import Editor, { type Monaco, OnMount, useMonaco } from '@monaco-editor/react';
+import Editor, { type Monaco, type OnMount, useMonaco } from '@monaco-editor/react';
 import { GizmoHelper, GizmoViewcube, Grid, OrbitControls, Stage } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { Vector2 } from '@tscad/modeling';
+import type { Vector2 } from '@tscad/modeling';
 import { solidToTHREE } from '@tscad/modeling/convert';
 import type * as esbuild from 'esbuild-wasm';
 import { folder, Leva, useControls } from 'leva';
 import { useTheme } from 'next-themes';
-import { createContext, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { bundleCode } from '@/lib/esbuild';
 import { homepage } from '../../../../package.json';
 
@@ -384,7 +392,7 @@ export function State() {
     const buildErrors = (error as esbuild.BuildFailure).errors;
 
     if (buildErrors?.length) {
-      return <Toast variant="error">{buildErrors[0].text}</Toast>;
+      return <Toast variant="error">{buildErrors[0]!.text}</Toast>;
     }
     return <Toast variant="error">{error.message}</Toast>;
   }

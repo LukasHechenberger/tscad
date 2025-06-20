@@ -8,6 +8,10 @@
     "moduleResolution": "Bundler",
     "allowJs": true,
     "jsx": "preserve",
-    "noEmit": true
+    "declaration": false,
+    "declarationMap": false,
+    "noEmit": true,
+    "incremental": true,
+    "esModuleInterop": true
   }
 }
