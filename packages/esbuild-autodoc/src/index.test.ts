@@ -15,11 +15,13 @@ vi.mock('ts-morph', async (importOriginal) => {
 });
 
 describe('addSeeTagPlugin', () => {
+  /* eslint-disable @typescript-eslint/no-explicit-any -- Mocks */
   let mockProject: any;
   let mockSourceFile: any;
   let mockFunction: any;
   let mockJsDocument: any;
   let mockTag: any;
+
   let build: PluginBuild;
   let getPathname: ReturnType<typeof vi.fn>;
 
