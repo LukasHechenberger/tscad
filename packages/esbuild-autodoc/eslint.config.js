@@ -1,8 +1,1 @@
-import { config } from '@repo/eslint-config/base';
-
-/*** @type {import("eslint").Linter.Config[]} */
-export default [
-  ...config,
-  // Ignore coverage
-  { ignores: ['coverage/**'] },
-];
+export { config as default } from '@repo/eslint-config/base';

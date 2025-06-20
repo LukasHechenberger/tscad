@@ -56,6 +56,6 @@ export const config = [
     },
   },
   {
-    ignores: ['dist/**', 'out/**'],
+    ignores: ['dist/**', 'out/**', 'coverage/**', 'tsup.config.bundled*.mjs'],
   },
 ];
