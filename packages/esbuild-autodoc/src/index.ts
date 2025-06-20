@@ -42,7 +42,8 @@ export function addSeeTagPlugin({
               continue;
             }
             const documentUrl = new URL(documentPath, DOCS_BASE_URL).toString();
-            const seeText = `@see {@link ${documentUrl}}`;
+            const seeContent = `{@link ${documentUrl}}`;
+            const seeText = `@see ${seeContent}`;
 
             if (existingSee) {
               if (existingSee.getText() !== seeText) {
@@ -50,7 +51,7 @@ export function addSeeTagPlugin({
                 modified = true;
               }
             } else {
-              jsDocument.addTag({ tagName: 'see', text: documentUrl });
+              jsDocument.addTag({ tagName: 'see', text: seeContent });
               modified = true;
             }
           }
