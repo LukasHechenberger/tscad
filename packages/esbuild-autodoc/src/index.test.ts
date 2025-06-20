@@ -14,14 +14,6 @@ vi.mock('ts-morph', async (importOriginal) => {
   };
 });
 
-vi.mock('node:path', async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    relative: vi.fn((cwd, filePath) => filePath.replace(`${cwd}/`, '')),
-  };
-});
-
 describe('addSeeTagPlugin', () => {
   let mockProject: any;
   let mockSourceFile: any;
