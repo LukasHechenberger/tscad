@@ -2,5 +2,5 @@
 .gitignore-sync
 
 [inline]
-pnpm-lock.yaml
+pnpm-lock.*yaml
 .changeset/*.md
