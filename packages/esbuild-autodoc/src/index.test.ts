@@ -1,10 +1,10 @@
 import type { PluginBuild } from 'esbuild';
-import { FunctionDeclaration, JSDoc, JSDocTag, Project, SourceFile } from 'ts-morph';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Project } from 'ts-morph';
+import { beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 import { addSeeTagPlugin } from './index';
 
 vi.mock('ts-morph', async (importOriginal) => {
-  const actual = await importOriginal();
+  const actual = (await importOriginal()) as typeof import('ts-morph');
   return {
     ...actual,
     Project: vi.fn().mockImplementation(() => ({
@@ -48,7 +48,7 @@ describe('addSeeTagPlugin', () => {
       getSourceFiles: vi.fn(),
       save: vi.fn(),
     };
-    (Project as unknown as vi.Mock).mockReturnValue(mockProject);
+    (Project as unknown as Mock).mockReturnValue(mockProject);
 
     build = {
       onStart: vi.fn(),
@@ -76,7 +76,7 @@ describe('addSeeTagPlugin', () => {
     plugin.setup(build);
 
     // Simulate onStart
-    const onStartHandler = (build.onStart as vi.Mock).mock.calls[0][0];
+    const onStartHandler = (build.onStart as Mock<typeof build.onStart>).mock!.calls[0]![0]!;
     await onStartHandler();
 
     expect(mockJsDocument.addTag).toHaveBeenCalledWith({
@@ -105,7 +105,7 @@ describe('addSeeTagPlugin', () => {
 
     plugin.setup(build);
 
-    const onStartHandler = (build.onStart as vi.Mock).mock.calls[0][0];
+    const onStartHandler = (build.onStart as Mock<typeof build.onStart>).mock!.calls[0]![0]!;
     await onStartHandler();
 
     expect(mockTag.replaceWithText).toHaveBeenCalledWith(
@@ -133,7 +133,7 @@ describe('addSeeTagPlugin', () => {
 
     plugin.setup(build);
 
-    const onStartHandler = (build.onStart as vi.Mock).mock.calls[0][0];
+    const onStartHandler = (build.onStart as Mock<typeof build.onStart>).mock!.calls[0]![0]!;
     await onStartHandler();
 
     expect(mockTag.replaceWithText).not.toHaveBeenCalled();
@@ -155,7 +155,7 @@ describe('addSeeTagPlugin', () => {
 
     plugin.setup(build);
 
-    const onStartHandler = (build.onStart as vi.Mock).mock.calls[0][0];
+    const onStartHandler = (build.onStart as Mock<typeof build.onStart>).mock!.calls[0]![0]!;
     await onStartHandler();
 
     expect(mockJsDocument.addTag).not.toHaveBeenCalled();
@@ -171,7 +171,8 @@ describe('addSeeTagPlugin', () => {
     mockSourceFile.getFilePath.mockReturnValue('/project/src/noDoc.ts');
     mockSourceFile.getFunctions.mockReturnValue([mockFunction]);
     mockProject.getSourceFiles.mockReturnValue([mockSourceFile]);
-    getPathname.mockReturnValue();
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    getPathname.mockReturnValue(undefined);
 
     const plugin = addSeeTagPlugin({
       baseUrl: 'https://docs.example.com/',
@@ -182,7 +183,7 @@ describe('addSeeTagPlugin', () => {
 
     plugin.setup(build);
 
-    const onStartHandler = (build.onStart as vi.Mock).mock.calls[0][0];
+    const onStartHandler = (build.onStart as Mock<typeof build.onStart>).mock!.calls[0]![0]!;
     await onStartHandler();
 
     expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('DOC @see for'));
