@@ -23,6 +23,7 @@ apps/docs/**/next-env.d.ts
 node_modules
 out
 .turbo
+coverage
 .vscode/settings.json
 .vscode/extensions.json
 .prettierignore

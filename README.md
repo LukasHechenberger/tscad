@@ -3,6 +3,8 @@
 
 # tscad
 
+[![Homepage](https://img.shields.io/badge/docs-default)](https://tscad.vercel.app)
+
 jscad, but for modern developers
 
 <!-- #endregion header -->
@@ -17,12 +19,13 @@ jscad, but for modern developers
 
 This repository contains the following packages:
 
-| Name                                                         | Description                                         | Links                                                                                                         |
-| ------------------------------------------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| [@tscad/modeling](packages/modeling)                         | Typescript friendly re-exports of `@jscad/modeling` | [![NPM Version](https://img.shields.io/npm/v/@tscad/modeling)](https://www.npmjs.com/package/@tscad/modeling) |
-| [@repo/eslint-config](packages/eslint-config)                | Shared eslint configuration for the workspace.      |                                                                                                               |
-| [@repo/typescript-config](packages/typescript-config)        | Shared typescript configuration for the workspace.  |                                                                                                               |
-| [@tscad/docs](apps/docs)                                     | Sources of tscad.vercel.app                         |                                                                                                               |
-| [@tscad/gridfinity-generator](examples/gridfinity-generator) | Gridfinity generator example                        |                                                                                                               |
+| Name                                                         | Description                                          | Links                                                                                                         |
+| ------------------------------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| [@tscad/modeling](packages/modeling)                         | Typescript friendly re-exports of `@jscad/modeling`  | [![NPM Version](https://img.shields.io/npm/v/@tscad/modeling)](https://www.npmjs.com/package/@tscad/modeling) |
+| [@repo/eslint-config](packages/eslint-config)                | Shared eslint configuration for the workspace.       |                                                                                                               |
+| [@repo/typescript-config](packages/typescript-config)        | Shared typescript configuration for the workspace.   |                                                                                                               |
+| [@tscad/docs](apps/docs)                                     | Sources of tscad.vercel.app                          |                                                                                                               |
+| [@tscad/gridfinity-generator](examples/gridfinity-generator) | Gridfinity generator example                         |                                                                                                               |
+| [esbuild-autodoc](packages/esbuild-autodoc)                  | Automatically update JSDoc comments in your codebase |                                                                                                               |
 
 <!-- #endregion packages -->

@@ -18,6 +18,9 @@ export const baseOptions: BaseLayoutProps = {
       </>
     ),
   },
+  themeSwitch: {
+    mode: 'light-dark-system',
+  },
   // see https://fumadocs.dev/docs/ui/navigation/links
   links: [
     {

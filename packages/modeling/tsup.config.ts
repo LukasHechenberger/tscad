@@ -1,5 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { addSeeTagPlugin } from 'esbuild-autodoc';
 import { defineConfig } from 'tsup';
 
 export default defineConfig([
@@ -10,6 +11,13 @@ export default defineConfig([
     dts: true,
     sourcemap: true,
     esbuildPlugins: [
+      addSeeTagPlugin({
+        baseUrl: 'https://tscad.vercel.app/docs/modeling/',
+        getPathname: (source, name) => {
+          if (!source.includes('/primitives/')) return;
+          return `${path.relative('src', path.dirname(source))}#${name}`;
+        },
+      }),
       {
         name: 'add-exports',
         setup({ onEnd }) {
