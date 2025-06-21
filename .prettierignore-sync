@@ -4,3 +4,4 @@
 [inline]
 pnpm-lock.*yaml
 .changeset/*.md
+turbo.json
