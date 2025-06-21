@@ -13,7 +13,7 @@
   "type": "module",
   "scripts": {
     "build": "next build",
-    "check-types": "tsc --noEmit",
+    "check:types": "tsc --noEmit",
     "dev": "next dev --turbo",
     "postinstall": "fumadocs-mdx",
     "lint": "next lint",

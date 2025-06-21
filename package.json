@@ -19,12 +19,14 @@
     "format": "prettier --write .",
     "ignore-sync": "ignore-sync .",
     "lint": "turbo run lint",
-    "prepare": "toolsync prepare --config toolsync.json && ignore-sync ."
+    "prepare": "toolsync prepare --config toolsync.json && ignore-sync .",
+    "check": "turbo run check",
+    "test": "turbo run test"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.4",
-    "@toolsync/builtin": "^0.2.2",
-    "@toolsync/cli": "0.2.3",
+    "@toolsync/builtin": "^0.3.0",
+    "@toolsync/cli": "0.2.4",
     "ignore-sync": "^8.0.0",
     "prettier": "^3.5.3",
     "prettier-plugin-packagejson": "^2.5.15",
