@@ -174,7 +174,7 @@ syncObservable(settings$, {
 });
 
 export function PlaygroundPreview() {
-  // const { resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const values = use$(settings$);
 
   useControls(
