@@ -257,7 +257,24 @@ export function PlaygroundPreview() {
         </Stage>
 
         <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
-          <GizmoViewcube />
+          {/* NOTE: Colors should come from theme */}
+          <GizmoViewcube
+            {...(resolvedTheme === 'dark'
+              ? {
+                  // Dark theme colors
+                  color: '#333',
+                  textColor: 'gray',
+                  strokeColor: 'gray',
+                  hoverColor: '#777',
+                }
+              : {
+                  // Light theme colors
+                  color: 'white',
+                  textColor: 'black',
+                  strokeColor: 'black',
+                  hoverColor: '#777',
+                })}
+          />
         </GizmoHelper>
 
         <OrbitControls makeDefault />
