@@ -307,6 +307,8 @@ export function PlaygroundEditor({
       open(uri) {
         if (uri.authority !== documentationOrigin) return false;
 
+        console.info('TODO: Open documentation link to the side:', uri.toString());
+
         // TODO [>=1.0.0]: Open the url to the side in a panel and return true
         return window.open(uri.toString(), 'documentation') !== null;
       },
