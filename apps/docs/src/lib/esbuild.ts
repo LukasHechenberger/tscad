@@ -48,15 +48,17 @@ export async function bundleCode(
   }
 }
 
+const playgroundImportRoot = new URL('/playground/resources/modules/', location.href);
+
 const resolveImports: esbuild.Plugin = {
   name: 'resolve-imports',
   setup(build) {
-    build.onResolve({ filter: /^@tscad\/.*$/ }, ({ path }) => {
+    build.onResolve({ filter: /^@[jt]scad\/.*$/ }, ({ path }) => {
       // console.log('resolving:', path);
 
       return {
         path: new URL(
-          path.replace('@tscad/', ''),
+          path.replace('@', ''),
           new URL('/playground/resources/modules/', location.href),
         ).toString(),
         namespace: 'http-url',
@@ -69,9 +71,18 @@ const resolveImports: esbuild.Plugin = {
     // this plugin.
     build.onResolve({ filter: /^https?:\/\// }, ({ path }) => ({ path, namespace: 'http-url' }));
 
-    build.onResolve({ filter: /./ }, ({ path }) => {
+    build.onResolve({ filter: /./ }, ({ path, importer, namespace, ...rest }) => {
+      if (importer.startsWith(playgroundImportRoot.toString())) {
+        console.log('Relative import:', { path, importer });
+
+        return {
+          path: new URL(path.replace('.js', ''), `${importer}`).toString(),
+          namespace: 'http-url',
+        };
+      }
+
       throw new Error(
-        `Cannot import ${path} in the playground. Only @tscad modules are supported.`,
+        `Cannot import ${path} in the playground. Only @tscad and @jscad modules are supported.`,
       );
     });
 

@@ -70,7 +70,7 @@ export default defineConfig([
     onSuccess: 'node ./out/scripts/update-readme.js',
   },
   {
-    entry: ['src/primitives/index.ts'],
+    entry: ['src/primitives/index.ts', 'src/jscad/*.ts'],
     format: 'esm',
     outDir: 'out/standalone',
     external: [],
