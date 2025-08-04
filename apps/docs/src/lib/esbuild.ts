@@ -48,7 +48,7 @@ export async function bundleCode(
   }
 }
 
-const playgroundImportRoot = new URL('/playground/resources/modules/', location.href);
+const getPlaygroundImportRoot = () => new URL('/playground/resources/modules/', location.href);
 
 const resolveImports: esbuild.Plugin = {
   name: 'resolve-imports',
@@ -57,10 +57,7 @@ const resolveImports: esbuild.Plugin = {
       // console.log('resolving:', path);
 
       return {
-        path: new URL(
-          path.replace('@', ''),
-          new URL('/playground/resources/modules/', location.href),
-        ).toString(),
+        path: new URL(path.replace('@', ''), getPlaygroundImportRoot()).toString(),
         namespace: 'http-url',
       };
     });
@@ -72,7 +69,7 @@ const resolveImports: esbuild.Plugin = {
     build.onResolve({ filter: /^https?:\/\// }, ({ path }) => ({ path, namespace: 'http-url' }));
 
     build.onResolve({ filter: /./ }, ({ path, importer, namespace, ...rest }) => {
-      if (importer.startsWith(playgroundImportRoot.toString())) {
+      if (importer.startsWith(getPlaygroundImportRoot().toString())) {
         console.log('Relative import:', { path, importer });
 
         return {
