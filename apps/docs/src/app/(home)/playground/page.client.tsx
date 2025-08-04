@@ -5,7 +5,14 @@ import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/
 import { use$ } from '@legendapp/state/react';
 import { syncObservable } from '@legendapp/state/sync';
 import Editor, { type Monaco, type OnMount, useMonaco } from '@monaco-editor/react';
-import { GizmoHelper, GizmoViewcube, Grid, OrbitControls, Stage } from '@react-three/drei';
+import {
+  GizmoHelper,
+  GizmoViewcube,
+  Grid,
+  OrbitControls,
+  Stage,
+  Wireframe,
+} from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import type { Vector2 } from '@tscad/modeling';
 import { solidToTHREE } from '@tscad/modeling/convert';
@@ -70,21 +77,46 @@ async function runInSandbox(tsCode: string): Promise<Model> {
 }
 
 function Entities() {
+  const wireframe = use$(() => settings$.rendering.wireframe.get());
   const { geometries } = useContext(PlaygroundContext);
   // FIXME [>=1.0.0]: Catch + report errors
-  const rendered = useMemo(
-    () => (Array.isArray(geometries) ? geometries : [geometries]).map((s) => solidToTHREE(s)),
-    [geometries],
-  );
+  const { rendered, error } = useMemo(() => {
+    try {
+      return {
+        rendered: (Array.isArray(geometries) ? geometries : [geometries]).flatMap((s) => {
+          try {
+            const geometry = solidToTHREE(s);
+
+            return [
+              {
+                geometry,
+                color: s.color ? `rgba(${s.color.map((c) => c * 255).join(',')})` : undefined,
+              },
+            ];
+          } catch (error) {
+            console.error('Error converting solid to THREE.js geometry:', error);
+            return [];
+          }
+        }),
+      };
+    } catch (error) {
+      console.error(error);
+      return { rendered: [], error: error as Error };
+    }
+  }, [geometries]);
+
+  if (error) {
+    <Toast variant="error">{error.message}</Toast>;
+  }
 
   return rendered.map((entity, index) => (
     // eslint-disable-next-line react/no-unknown-property
-    <mesh key={index} castShadow geometry={entity}>
-      <meshStandardMaterial color="orange" />
+    <mesh key={index} castShadow geometry={entity.geometry}>
+      <meshStandardMaterial color={entity.color ?? 'orange'} />
 
-      {/* FIXME [>=1.0.0]: Optionally enable (one of both) */}
-      {/* <Wireframe geometry={entity} /> */}
-      {/* <Outlines thickness={0.06} color="aquamarine" /> */}
+      {wireframe && (
+        <Wireframe geometry={entity.geometry} stroke={entity.color ?? 'orange'} fillOpacity={0} />
+      )}
     </mesh>
   ));
 }
@@ -161,8 +193,10 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
   );
 }
 
-const defaultSettings = { grid: { enabled: true } };
-const folderNames = { grid: 'Grid' } satisfies { [K in keyof typeof defaultSettings]: string };
+const defaultSettings = { rendering: { grid: true, wireframe: false } };
+const folderNames = { rendering: 'Rendering' } satisfies {
+  [K in keyof typeof defaultSettings]: string;
+};
 const settings$ = observable(defaultSettings);
 
 // Persist the observable to the named key of the global persist plugin
@@ -174,7 +208,7 @@ syncObservable(settings$, {
 });
 
 export function PlaygroundPreview() {
-  // const { resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const values = use$(settings$);
 
   useControls(
@@ -201,7 +235,7 @@ export function PlaygroundPreview() {
     [values],
   );
 
-  const { enabled: gridEnabled } = values.grid;
+  const { grid: gridEnabled, wireframe: wireframeEnabled } = values.rendering;
 
   const gridSize = [10, 10] as Vector2; // TODO [>=1.0.0]: Make this configurable
   const gridConfig = {
@@ -241,14 +275,13 @@ export function PlaygroundPreview() {
         <Stage
           adjustCamera
           intensity={0.5}
-          preset="rembrandt"
+          preset="soft"
+          environment="city"
           shadows={{
             type: 'contact',
             color: '#555',
             colorBlend: 1,
             opacity: 0.8,
-            intensity: 0.5,
-            position: [0, 0, 0],
           }}
         >
           <Entities />
@@ -257,7 +290,24 @@ export function PlaygroundPreview() {
         </Stage>
 
         <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
-          <GizmoViewcube />
+          {/* NOTE: Colors should come from theme */}
+          <GizmoViewcube
+            {...(resolvedTheme === 'dark'
+              ? {
+                  // Dark theme colors
+                  color: '#333',
+                  textColor: 'gray',
+                  strokeColor: 'gray',
+                  hoverColor: '#777',
+                }
+              : {
+                  // Light theme colors
+                  color: 'white',
+                  textColor: 'black',
+                  strokeColor: 'black',
+                  hoverColor: '#777',
+                })}
+          />
         </GizmoHelper>
 
         <OrbitControls makeDefault />
@@ -289,6 +339,8 @@ export function PlaygroundEditor({
     monaco.editor.registerLinkOpener({
       open(uri) {
         if (uri.authority !== documentationOrigin) return false;
+
+        console.info('TODO: Open documentation link to the side:', uri.toString());
 
         // TODO [>=1.0.0]: Open the url to the side in a panel and return true
         return window.open(uri.toString(), 'documentation') !== null;
