@@ -50,7 +50,7 @@ Next, I wanna create a flexible preview based on web technology. This way we can
 
 We can then use this preview to create a command line application to build and preview our models. It basically runs a webserver that updates the page when the underlying code changes.
 
-> Now users are able to preview their models as they code.
+> Now users are able to preview their models as they code. You can even use an in-IDE-browser (like VSCode's Simple Browser) to preview code and preview side by side.
 
 Now we can also use the preview and put it in an online web application together with an online IDE.
 
