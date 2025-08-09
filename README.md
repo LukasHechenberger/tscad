@@ -5,7 +5,7 @@
 
 [![Homepage](https://img.shields.io/badge/docs-default)](https://tscad.vercel.app)
 
-jscad, but for modern developers
+JSCAD, but for modern developers
 
 <!-- #endregion header -->
 
@@ -14,51 +14,51 @@ jscad, but for modern developers
 
 ## Inspiration
 
-I wanna have an open source parametric CAD solution with good developer tooling. I draw my interest from seeing other open source projects doing great work on the CAD front, but lack the dx[^dx] a modern developer expects:
+I want to have an open source parametric CAD solution with good developer tooling. I draw my inspiration from seeing other open source projects doing great work on the CAD front, but lacking the DX[^dx] a modern developer expects:
 
 ### OpenSCAD
 
-OpenSCAD is great because it has a ton of features and a pretty active community to help resolve issues.
+OpenSCAD is great because it has tons of features and a pretty active community to help resolve issues.
 
-Sadly, they invented their own programming language and their own IDE, which lack many basic features like autocompletion and cannot compete with modern AI-assisted IDEs. You can use your own IDE (e.g. VS Code with some plugins) and use the OpenSCAD app just for rendering, but still, own programming language and documentation is sparse. Also, the performance can be really bad for some models.
+Sadly, they invented their own programming language and their own IDE, which lacks many basic features like autocompletion and cannot compete with modern AI-assisted IDEs. You can use your own IDE (e.g., VS Code with some plugins) and use the OpenSCAD app just for rendering, but it still uses its own programming language, and documentation is sparse. Also, performance can be really bad for some models.
 
 ### JSCAD
 
 Similar to OpenSCAD, but they use JavaScript for coding.
 
-They lack the same essentials to DX: Their own IDE (a website, actually) has a very basic code editor, with no autocompletion as well. The model preview is fine actually, but the documentation is not really up-to-date and very basic. The API is stable, so we'll (re)use many of their APIs.
+They lack the same DX essentials: Their own IDE (actually a website) has a very basic code editor with no autocompletion as well. The model preview is actually fine, but the documentation is not really up-to-date and is very basic. Using a "real" IDE helps a lot and the command line application is really handy for scripting. The API is stable, so we'll (re)use many of their APIs.
 
-> I just wanna add once more, these projects are my main inspiration and I totally admire these guys for their work. You layed the groundwork for this project.
+> I just want to add once more that these projects are my main inspiration and I totally admire these developers for their work. You laid the groundwork for this project.
 
 ## Goals
 
-In order to achieve a better developer experience, I wanna focus on these primary goals to increase the allover developer experience with parametric CAD:
+In order to achieve a better developer experience, I want to focus on these primary goals to increase the overall developer experience with parametric CAD:
 
-## Modern programming
+## Modern Programming
 
-I wanna use **TypeScript** in this project. It's a solid programming language with excellent tooling. You can also run it in a browser and use it on basically any OS, which is great to integrate other tools/services.
+I want to use **TypeScript** in this project. It's a solid programming language with excellent tooling. You can also run it in a browser and use it on basically any OS, which is great for integrating other tools/services.
 
-As Typescript is basically JavaScript with types I wanna also support JavaScript and the entire npm universe to make things modular.
+Since TypeScript is basically JavaScript with types, I also want to support JavaScript and the entire npm ecosystem to make things modular.
 
-## Flexible tooling
+## Flexible Tooling
 
-First and foremost I wanna provide a stable, strongly typed TypeScript API for parametric CAD with a good documentations. It should basically have the same functionality as JSCAD, just in TypeScript.
+First and foremost, I want to provide a stable, strongly typed TypeScript API for parametric CAD with good documentation. It should basically have the same functionality as JSCAD, just in TypeScript. A basic command line interface can be used to generate exports etc.
 
-> At this point, users can create CAD models and e.g. export them to STL.
+> At this point, users can create CAD models and e.g., export them to STL.
 
-Next, I wanna create a flexible preview based on web technology. This way we can easily run it in a browser, on a server and in a desktop app (with something like Tauri).
+Next, I want to create a flexible preview based on web technology. This way we can easily run it in a browser, on a server, or in a desktop app (with something like Tauri).
 
-We can then use this preview to create a command line application to build and preview our models. It basically runs a webserver that updates the page when the underlying code changes.
+We can then integrate this preview into the command line application to build and preview our models. It basically runs a web server that updates the page when the underlying code changes.
 
-> Now users are able to preview their models as they code. You can even use an in-IDE-browser (like VSCode's Simple Browser) to preview code and preview side by side.
+> Now users are able to preview their models as they code. You can even use an in-IDE browser (like VSCode's Simple Browser) to preview code and preview side by side.
 
 Now we can also use the preview and put it in an online web application together with an online IDE.
 
 > Now we're talking: We're basically feature-complete with OpenSCAD and JSCAD.
 
-## Good documentation
+## Good Documentation
 
-Alongside the online IDE I wanna host an extensive documentation with a good search.
+Alongside the online IDE, I want to host extensive documentation with good search functionality.
 
 <!-- #region packages -->
 <!-- Generated by @toolsync/builtin/package-readme. Do not edit manually, instead run `toolsync prepare`. -->
