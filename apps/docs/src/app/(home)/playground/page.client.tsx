@@ -106,7 +106,7 @@ function Entities() {
   }, [geometries]);
 
   if (error) {
-    <Toast variant="error">{error.message}</Toast>;
+    return <Toast variant="error">{error.message}</Toast>;
   }
 
   return rendered.map((entity, index) => (

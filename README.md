@@ -14,13 +14,13 @@ jscad, but for modern developers
 
 ## Inspiration
 
-I wanna have an open source parametric CAD solution with good developer tooling. I draw my interrest from seeing other open source doing great work on the CAD front, but lack the dx[^dx] a modern developer expects:
+I wanna have an open source parametric CAD solution with good developer tooling. I draw my interest from seeing other open source projects doing great work on the CAD front, but lack the dx[^dx] a modern developer expects:
 
 ### OpenSCAD
 
 OpenSCAD is great because it has a ton of features and a pretty active community to help resolve issues.
 
-Sadly, they invented their own progamming language and their own IDE, which lack many basic features like autocompletion and cannot compete with modern AI-assisted IDEs. You can use your own IDE (e.g. VS Code with some plugins) and use the OpenSCAD app just for rendering, but still, own programming language and documentation is sparse. Also, the performance can be really bad for some models.
+Sadly, they invented their own programming language and their own IDE, which lack many basic features like autocompletion and cannot compete with modern AI-assisted IDEs. You can use your own IDE (e.g. VS Code with some plugins) and use the OpenSCAD app just for rendering, but still, own programming language and documentation is sparse. Also, the performance can be really bad for some models.
 
 ### JSCAD
 
@@ -54,7 +54,7 @@ We can then use this preview to create a command line application to build and p
 
 Now we can also use the preview and put it in an online web application together with an online IDE.
 
-> Now we're talking: We're basically feature-complete with OpenSCAD and JSDOC.
+> Now we're talking: We're basically feature-complete with OpenSCAD and JSCAD.
 
 ## Good documentation
 
