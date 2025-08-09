@@ -2,7 +2,7 @@
   "name": "tscad",
   "version": "0.0.0",
   "private": true,
-  "description": "jscad, but for modern developers",
+  "description": "JSCAD, but for modern developers",
   "keywords": [],
   "homepage": "https://tscad.vercel.app",
   "repository": {
