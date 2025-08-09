@@ -34,13 +34,13 @@ They lack the same DX essentials: Their own IDE (actually a website) has a very 
 
 In order to achieve a better developer experience, I want to focus on these primary goals to increase the overall developer experience with parametric CAD:
 
-## Modern Programming
+### Modern Programming
 
 I want to use **TypeScript** in this project. It's a solid programming language with excellent tooling. You can also run it in a browser and use it on basically any OS, which is great for integrating other tools/services.
 
 Since TypeScript is basically JavaScript with types, I also want to support JavaScript and the entire npm ecosystem to make things modular.
 
-## Flexible Tooling
+### Flexible Tooling
 
 First and foremost, I want to provide a stable, strongly typed TypeScript API for parametric CAD with good documentation. It should basically have the same functionality as JSCAD, just in TypeScript. A basic command line interface can be used to generate exports etc.
 
@@ -56,7 +56,7 @@ Now we can also use the preview and put it in an online web application together
 
 > Now we're talking: We're basically feature-complete with OpenSCAD and JSCAD.
 
-## Good Documentation
+### Good Documentation
 
 Alongside the online IDE, I want to host extensive documentation with good search functionality.
 
