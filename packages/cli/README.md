@@ -7,4 +7,37 @@
 
 <!-- #endregion header -->
 
-# `@tscad/cli`
+## Installation
+
+**In a node.js project**
+
+```shell
+# Choose one:
+pnpm add -D @tscad/cli
+npm install --save-dev @tscad/cli
+yarn add @tscad/cli
+```
+
+## Usage
+
+**Use `tscad --help` to see available commands and options.**
+
+```shell
+tscad --help
+```
+
+<!-- #region usage -->
+<!-- This section is generated. Do not edit manually! -->
+
+Usage: tscad [options]
+
+A CLI tool for working with tscad models
+
+Options:
+  -V, --version  output the version number
+  -h, --help     display help for command
+
+For details consult the tscad documentation:
+  https://tscad.vercel.app
+
+<!-- #endregion usage -->

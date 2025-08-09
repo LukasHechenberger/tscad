@@ -1,26 +1,38 @@
 {
   "name": "@tscad/cli",
   "version": "0.0.0",
-  "scripts": {
-    "build": "echo 'Add build script here'",
-    "dev": "echo 'Add dev script here'",
-    "lint": "echo 'Add lint script here'",
-    "test": "echo 'Add test script here'"
-  },
-  "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "eslint": "^9.29.0",
-    "tsup": "^8.5.0",
-    "typescript": "^5.8.3"
-  },
-  "license": "MIT",
+  "description": "A CLI tool for working with tscad models",
+  "homepage": "https://tscad.vercel.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LukasHechenberger/tscad.git",
     "directory": "packages/cli"
   },
-  "homepage": "https://tscad.vercel.app",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "tscad": "./out/bin.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "check:exports": "publint",
+    "dev": "tsup --watch",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "commander": "^14.0.0"
+  },
+  "devDependencies": {
+    "@commander-js/extra-typings": "^14.0.0",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@toolsync/template": "^0.1.0",
+    "@types/node": "^22.15.32",
+    "eslint": "^9.29.0",
+    "publint": "^0.3.12",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
   "publishConfig": {
     "access": "public"
   }
