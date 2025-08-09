@@ -1,0 +1,27 @@
+{
+  "name": "@tscad/cli",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "echo 'Add build script here'",
+    "dev": "echo 'Add dev script here'",
+    "lint": "echo 'Add lint script here'",
+    "test": "echo 'Add test script here'"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "eslint": "^9.29.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasHechenberger/tscad.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://tscad.vercel.app",
+  "publishConfig": {
+    "access": "public"
+  }
+}
