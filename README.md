@@ -74,6 +74,7 @@ This repository contains the following packages:
 | [@repo/typescript-config](packages/typescript-config)        | Shared typescript configuration for the workspace.   |                                                                                                               |
 | [@tscad/docs](apps/docs)                                     | Sources of tscad.vercel.app                          |                                                                                                               |
 | [@tscad/gridfinity-generator](examples/gridfinity-generator) | Gridfinity generator example                         |                                                                                                               |
+| [@tscad/viewer](packages/viewer)                             | A viewer for tscad models                            |                                                                                                               |
 | [esbuild-autodoc](packages/esbuild-autodoc)                  | Automatically update JSDoc comments in your codebase |                                                                                                               |
 
 <!-- #endregion packages -->

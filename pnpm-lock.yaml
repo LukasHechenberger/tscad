@@ -291,6 +291,15 @@ importers:
 
   packages/typescript-config: {}
 
+  packages/viewer:
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+
 packages:
 
   '@alloc/quick-lru@5.2.0':
