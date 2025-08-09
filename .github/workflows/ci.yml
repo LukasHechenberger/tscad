@@ -14,7 +14,8 @@ jobs:
     env:
       DO_NOT_TRACK: '1'
     steps:
-      - name: Check out code
+      - id: checkout
+        name: Check out code
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
@@ -29,11 +30,14 @@ jobs:
       - id: install
         name: Install dependencies
         run: pnpm install
-      - name: Code Quality Checks
+      - id: checks
+        name: Code Quality Checks
         run: pnpm turbo check lint test build
-      - name: Ensure there are no uncommitted changes
+      - id: ensure-clean
+        name: Ensure there are no uncommitted changes
         run: git diff --exit-code || (echo "There are uncommitted changes!" && exit 1)
-      - if: ${{ github.event_name == 'push' }}
+      - id: changesets
+        if: ${{ github.event_name == 'push' }}
         name: Changesets
         uses: changesets/action@v1
         with:

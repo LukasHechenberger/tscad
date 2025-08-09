@@ -1,8 +1,14 @@
 {
   "name": "@tscad/viewer",
   "version": "0.0.0",
-  "private": true,
   "description": "A viewer for tscad models",
+  "homepage": "https://tscad.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasHechenberger/tscad.git",
+    "directory": "packages/viewer"
+  },
+  "license": "MIT",
   "scripts": {
     "build": "echo 'Add build script here'",
     "dev": "echo 'Add dev script here'",
@@ -13,11 +19,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*"
   },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/LukasHechenberger/tscad.git",
-    "directory": "packages/viewer"
-  },
-  "homepage": "https://tscad.vercel.app"
+  "publishConfig": {
+    "access": "public"
+  }
 }

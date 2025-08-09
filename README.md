@@ -70,11 +70,11 @@ This repository contains the following packages:
 | Name                                                         | Description                                          | Links                                                                                                         |
 | ------------------------------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | [@tscad/modeling](packages/modeling)                         | Typescript friendly re-exports of `@jscad/modeling`  | [![NPM Version](https://img.shields.io/npm/v/@tscad/modeling)](https://www.npmjs.com/package/@tscad/modeling) |
+| [@tscad/viewer](packages/viewer)                             | A viewer for tscad models                            | [![NPM Version](https://img.shields.io/npm/v/@tscad/viewer)](https://www.npmjs.com/package/@tscad/viewer)     |
 | [@repo/eslint-config](packages/eslint-config)                | Shared eslint configuration for the workspace.       |                                                                                                               |
 | [@repo/typescript-config](packages/typescript-config)        | Shared typescript configuration for the workspace.   |                                                                                                               |
 | [@tscad/docs](apps/docs)                                     | Sources of tscad.vercel.app                          |                                                                                                               |
 | [@tscad/gridfinity-generator](examples/gridfinity-generator) | Gridfinity generator example                         |                                                                                                               |
-| [@tscad/viewer](packages/viewer)                             | A viewer for tscad models                            |                                                                                                               |
 | [esbuild-autodoc](packages/esbuild-autodoc)                  | Automatically update JSDoc comments in your codebase |                                                                                                               |
 
 <!-- #endregion packages -->

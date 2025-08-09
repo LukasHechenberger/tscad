@@ -12,8 +12,8 @@ importers:
         specifier: ^2.29.4
         version: 2.29.4
       '@toolsync/builtin':
-        specifier: ^0.3.0
-        version: 0.3.0(ignore-sync@8.0.0)(prettier@3.5.3)
+        specifier: ^0.3.1
+        version: 0.3.1(ignore-sync@8.0.0)(prettier@3.5.3)
       '@toolsync/cli':
         specifier: 0.2.4
         version: 0.2.4
@@ -1757,8 +1757,8 @@ packages:
   '@tailwindcss/postcss@4.1.10':
     resolution: {integrity: sha512-B+7r7ABZbkXJwpvt2VMnS6ujcDoR2OOcFaqrLIo1xbcdxje4Vf+VgJdBzNNbrAjBj/rLZ66/tlQ1knIGNLKOBQ==}
 
-  '@toolsync/builtin@0.3.0':
-    resolution: {integrity: sha512-KqGmmdexyv9pYnZc5rxsf+Zq7fFeYSFP80GTCmu1FqTq5N3WoA+H3WxKaILsvbtIAXe65CTufcqa9Azkf7KX7w==}
+  '@toolsync/builtin@0.3.1':
+    resolution: {integrity: sha512-YHJSq8yLOx1qg9Ci08EOBaqH0kLmw8DPuLCqba7yAUQdMfLJlTbblDEEUSbkngWaMwIYRX4DNNVmc98hWMNkvA==}
     engines: {node: '>=20.6.0'}
     peerDependencies:
       ignore-sync: ^8.0.0
@@ -2829,8 +2829,8 @@ packages:
     resolution: {integrity: sha512-qsITQPfmvMOSAdeyZ+12I1c+CKSstAFAwu+97zrnWAbIr5u8wfsExUzCesVLC8NgHuRUqNN4Zy6UPWUTRGslcA==}
     engines: {node: '>= 6'}
 
-  fs-extra@11.3.0:
-    resolution: {integrity: sha512-Z4XaCL6dUDHfP/jT25jJKMmtxvuwbkrD1vNSMFlo9lNLY2c5FHYSQgHPRZUjAB26TpDEoW9HCOgplrdbaPV/ew==}
+  fs-extra@11.3.1:
+    resolution: {integrity: sha512-eXvGGwZ5CL17ZSwHWd3bbgk7UUpF6IFHtP57NYYakPvHOs8GDgDe5KJI36jIJzDkJ6eJjuzRA8eBQb6SkKue0g==}
     engines: {node: '>=14.14'}
 
   fs-extra@7.0.1:
@@ -6640,7 +6640,7 @@ snapshots:
       ajv: 8.13.0
       ajv-draft-04: 1.0.0(ajv@8.13.0)
       ajv-formats: 3.0.1(ajv@8.13.0)
-      fs-extra: 11.3.0
+      fs-extra: 11.3.1
       import-lazy: 4.0.0
       jju: 1.4.0
       resolve: 1.22.10
@@ -6804,7 +6804,7 @@ snapshots:
       postcss: 8.5.6
       tailwindcss: 4.1.10
 
-  '@toolsync/builtin@0.3.0(ignore-sync@8.0.0)(prettier@3.5.3)':
+  '@toolsync/builtin@0.3.1(ignore-sync@8.0.0)(prettier@3.5.3)':
     dependencies:
       '@toolsync/core': 0.1.2
       '@toolsync/template': 0.1.0
@@ -8099,7 +8099,7 @@ snapshots:
       hasown: 2.0.2
       mime-types: 2.1.35
 
-  fs-extra@11.3.0:
+  fs-extra@11.3.1:
     dependencies:
       graceful-fs: 4.2.11
       jsonfile: 6.1.0

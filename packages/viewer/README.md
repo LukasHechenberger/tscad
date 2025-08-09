@@ -3,7 +3,7 @@
 
 # @tscad/viewer
 
-[![Homepage](https://img.shields.io/badge/docs-default)](https://tscad.vercel.app)
+[![NPM Version](https://img.shields.io/npm/v/@tscad/viewer)](https://www.npmjs.com/package/@tscad/viewer) [![Homepage](https://img.shields.io/badge/docs-default)](https://tscad.vercel.app)
 
 A viewer for tscad models
 
