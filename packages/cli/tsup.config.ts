@@ -1,11 +1,8 @@
 import { defineConfig } from 'tsup';
 
-export default defineConfig({
+export default defineConfig(({ watch }) => ({
   entry: ['./src/bin.ts'],
   outDir: './out',
   format: ['esm'],
-  onSuccess: [
-    'pnpm update-section README.md usage "$(node out/bin.js --help)"',
-    'pnpm dev:on-success',
-  ].join('&&'),
-});
+  onSuccess: ['pnpm -s build:readme', watch && 'pnpm -s dev:on-success'].filter(Boolean).join('&&'),
+}));

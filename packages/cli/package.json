@@ -15,6 +15,7 @@
   },
   "scripts": {
     "build": "tsup",
+    "build:readme": "pnpm update-section README.md usage \"\\`\\`\\`\n$(node out/bin.js --help)\n\\`\\`\\`\"",
     "check:exports": "publint",
     "dev": "tsup --watch",
     "dev:on-success": "node out/bin.js dev ../../examples/gridfinity-generator/src/model.ts",

@@ -31,6 +31,7 @@ tscad --help
 <!-- #region usage -->
 <!-- This section is generated. Do not edit manually! -->
 
+```
 Usage: tscad [options] [command]
 
 A CLI tool for working with tscad models
@@ -45,5 +46,6 @@ Commands:
 
 For details consult the tscad documentation:
   https://tscad.vercel.app
+```
 
 <!-- #endregion usage -->
