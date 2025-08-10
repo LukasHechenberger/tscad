@@ -1,6 +1,7 @@
+import type { Model } from '@tscad/modeling';
+
 declare module '@tscad-viewer/model' {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const model: any;
+  const model: Model;
 
   export default model;
 }
