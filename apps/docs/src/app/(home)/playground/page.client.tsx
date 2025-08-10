@@ -8,7 +8,7 @@ import Editor, { type Monaco, type OnMount, useMonaco } from '@monaco-editor/rea
 import { GizmoHelper, GizmoViewcube, Grid, OrbitControls, Stage } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import type { Vector2 } from '@tscad/modeling';
-import { solidToTHREE } from '@tscad/modeling/convert';
+import { solidToThree } from '@tscad/modeling/convert';
 import type * as esbuild from 'esbuild-wasm';
 import { folder, Leva, useControls } from 'leva';
 import { useTheme } from 'next-themes';
@@ -73,7 +73,7 @@ function Entities() {
   const { geometries } = useContext(PlaygroundContext);
   // FIXME [>=1.0.0]: Catch + report errors
   const rendered = useMemo(
-    () => (Array.isArray(geometries) ? geometries : [geometries]).map((s) => solidToTHREE(s)),
+    () => (Array.isArray(geometries) ? geometries : [geometries]).map((s) => solidToThree(s)),
     [geometries],
   );
 
