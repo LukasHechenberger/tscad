@@ -26,6 +26,8 @@ ${styleText(['italic'], 'For details consult the tscad documentation:')}
     styleArgumentText: (text) => styleText(['cyan'], text),
   })
 
+  // Add commands
   .addCommand(developmentCommand)
 
+  // Finally, run the CLI
   .parse();
