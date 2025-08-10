@@ -52,7 +52,7 @@ const baseplateCutout = () =>
     ),
   );
 
-type GridfinityBaseplateOptions = {
+export type GridfinityBaseplateOptions = {
   grid: Vector2;
   /** Override the allover size */
   size?: Vector2 | Vector3;
@@ -91,9 +91,6 @@ export function gridfinityBaseplate({
         gridfinity.baseplateHeight,
       ];
   const [width, depth, height] = size;
-
-  console.log({ size });
-
   const cutout = baseplateCutout();
 
   return colorize(

@@ -1,0 +1,16 @@
+html,
+body,
+#root {
+  height: 100%;
+  margin: unset;
+  overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  html,
+  body,
+  #root {
+    background-color: #222;
+    color: white;
+  }
+}

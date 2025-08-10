@@ -1,3 +1,5 @@
+import type { GridfinityBaseplateOptions } from '.';
+
 const sizes = [
   [1, 1],
   [1, 2],
@@ -5,7 +7,7 @@ const sizes = [
   [2, 2],
   [2, 3],
   [3, 3],
-];
+] as [number, number][];
 
 export const examples = [
   ...sizes.map((size) => ({
@@ -18,4 +20,4 @@ export const examples = [
     description: `A simple ${size[0]}x${size[1]} baseplate with no outer padding.`,
     options: { grid: size, outerPadding: false },
   })),
-];
+] satisfies { title: string; description: string; options: GridfinityBaseplateOptions }[];

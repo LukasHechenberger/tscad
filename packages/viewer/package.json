@@ -1,0 +1,40 @@
+{
+  "name": "@tscad/viewer",
+  "version": "0.0.0",
+  "description": "A viewer for tscad models",
+  "homepage": "https://tscad.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasHechenberger/tscad.git",
+    "directory": "packages/viewer"
+  },
+  "license": "MIT",
+  "scripts": {
+    "check:types": "tsc --noEmit",
+    "dev": "echo 'Add dev script here'",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.3.0",
+    "@react-three/fiber": "^9.1.2",
+    "@tscad/modeling": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "eslint": "^9.29.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "three": "^0.177.0",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
