@@ -5,22 +5,13 @@ import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/
 import { use$ } from '@legendapp/state/react';
 import { syncObservable } from '@legendapp/state/sync';
 import Editor, { type Monaco, type OnMount, useMonaco } from '@monaco-editor/react';
-import { GizmoHelper, GizmoViewcube, Grid, OrbitControls, Stage } from '@react-three/drei';
-import { Canvas } from '@react-three/fiber';
+import { Grid } from '@react-three/drei';
 import type { Vector2 } from '@tscad/modeling';
-import { solidToThree } from '@tscad/modeling/convert';
+import Viewer from '@tscad/viewer/src/viewer';
 import type * as esbuild from 'esbuild-wasm';
 import { folder, Leva, useControls } from 'leva';
 import { useTheme } from 'next-themes';
-import {
-  createContext,
-  type ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { bundleCode } from '@/lib/esbuild';
 import { homepage } from '../../../../package.json';
 
@@ -67,26 +58,6 @@ async function runInSandbox(tsCode: string): Promise<Model> {
     };
     worker.postMessage({ code: jsCode });
   });
-}
-
-function Entities() {
-  const { geometries } = useContext(PlaygroundContext);
-  // FIXME [>=1.0.0]: Catch + report errors
-  const rendered = useMemo(
-    () => (Array.isArray(geometries) ? geometries : [geometries]).map((s) => solidToThree(s)),
-    [geometries],
-  );
-
-  return rendered.map((entity, index) => (
-    // eslint-disable-next-line react/no-unknown-property
-    <mesh key={index} castShadow geometry={entity}>
-      <meshStandardMaterial color="orange" />
-
-      {/* FIXME [>=1.0.0]: Optionally enable (one of both) */}
-      {/* <Wireframe geometry={entity} /> */}
-      {/* <Outlines thickness={0.06} color="aquamarine" /> */}
-    </mesh>
-  ));
 }
 
 type PlaygroundContextType = {
@@ -174,8 +145,8 @@ syncObservable(settings$, {
 });
 
 export function PlaygroundPreview() {
-  // const { resolvedTheme } = useTheme();
   const values = use$(settings$);
+  const { geometries } = useContext(PlaygroundContext);
 
   useControls(
     Object.fromEntries(
@@ -237,31 +208,9 @@ export function PlaygroundPreview() {
         />
       </div>
 
-      <Canvas shadows camera={{ position: [5, 5, 5], fov: 50 }}>
-        <Stage
-          adjustCamera
-          intensity={0.5}
-          preset="rembrandt"
-          shadows={{
-            type: 'contact',
-            color: '#555',
-            colorBlend: 1,
-            opacity: 0.8,
-            intensity: 0.5,
-            position: [0, 0, 0],
-          }}
-        >
-          <Entities />
-
-          {gridEnabled && <Grid side={2} position={[0, 0, 0]} args={gridSize} {...gridConfig} />}
-        </Stage>
-
-        <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
-          <GizmoViewcube />
-        </GizmoHelper>
-
-        <OrbitControls makeDefault />
-      </Canvas>
+      <Viewer model={geometries}>
+        {gridEnabled && <Grid side={2} position={[0, 0, 0]} args={gridSize} {...gridConfig} />}
+      </Viewer>
     </>
   );
 }

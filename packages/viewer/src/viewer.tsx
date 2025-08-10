@@ -1,7 +1,7 @@
 import { GizmoHelper, GizmoViewcube, OrbitControls, Stage } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { solidToThree } from '@tscad/modeling/convert';
-import { useMemo } from 'react';
+import { type ReactNode, useMemo } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Solid = any;
@@ -24,7 +24,13 @@ function Entities({ model }: { model: Solid | Solid[] }) {
   );
 }
 
-export default function Viewer({ model }: { model: Solid | Solid[] }) {
+export default function Viewer({
+  model,
+  children,
+}: {
+  model: Solid | Solid[];
+  children?: ReactNode;
+}) {
   return (
     <Canvas shadows camera={{ position: [25, 25, 50] }}>
       <OrbitControls makeDefault />
@@ -35,6 +41,8 @@ export default function Viewer({ model }: { model: Solid | Solid[] }) {
         <GizmoHelper>
           <GizmoViewcube />
         </GizmoHelper>
+
+        {children}
       </Stage>
     </Canvas>
   );
