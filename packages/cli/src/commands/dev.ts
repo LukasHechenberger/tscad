@@ -1,10 +1,11 @@
-import viteReact from '@vitejs/plugin-react';
-import { Command } from 'commander';
 import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import path from 'node:path';
+import viteReact from '@vitejs/plugin-react';
+import { Command } from 'commander';
 import { createServer } from 'vite';
 
+const { dirname, join } = path;
 const { resolve } = createRequire(import.meta.url);
 
 export const devCommand = new Command('dev')
@@ -14,7 +15,7 @@ export const devCommand = new Command('dev')
   .option('--open', 'Open the browser after the server is started', false)
   .action(async (model, options) => {
     const explicitPortString = options.port || process.env.PORT;
-    const explicitPort = explicitPortString ? parseInt(explicitPortString, 10) : undefined;
+    const explicitPort = explicitPortString ? Number.parseInt(explicitPortString, 10) : undefined;
 
     const modelPath = join(process.cwd(), model);
     console.debug('Using model path', modelPath);

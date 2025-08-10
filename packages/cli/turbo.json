@@ -4,6 +4,9 @@
   "tasks": {
     "build": {
       "outputs": ["out/**", "README.md"]
+    },
+    "dev": {
+      "passThroughEnv": ["PORT"]
     }
   }
 }
