@@ -10,7 +10,7 @@ const { resolve } = createRequire(import.meta.url);
 
 export const devCommand = new Command('dev')
   .description('Start the development server')
-  .argument('[model]', 'Model file to serve', 'model.ts')
+  .argument('[model]', 'Model file to serve', 'src/model.ts')
   .option('-p, --port <port>', 'The port to listen to. Defaults to 4000')
   .option('--open', 'Open the browser after the server is started', false)
   .action(async (model, options) => {
