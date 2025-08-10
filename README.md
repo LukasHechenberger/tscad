@@ -69,7 +69,7 @@ This repository contains the following packages:
 
 | Name                                                         | Description                                          | Links                                                                                                         |
 | ------------------------------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| [@tscad/cli](packages/cli)                                   | _no description_                                     | [![NPM Version](https://img.shields.io/npm/v/@tscad/cli)](https://www.npmjs.com/package/@tscad/cli)           |
+| [@tscad/cli](packages/cli)                                   | A CLI tool for working with tscad models             | [![NPM Version](https://img.shields.io/npm/v/@tscad/cli)](https://www.npmjs.com/package/@tscad/cli)           |
 | [@tscad/modeling](packages/modeling)                         | Typescript friendly re-exports of `@jscad/modeling`  | [![NPM Version](https://img.shields.io/npm/v/@tscad/modeling)](https://www.npmjs.com/package/@tscad/modeling) |
 | [@tscad/viewer](packages/viewer)                             | A viewer for tscad models                            | [![NPM Version](https://img.shields.io/npm/v/@tscad/viewer)](https://www.npmjs.com/package/@tscad/viewer)     |
 | [@repo/eslint-config](packages/eslint-config)                | Shared eslint configuration for the workspace.       |                                                                                                               |

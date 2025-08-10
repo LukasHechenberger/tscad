@@ -5,6 +5,8 @@
 
 [![NPM Version](https://img.shields.io/npm/v/@tscad/cli)](https://www.npmjs.com/package/@tscad/cli) [![Homepage](https://img.shields.io/badge/docs-default)](https://tscad.vercel.app)
 
+A CLI tool for working with tscad models
+
 <!-- #endregion header -->
 
 ## Installation
@@ -29,13 +31,17 @@ tscad --help
 <!-- #region usage -->
 <!-- This section is generated. Do not edit manually! -->
 
-Usage: tscad [options]
+Usage: tscad [options] [command]
 
 A CLI tool for working with tscad models
 
 Options:
-  -V, --version  output the version number
-  -h, --help     display help for command
+  -V, --version          output the version number
+  -h, --help             display help for command
+
+Commands:
+  dev [options] [model]  Start the development server
+  help [command]         display help for command
 
 For details consult the tscad documentation:
   https://tscad.vercel.app
