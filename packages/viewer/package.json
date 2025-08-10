@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "@react-three/drei": "^10.3.0",
-    "@react-three/fiber": "^9.1.2"
+    "@react-three/fiber": "^9.1.2",
+    "@tscad/modeling": "workspace:*"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -29,7 +30,6 @@
     "three": "^0.177.0"
   },
   "peerDependencies": {
-    "@tscad/modeling": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
