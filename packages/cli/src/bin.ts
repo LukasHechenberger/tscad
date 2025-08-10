@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { styleText } from 'node:util';
-import { homepage, version, description } from '../package.json';
 import { program } from 'commander';
-import { devCommand } from './commands/dev';
+import { description, homepage, version } from '../package.json';
+import { devCommand as developmentCommand } from './commands/dev';
 
 // Add general usage info
 program
