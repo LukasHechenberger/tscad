@@ -47,6 +47,7 @@
   "scripts": {
     "build": "tsup",
     "check:exports": "publint",
+    "check:types": "tsc --noEmit",
     "dev": "tsup --watch",
     "lint": "eslint . --max-warnings 0"
   },

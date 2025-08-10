@@ -10,10 +10,9 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "echo 'Add build script here'",
+    "check:types": "tsc --noEmit",
     "dev": "echo 'Add dev script here'",
-    "lint": "echo 'Add lint script here'",
-    "test": "echo 'Add test script here'"
+    "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
     "@react-three/drei": "^10.3.0",
@@ -24,6 +23,7 @@
     "@repo/typescript-config": "workspace:*",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "eslint": "^9.29.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "three": "^0.177.0"

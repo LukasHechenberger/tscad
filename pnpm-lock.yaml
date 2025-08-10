@@ -373,6 +373,9 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.1.6(@types/react@19.1.8)
+      eslint:
+        specifier: ^9.29.0
+        version: 9.29.0(jiti@2.4.2)
       react:
         specifier: 'catalog:'
         version: 19.1.0
