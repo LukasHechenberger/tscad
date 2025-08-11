@@ -1,6 +1,6 @@
 {
   "name": "@tscad/docs",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "Sources of tscad.vercel.app",
   "homepage": "https://tscad.vercel.app",
