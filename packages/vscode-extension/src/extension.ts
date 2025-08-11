@@ -41,7 +41,7 @@ function openPreview() {
 
 const uriHandler = {
   handleUri(uri) {
-    vscode.window.showInformationMessage(`URI received: ${uri.toString()}`);
+    console.log(`URI received: ${uri.toString()}`);
     vscode.commands.executeCommand(
       openPreviewCommandId /* Pass options, like port etc. 'http://localhost:4000' */,
     );
