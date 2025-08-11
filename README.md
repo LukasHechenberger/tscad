@@ -77,6 +77,7 @@ This repository contains the following packages:
 | [@tscad/docs](apps/docs)                                     | Sources of tscad.vercel.app                          |                                                                                                               |
 | [@tscad/gridfinity-generator](examples/gridfinity-generator) | Gridfinity generator example                         |                                                                                                               |
 | [esbuild-autodoc](packages/esbuild-autodoc)                  | Automatically update JSDoc comments in your codebase |                                                                                                               |
+| [tscad-vscode](packages/vscode-extension)                    | The official tscad VSCode extension                  |                                                                                                               |
 
 <!-- #endregion packages -->
 

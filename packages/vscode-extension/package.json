@@ -1,0 +1,61 @@
+{
+  "name": "tscad-vscode",
+  "displayName": "tscad Preview",
+  "version": "0.0.0-pre.0",
+  "private": true,
+  "description": "The official tscad VSCode extension",
+  "categories": [
+    "Other"
+  ],
+  "homepage": "https://tscad.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasHechenberger/tscad.git",
+    "directory": "packages/vscode-extension"
+  },
+  "license": "MIT",
+  "publisher": "tscad",
+  "type": "commonjs",
+  "main": "./out/extension.js",
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",
+    "compile-tests": "tsc -p . --outDir out",
+    "dev": "npm-run-all -p watch:*",
+    "lint": "eslint src",
+    "package": "pnpm run check-types && pnpm run lint && node esbuild.js --production",
+    "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
+    "test": "vscode-test",
+    "vscode:prepublish": "pnpm run package",
+    "watch": "npm-run-all -p watch:*",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "tscad-vscode.open",
+        "title": "Open tscad preview"
+      }
+    ]
+  },
+  "activationEvents": [],
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.102.0",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.6.0",
+    "esbuild": "^0.25.8",
+    "eslint": "^9.32.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "vscode": "^1.103.0"
+  }
+}
