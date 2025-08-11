@@ -1,7 +1,7 @@
 {
   "name": "tscad-vscode",
   "displayName": "tscad",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "description": "The official tscad VSCode extension",
   "categories": [
@@ -23,11 +23,12 @@
     "check:types": "tsc --noEmit",
     "dev": "tsup --watch",
     "lint": "eslint . --max-warnings 0",
-    "publish:pre-release": "pnpm publish:release --pre-release",
-    "publish:release": "vsce publish --skip-license --baseContentUrl \"https://github.com/LukasHechenberger/tscad/raw/$(git branch --show-current)/packages/vscode-extension\"",
+    "postpublish": "pnpm vscode:publish",
     "test:integration": "vscode-test",
-    "vscode:package": "vsce package --skip-license",
-    "vscode:prepublish": "pnpm run check:types && pnpm run lint && pnpm build"
+    "vscode:package": "pnpm vscode:rebuild && vsce package --skip-license",
+    "vscode:publish": "vsce publish --skip-license --baseContentUrl \"https://github.com/LukasHechenberger/tscad/raw/$(git branch --show-current)/packages/vscode-extension\"",
+    "vscode:publish-prerelease": "pnpm vscode:rebuild && pnpm vscode:publish --pre-release",
+    "vscode:rebuild": "pnpm run check:types && pnpm run lint && pnpm build"
   },
   "contributes": {
     "commands": [
