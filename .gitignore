@@ -20,6 +20,9 @@ apps/docs/**/.env*.local
 apps/docs/**/.vercel
 apps/docs/**/next-env.d.ts
 
+packages/vscode-extension/*.vsix
+packages/vscode-extension/.vscode-test
+
 node_modules
 out
 .turbo

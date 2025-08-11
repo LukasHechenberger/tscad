@@ -6,7 +6,7 @@
       "outputs": ["out/**", "README.md"]
     },
     "dev": {
-      "passThroughEnv": ["PORT"]
+      "passThroughEnv": ["PORT", "TERM_PROGRAM"]
     }
   }
 }

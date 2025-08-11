@@ -1,5 +1,6 @@
 [relative]
-apps/docs/.gitignore
+apps/*/.gitignore
+packages/*/.gitignore
 
 [inline]
 node_modules

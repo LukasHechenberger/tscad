@@ -10,6 +10,10 @@ import { homepage } from '../../package.json';
 const { dirname, join, relative } = path;
 const { resolve } = createRequire(import.meta.url);
 
+async function openVscodePreview() {
+  await open(`vscode://tscad.tscad-vscode`, { wait: false });
+}
+
 export const devCommand = new Command('dev')
   .description('Start the development server')
   .argument('[model]', 'Model file to serve', 'src/model.ts')
@@ -45,15 +49,28 @@ export const devCommand = new Command('dev')
 
     await server.listen();
 
+    // Try to open vscode preview if terminal is vscode
+    if (process.env.TERM_PROGRAM === 'vscode') {
+      await openVscodePreview();
+    }
+
     server.printUrls();
+
     server.bindCLIShortcuts({
       print: true,
       customShortcuts: [
         {
+          key: 'v',
+          description: 'open vscode preview',
+          async action() {
+            await openVscodePreview();
+          },
+        },
+        {
           key: 'd',
           description: 'open documentation',
-          action() {
-            open(homepage);
+          async action() {
+            await open(homepage);
           },
         },
       ],

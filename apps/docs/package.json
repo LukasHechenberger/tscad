@@ -28,7 +28,7 @@
     "@tscad/viewer": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "esbuild-wasm": "^0.25.5",
+    "esbuild-wasm": "^0.25.8",
     "fumadocs-core": "15.5.3",
     "fumadocs-mdx": "11.6.9",
     "fumadocs-ui": "15.5.3",

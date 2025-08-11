@@ -1,0 +1,59 @@
+{
+  "name": "tscad-vscode",
+  "displayName": "tscad",
+  "version": "0.0.3",
+  "private": true,
+  "description": "The official tscad VSCode extension",
+  "categories": [
+    "Visualization"
+  ],
+  "homepage": "https://tscad.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasHechenberger/tscad.git",
+    "directory": "packages/vscode-extension"
+  },
+  "license": "MIT",
+  "author": "Lukas Hechenberger <npm@ls-age.com> (https://ls-age.com/)",
+  "publisher": "tscad",
+  "type": "commonjs",
+  "main": "./out/extension.js",
+  "scripts": {
+    "build": "tsup --minify --clean",
+    "check:types": "tsc --noEmit",
+    "dev": "tsup --watch",
+    "lint": "eslint . --max-warnings 0",
+    "postpublish": "pnpm vscode:publish",
+    "test:integration": "vscode-test",
+    "vscode:package": "pnpm vscode:rebuild && vsce package --skip-license",
+    "vscode:publish": "vsce publish --skip-license --baseContentUrl \"https://github.com/LukasHechenberger/tscad/raw/$(git branch --show-current)/packages/vscode-extension\"",
+    "vscode:publish-prerelease": "pnpm vscode:rebuild && pnpm vscode:publish --pre-release",
+    "vscode:rebuild": "pnpm run check:types && pnpm run lint && pnpm build"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "tscad-vscode.open-preview",
+        "title": "Open tscad preview"
+      }
+    ]
+  },
+  "activationEvents": [],
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.15.32",
+    "@types/vscode": "^1.102.0",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.6.0",
+    "eslint": "^9.29.0",
+    "npm-run-all": "^4.1.5",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "vscode": "^1.103.0"
+  }
+}

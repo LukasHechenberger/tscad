@@ -18,5 +18,7 @@ mergeGitBranchLockfilesBranchPattern:
 onlyBuiltDependencies:
   - '@jscad/cli'
   - '@tailwindcss/oxide'
+  - '@vscode/vsce-sign'
   - esbuild
+  - keytar
   - sharp
