@@ -19,15 +19,13 @@
   "type": "commonjs",
   "main": "./out/extension.js",
   "scripts": {
-    "build": "tsup --minify",
+    "build": "tsup --minify --clean",
     "check:types": "tsc --noEmit",
-    "compile-tests": "tsc -p . --outDir out",
     "dev": "tsup --watch",
     "lint": "eslint . --max-warnings 0",
-    "package": "pnpm run check:types && pnpm run lint && pnpm build",
-    "pretest": "pnpm run compile-tests && pnpm run build && pnpm run lint",
-    "test": "vscode-test",
-    "vscode:prepublish": "pnpm run package"
+    "test:integration": "vscode-test",
+    "vscode:package": "vsce package --skip-license",
+    "vscode:prepublish": "pnpm run check:types && pnpm run lint && pnpm build"
   },
   "contributes": {
     "commands": [

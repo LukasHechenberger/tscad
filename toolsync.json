@@ -7,7 +7,13 @@
     }
   },
   "@toolsync/builtin/package-readme": {},
-  "@toolsync/builtin/turbo": {},
+  "@toolsync/builtin/turbo": {
+    "tasks": {
+      "test:integration": {
+        "dependsOn": ["build"]
+      }
+    }
+  },
   "@toolsync/builtin/pnpm": {},
   "@toolsync/builtin/prettier": {
     "settings": {

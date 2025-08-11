@@ -1,7 +1,10 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "ui": "tui",
   "tasks": {
+    "test:integration": {
+      "dependsOn": [
+        "build"
+      ]
+    },
     "build": {
       "dependsOn": [
         "^build"
@@ -48,5 +51,7 @@
       ]
     },
     "//#check:format": {}
-  }
+  },
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui"
 }
