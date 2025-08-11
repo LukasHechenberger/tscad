@@ -18,22 +18,22 @@ function openPreview() {
     <!DOCTYPE html>
     <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>tscad preview</title>
-        <style>
-            html, body, iframe {
-                margin: 0;
-                padding: 0;
-                height: 100%;
-                width: 100%;
-                border: none;
-                overflow: hidden;
-            }
-        </style>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>tscad preview</title>
+      <style>
+        html, body, iframe {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+          width: 100%;
+          border: none;
+          overflow: hidden;
+        }
+      </style>
     </head>
     <body>
-        <iframe src="http://localhost:4000"></iframe>
+      <iframe src="http://localhost:4000"></iframe>
     </body>
     </html>
   `;
