@@ -20,17 +20,17 @@
   "main": "./out/extension.js",
   "scripts": {
     "check:types": "tsc --noEmit",
-    "compile": "pnpm run check:types && pnpm run lint && node esbuild.js",
+    "compile": "tsup",
     "compile-tests": "tsc -p . --outDir out",
     "dev": "npm-run-all -p watch:*",
     "lint": "eslint . --max-warnings 0",
-    "package": "pnpm run check:types && pnpm run lint && node esbuild.js --production",
+    "package": "pnpm run check:types && pnpm run lint && tsup --minify",
     "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
     "test": "vscode-test",
     "vscode:prepublish": "pnpm run package",
     "watch": "npm-run-all -p watch:*",
     "watch-tests": "tsc -p . -w --outDir out",
-    "watch:esbuild": "node esbuild.js --watch",
+    "watch:esbuild": "tsup --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json"
   },
   "contributes": {
@@ -51,9 +51,9 @@
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.6.0",
-    "esbuild": "^0.25.8",
     "eslint": "^9.29.0",
     "npm-run-all": "^4.1.5",
+    "tsup": "^8.5.0",
     "typescript": "^5.9.2"
   },
   "engines": {
