@@ -23,7 +23,6 @@
     "check:types": "tsc --noEmit",
     "dev": "tsup --watch",
     "lint": "eslint . --max-warnings 0",
-    "postpublish": "pnpm vscode:publish",
     "test:integration": "vscode-test",
     "vscode:package": "pnpm vscode:rebuild && vsce package --skip-license",
     "vscode:publish": "vsce publish --skip-license --baseContentUrl \"https://github.com/LukasHechenberger/tscad/raw/$(git branch --show-current)/packages/vscode-extension\"",
