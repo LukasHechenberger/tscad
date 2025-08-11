@@ -7,5 +7,9 @@
   "access": "restricted",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@tscad/gridfinity-generator", "@repo/*"]
+  "ignore": ["@tscad/gridfinity-generator", "@repo/*"],
+  "privatePackages": {
+    "version": true,
+    "tag": true
+  }
 }
