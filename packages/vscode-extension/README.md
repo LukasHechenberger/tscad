@@ -9,6 +9,10 @@ The official tscad VSCode extension
 
 <!-- #endregion header -->
 
+## Installation
+
+Install the extension from [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=tscad.tscad-vscode).
+
 ## Features
 
 Provides an in-editor preview for your tscad models.
