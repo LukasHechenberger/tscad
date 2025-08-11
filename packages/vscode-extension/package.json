@@ -1,6 +1,6 @@
 {
   "name": "tscad-vscode",
-  "displayName": "tscad Preview",
+  "displayName": "tscad",
   "version": "0.0.0-pre.0",
   "private": true,
   "description": "The official tscad VSCode extension",
@@ -14,6 +14,7 @@
     "directory": "packages/vscode-extension"
   },
   "license": "MIT",
+  "author": "Lukas Hechenberger <npm@ls-age.com> (https://ls-age.com/)",
   "publisher": "tscad",
   "type": "commonjs",
   "main": "./out/extension.js",
