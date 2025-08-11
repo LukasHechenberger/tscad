@@ -1,0 +1,30 @@
+{
+  "name": "@repo/toolsync-plugin",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A toolsync plugin for the tscad repository",
+  "homepage": "https://tscad.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasHechenberger/tscad.git",
+    "directory": "packages/toolsync-plugin"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "check:types": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@toolsync/core": "^0.1.2",
+    "eslint": "^9.33.0"
+  }
+}

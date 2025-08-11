@@ -30,5 +30,6 @@
         "source.fixAll.eslint": "explicit"
       }
     }
-  }
+  },
+  "@repo/toolsync-plugin": {}
 }
