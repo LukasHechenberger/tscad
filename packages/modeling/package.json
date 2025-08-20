@@ -19,14 +19,6 @@
       "types": "./out/index.d.ts",
       "default": "./out/index.js"
     },
-    "./types": {
-      "require": {
-        "types": "./out/types.d.cts",
-        "default": "./out/types.cjs"
-      },
-      "types": "./out/types.d.ts",
-      "default": "./out/types.js"
-    },
     "./convert": {
       "require": {
         "types": "./out/convert/index.d.cts",
@@ -42,6 +34,14 @@
       },
       "types": "./out/primitives/index.d.ts",
       "default": "./out/primitives/index.js"
+    },
+    "./types": {
+      "require": {
+        "types": "./out/types.d.cts",
+        "default": "./out/types.cjs"
+      },
+      "types": "./out/types.d.ts",
+      "default": "./out/types.js"
     }
   },
   "scripts": {
