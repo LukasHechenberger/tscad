@@ -50,7 +50,7 @@ ${command.helpInformation({ error: false })}
   template.update({
     section: 'options',
     content: `## Options
-    
+
 ${getOptionsDocumentation(command as Command)}`,
     insert: 'bottom',
   });
