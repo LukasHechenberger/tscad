@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as path from 'node:path';
+import path from 'node:path';
 import { styleText } from 'node:util';
 import { program } from '@tscad/commander';
 import { execaCommand } from 'execa';
@@ -13,22 +13,22 @@ const pm = whichPmRuns();
 const pmCommands = {
   pnpm: {
     create: `pnpm create @tscad`,
-    install: 'pnpm add -D @tscad/cli@latest',
+    install: 'pnpm add -D @tscad/cli@latest @tscad/modeling@latest',
     runDev: 'pnpm dev',
   },
   npm: {
     create: 'npm init tscad',
-    install: 'npm install --save-dev @tscad/cli@latest',
+    install: 'npm install --save-dev @tscad/cli@latest @tscad/modeling@latest',
     runDev: 'npm run dev',
   },
   cnpm: {
     create: 'cnpm init tscad',
-    install: 'cnpm install --save-dev @tscad/cli@latest',
+    install: 'cnpm install --save-dev @tscad/cli@latest @tscad/modeling@latest',
     runDev: 'cnpm run dev',
   },
   yarn: {
     create: 'yarn create @tscad',
-    install: 'yarn add -D @tscad/cli@latest',
+    install: 'yarn add -D @tscad/cli@latest @tscad/modeling@latest',
     runDev: 'yarn dev',
   },
 };
@@ -98,16 +98,15 @@ program
           path: `{{dir}}/src/model.ts`,
           template: `import { cube, sphere } from '@tscad/modeling/primitives';
 
-/** Use this method to create your model */
-export function main() {
-  return [
-    cube({ size: 1.5, center: [0, 0.75, 0] }),
-    sphere({ radius: 1.2, center: [0, 1.2, 0] }),
-  ];
-}`,
+
+export default [
+  cube({ size: 1.5, center: [0, 0.75, 0] }),
+  sphere({ radius: 1.2, center: [0, 1.2, 0] }),
+];
+`,
           force: options.force,
         },
-        `Installing dependencies using ${selectedPmCommands.install}`,
+        `Installing dependencies using ${selectedPm}`,
         {
           type: 'run',
           command: selectedPmCommands.install,

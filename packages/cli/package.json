@@ -23,6 +23,7 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
+    "@tscad/viewer": "workspace:*",
     "@vitejs/plugin-react": "^5.0.0",
     "commander": "^14.0.0",
     "open": "^10.2.0",
@@ -33,7 +34,6 @@
     "@repo/typescript-config": "workspace:*",
     "@toolsync/template": "^0.1.1",
     "@tscad/commander": "workspace:*",
-    "@tscad/viewer": "workspace:*",
     "@types/node": "^22.15.32",
     "eslint": "^9.29.0",
     "publint": "^0.3.12",

@@ -187,6 +187,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@tscad/viewer':
+        specifier: workspace:*
+        version: link:../viewer
       '@vitejs/plugin-react':
         specifier: ^5.0.0
         version: 5.0.0(vite@7.1.1(@types/node@22.15.32)(jiti@2.4.2)(lightningcss@1.30.1)(yaml@2.8.1))
@@ -212,9 +215,6 @@ importers:
       '@tscad/commander':
         specifier: workspace:*
         version: link:../commander
-      '@tscad/viewer':
-        specifier: workspace:*
-        version: link:../viewer
       '@types/node':
         specifier: ^22.15.32
         version: 22.15.32
