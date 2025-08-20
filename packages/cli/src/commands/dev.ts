@@ -1,8 +1,8 @@
 import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { Command } from '@tscad/commander';
 import viteReact from '@vitejs/plugin-react';
-import { Command } from 'commander';
 import open from 'open';
 import { createServer } from 'vite';
 import { homepage } from '../../package.json';

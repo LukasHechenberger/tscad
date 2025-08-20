@@ -29,10 +29,10 @@
     "vite": "^7.1.1"
   },
   "devDependencies": {
-    "@commander-js/extra-typings": "^14.0.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@toolsync/template": "^0.1.0",
+    "@tscad/commander": "workspace:*",
     "@tscad/viewer": "workspace:*",
     "@types/node": "^22.15.32",
     "eslint": "^9.29.0",
