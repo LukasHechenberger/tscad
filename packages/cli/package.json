@@ -31,7 +31,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@toolsync/template": "^0.1.0",
+    "@toolsync/template": "^0.1.1",
     "@tscad/commander": "workspace:*",
     "@tscad/viewer": "workspace:*",
     "@types/node": "^22.15.32",

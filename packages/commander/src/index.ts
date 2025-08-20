@@ -1,23 +1,27 @@
 import { styleText } from 'node:util';
-import { program as defaultProgram } from 'commander';
+import { Command as DefaultCommand } from 'commander';
 import { homepage } from '../package.json';
 
 export * from 'commander';
 
-// Add general usage info
-export const program = defaultProgram
-  .addHelpText(
-    'afterAll',
-    `
-${styleText(['italic'], 'For details consult the tscad documentation:')}
-  ${styleText(['magenta'], homepage)}`,
-  )
+export class Command extends DefaultCommand {
+  constructor(name?: string) {
+    super(name);
 
-  // Add colors
-  .configureHelp({
-    styleCommandText: (text) => styleText(['bold', 'cyan'], text),
-    styleCommandDescription: (text) => styleText(['dim'], text),
-    styleTitle: (text) => styleText(['bold'], text),
-    styleOptionText: (text) => styleText(['cyan'], text),
-    styleArgumentText: (text) => styleText(['cyan'], text),
-  });
+    // Add colors
+    this.configureHelp({
+      styleCommandText: (text) => styleText(['bold', 'magenta'], text),
+      styleCommandDescription: (text) => styleText(['dim'], `> ${text}`),
+      styleTitle: (text) => styleText(['bold'], text),
+      styleOptionText: (text) => styleText(['cyan'], text),
+      styleArgumentText: (text) => styleText(['cyan'], text),
+    });
+  }
+}
+
+// Add general usage info
+export const program = new Command().addHelpText(
+  'afterAll',
+  `
+${styleText(['italic'], 'Documentation:')} ${styleText(['magenta'], homepage)}`,
+);

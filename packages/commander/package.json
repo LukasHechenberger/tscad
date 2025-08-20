@@ -18,10 +18,7 @@
     }
   },
   "scripts": {
-    "build": "echo 'Add build script here'",
-    "dev": "echo 'Add dev script here'",
-    "lint": "eslint . --max-warnings 0",
-    "test": "echo 'Add test script here'"
+    "lint": "eslint . --max-warnings 0"
   },
   "devDependencies": {
     "@commander-js/extra-typings": "^14.0.0",

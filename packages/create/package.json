@@ -26,7 +26,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@toolsync/template": "^0.1.0",
+    "@toolsync/template": "^0.1.1",
     "@tscad/commander": "workspace:*",
     "eslint": "^9.33.0",
     "tsup": "^8.5.0",
