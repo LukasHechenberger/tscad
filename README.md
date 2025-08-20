@@ -5,7 +5,7 @@
 
 [![Homepage](https://img.shields.io/badge/docs-default)](https://tscad.vercel.app)
 
-JSCAD, but for modern developers
+A modern CAD modeller for programmers
 
 <!-- #endregion header -->
 
