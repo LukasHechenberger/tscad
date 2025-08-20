@@ -11,7 +11,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   } satisfies DocsLayoutProps;
 
   return (
-    <DocsLayout {...options} containerProps={{ className: '!m-0 ![--fd-sidebar-width:0px]' }}>
+    <DocsLayout {...options} containerProps={{ className: '![--fd-sidebar-width:0px]' }}>
       {children}
     </DocsLayout>
   );

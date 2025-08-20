@@ -25,14 +25,13 @@ npm init @tscad
 ```
 Usage: pnpm create @tscad [options]
 
-Initializes new tscad projects
+> Initializes new tscad projects
 
 Options:
   -V, --version  output the version number
   -h, --help     display help for command
 
-For details consult the tscad documentation:
-  https://tscad.vercel.app
+Documentation: https://tscad.vercel.app
 ```
 
 <!-- #endregion usage -->
