@@ -34,5 +34,3 @@ This repository contains the following packages:
 | [tscad-vscode](packages/vscode-extension)                    | The official tscad VSCode extension                  |                                                                                                               |
 
 <!-- #endregion packages -->
-
-[^dx]: developer experience
