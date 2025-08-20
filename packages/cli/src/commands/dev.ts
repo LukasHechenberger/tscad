@@ -16,9 +16,9 @@ async function openVscodePreview() {
 
 export const devCommand = new Command('dev')
   .description('Start the development server')
-  .argument('[model]', 'Model file to serve', 'src/model.ts')
-  .option('-p, --port <port>', 'The port to listen to. Defaults to 4000')
-  .option('--open', 'Open the browser after the server is started', false)
+  .argument('[model]', 'model file to serve', 'src/model.ts')
+  .option('-p, --port <port>', 'the port to listen at (default: 4000)')
+  .option('--open', 'open the browser once started', false)
   .action(async function runDevelopmentCommand(model, options) {
     const explicitPortString = options.port || process.env.PORT;
     const explicitPort = explicitPortString ? Number.parseInt(explicitPortString, 10) : undefined;

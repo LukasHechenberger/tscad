@@ -5,8 +5,6 @@ import { Template } from '@toolsync/template';
 import type { Command } from '@tscad/commander';
 import { cli } from '../index';
 
-process.stdout.columns = 100;
-
 class RawTemplate extends Template {
   replace(search: RegExp, replacement: string) {
     this.options.content = this.options.content.replace(search, replacement);
