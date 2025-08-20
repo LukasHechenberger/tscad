@@ -13,6 +13,7 @@ import { folder, Leva, useControls } from 'leva';
 import { useTheme } from 'next-themes';
 import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { bundleCode } from '@/lib/esbuild';
+import { defaultCode } from '@/lib/playground';
 import { homepage } from '../../../../package.json';
 
 const documentationOrigin = new URL(homepage).host;
@@ -71,16 +72,6 @@ type PlaygroundContextType = {
 const PlaygroundContext = createContext<PlaygroundContextType>(
   undefined as unknown as PlaygroundContextType,
 );
-
-const defaultCode = `import { cube, sphere } from '@tscad/modeling/primitives';
-
-/** Use this method to create your model */
-export function main() {
-  return [
-    cube({ size: 1.5, center: [0, 0.75, 0] }),
-    sphere({ radius: 1.2, center: [0, 1.2, 0] }),
-  ];
-}`;
 
 const code$ = observable(defaultCode);
 syncObservable(code$, {

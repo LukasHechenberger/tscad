@@ -22,7 +22,15 @@ function Entities({ model }: { model: Model }) {
   );
 }
 
-export default function Viewer({ model, children }: { model: Model; children?: ReactNode }) {
+export default function Viewer({
+  model,
+  children,
+  viewcube = true,
+}: {
+  model: Model;
+  viewcube?: boolean;
+  children?: ReactNode;
+}) {
   return (
     <Canvas shadows camera={{ position: [25, 25, 50] }}>
       <OrbitControls makeDefault />
@@ -30,9 +38,11 @@ export default function Viewer({ model, children }: { model: Model; children?: R
       <Stage adjustCamera environment="city" center={{ precise: true }}>
         <Entities model={model} />
 
-        <GizmoHelper>
-          <GizmoViewcube />
-        </GizmoHelper>
+        {viewcube && (
+          <GizmoHelper>
+            <GizmoViewcube />
+          </GizmoHelper>
+        )}
 
         {children}
       </Stage>
