@@ -1,6 +1,6 @@
 import { defineConfig } from 'tsup';
 
-export default defineConfig(({ watch }) => ({
+export default defineConfig(() => ({
   entry: ['./src/bin.ts'],
   outDir: './out',
   format: ['esm'],
