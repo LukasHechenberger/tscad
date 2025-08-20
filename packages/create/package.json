@@ -21,13 +21,16 @@
     "extends": "@repo/eslint-config/base"
   },
   "dependencies": {
-    "commander": "^14.0.0"
+    "commander": "^14.0.0",
+    "execa": "^9.6.0",
+    "node-plop": "^0.32.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@toolsync/template": "^0.1.1",
     "@tscad/commander": "workspace:*",
+    "@types/node": "^22.15.32",
     "eslint": "^9.33.0",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2",

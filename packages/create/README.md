@@ -28,6 +28,7 @@ Usage: pnpm create @tscad [options]
 > Initializes new tscad projects
 
 Options:
+  --force        overwrite existing files
   -V, --version  output the version number
   -h, --help     display help for command
 
