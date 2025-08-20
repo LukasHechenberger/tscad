@@ -58,7 +58,9 @@ export default defineConfig([
 
             if (exports.length > 0) {
               const manifest = JSON.parse(await readFile('package.json', 'utf8'));
-              manifest.exports = Object.fromEntries(exports);
+              manifest.exports = Object.fromEntries(
+                exports.sort((a, b) => a[0].localeCompare(b[0])),
+              );
 
               console.log(`EXP Added ${exports.length} exports to package.json`);
               await writeFile('package.json', `${JSON.stringify(manifest, undefined, 2)}\n`);
