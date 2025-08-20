@@ -1,0 +1,9 @@
+{
+  "extends": "@repo/typescript-config/base",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "esModuleInterop": true
+  }
+}

@@ -14,11 +14,8 @@ export default async function PlaygroundPage() {
     <PlaygroundProvider>
       <State />
 
-      <div className="h-[calc(100vh-var(--fd-nav-height))]">
-        <ResizablePanelGroup
-          direction="horizontal"
-          className="relative !h-[calc(100vh-var(--fd-nav-height))]"
-        >
+      <div className="relative pt-[var(--fd-nav-height)] h-screen">
+        <ResizablePanelGroup direction="horizontal" className="relative">
           <ResizablePanel>
             <PlaygroundEditor moduleTypes={moduleTypes} />
           </ResizablePanel>

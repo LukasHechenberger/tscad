@@ -1,0 +1,60 @@
+import { existsSync } from 'node:fs';
+import { writeFile } from 'node:fs/promises';
+import { styleText } from 'node:util';
+import { Template } from '@toolsync/template';
+import type { Command } from '@tscad/commander';
+import { cli } from '../index';
+
+class RawTemplate extends Template {
+  replace(search: RegExp, replacement: string) {
+    this.options.content = this.options.content.replace(search, replacement);
+  }
+}
+
+const getOptionsDocumentation = (command: Command) =>
+  `${command.options
+    .map(
+      (option) => `### \`${option.flags}\`
+
+${option.description}`,
+    )
+    .join('\n\n')}`;
+
+const logPrefix = styleText(['magenta'], 'DOC');
+console.time(`${logPrefix} ⚡️ Build succeeded`);
+for (const command of cli.commands) {
+  const path = `../../apps/docs/content/docs/(cli)/${command.name()}.mdx`;
+  console.info(`${logPrefix} Documenting \`${command.name()}\` command...`);
+
+  if (!existsSync(path)) await writeFile(path, '---\n---');
+
+  const template = await RawTemplate.load(path, { commentPattern: { start: `{/*`, end: `*/}` } });
+  template.replace(
+    /---[^]*---/m,
+    `---
+title: ${command.name()}
+description: ${command.description()}
+---`,
+  );
+
+  template.update({
+    section: 'usage',
+    content: `
+    \`\`\`ansi title="Terminal"
+${command.helpInformation({ error: false })}
+\`\`\`
+`,
+    insert: 'bottom',
+  });
+
+  template.update({
+    section: 'options',
+    content: `## Options
+
+${getOptionsDocumentation(command as Command)}`,
+    insert: 'bottom',
+  });
+
+  await template.save();
+}
+console.timeEnd(`${logPrefix} ⚡️ Build succeeded`);

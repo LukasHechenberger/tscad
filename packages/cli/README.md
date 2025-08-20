@@ -34,7 +34,7 @@ tscad --help
 ```
 Usage: tscad [options] [command]
 
-A CLI tool for working with tscad models
+> A CLI tool for working with tscad models
 
 Options:
   -V, --version          output the version number
@@ -44,8 +44,7 @@ Commands:
   dev [options] [model]  Start the development server
   help [command]         display help for command
 
-For details consult the tscad documentation:
-  https://tscad.vercel.app
+Documentation: https://tscad.vercel.app
 ```
 
 <!-- #endregion usage -->

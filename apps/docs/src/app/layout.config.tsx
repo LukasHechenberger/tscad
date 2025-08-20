@@ -27,5 +27,10 @@ export const baseOptions: BaseLayoutProps = {
       text: 'Playground',
       url: '/playground',
     },
+    {
+      text: 'Docs',
+      url: '/docs',
+      active: 'nested-url',
+    },
   ],
 };
