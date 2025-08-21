@@ -16,6 +16,12 @@ export class Command extends DefaultCommand {
       styleOptionText: (text) => styleText(['cyan'], text),
       styleArgumentText: (text) => styleText(['cyan'], text),
     });
+
+    this.configureOutput({
+      outputError: (string_, write) => {
+        write(styleText(['red'], string_));
+      },
+    });
   }
 }
 
