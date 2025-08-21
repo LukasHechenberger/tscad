@@ -36,6 +36,8 @@ const pmCommands = {
 const selectedPm = pm && pm?.name in pmCommands ? (pm.name as keyof typeof pmCommands) : 'npm';
 const selectedPmCommands = pmCommands[selectedPm];
 
+const stringifyJsonSource = (source: unknown) => `${JSON.stringify(source, undefined, 2)}\n`;
+
 // Add general usage info
 program
   .name(selectedPmCommands.create ?? packageName)
@@ -79,19 +81,24 @@ program
         {
           type: 'add',
           path: `{{dir}}/package.json`,
-          template: `${JSON.stringify(
-            {
-              name: `{{projectName}}`,
-              private: true,
-              scripts: {
-                dev: 'tscad dev',
-              },
-              ...(pm ? { packageManager: `${pm.name}@${pm.version}` } : {}),
+          template: stringifyJsonSource({
+            name: `{{projectName}}`,
+            private: true,
+            scripts: {
+              dev: 'tscad dev',
             },
-            undefined,
-            '  ',
-          )}\n`,
+            ...(pm ? { packageManager: `${pm.name}@${pm.version}` } : {}),
+          }),
           force: options.force,
+        },
+        {
+          type: 'add',
+          path: `{{dir}}/.vscode/extensions.json`,
+          template: stringifyJsonSource({
+            recommendations: ['tscad.tscad-vscode'],
+          }),
+          force: options.force,
+          skipIfExists: true,
         },
         {
           type: 'add',
