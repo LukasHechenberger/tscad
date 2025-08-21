@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { inspect, styleText } from 'node:util';
 import { Template } from '@toolsync/template';
-import type { Command } from '@tscad/commander';
+import type { Argument, CommandUnknownOpts, Option } from '@tscad/commander';
 import { cli } from '../index';
 
 class RawTemplate extends Template {
@@ -11,22 +11,22 @@ class RawTemplate extends Template {
   }
 }
 
-const getArgumentsDocumentation = (command: Command) =>
-  `${command.registeredArguments
-    .flatMap((option) => [
-      `### \`${option.name()}\``,
-      ...(option.defaultValue ? [`Default: \`${inspect(option.defaultValue)}\``] : []),
-      option.description,
-    ])
-    .join('\n\n')}`;
-const getOptionsDocumentation = (command: Command) =>
-  `${command.options
-    .flatMap((option) => [
-      `### \`${option.flags}\``,
-      ...(option.defaultValue ? [`Default: \`${inspect(option.defaultValue)}\``] : []),
-      option.description,
-    ])
-    .join('\n\n')}`;
+const getArgumenDescription = (option: Argument | Option) => [
+  ...(option.defaultValue ? [`Default: \`${inspect(option.defaultValue)}\``] : []),
+  option.description,
+];
+
+const getArgumentsDocumentation = (command: CommandUnknownOpts) =>
+  command.registeredArguments.flatMap((option) => [
+    `### \`${option.name()}\``,
+    ...getArgumenDescription(option),
+  ]);
+
+const getOptionsDocumentation = (command: CommandUnknownOpts) =>
+  command.options.flatMap((option) => [
+    `### \`${option.flags}\``,
+    ...getArgumenDescription(option),
+  ]);
 
 const logPrefix = styleText(['magenta'], 'DOC');
 console.time(`${logPrefix} ⚡️ Build succeeded`);
@@ -62,17 +62,17 @@ ${command
 
   template.update({
     section: 'arguments',
-    content: `## Arguments
-
-${getArgumentsDocumentation(command as Command)}`,
+    content: [
+      ...(command.registeredArguments.length > 0
+        ? [`## Arguments`, ...getArgumentsDocumentation(command)]
+        : ['{/* No arguments available. */}']),
+    ].join('\n\n'),
     insert: 'bottom',
   });
 
   template.update({
     section: 'options',
-    content: `## Options
-
-${getOptionsDocumentation(command as Command)}`,
+    content: ['## Options', ...getOptionsDocumentation(command)].join('\n\n'),
     insert: 'bottom',
   });
 
