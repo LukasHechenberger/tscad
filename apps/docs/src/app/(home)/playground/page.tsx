@@ -1,6 +1,11 @@
 import { readFile } from 'node:fs/promises';
+import type { Metadata } from 'next';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { PlaygroundEditor, PlaygroundPreview, PlaygroundProvider, State } from './page.client';
+
+export function generateMetadata() {
+  return { title: 'Playground' } satisfies Metadata;
+}
 
 export default async function PlaygroundPage() {
   const moduleTypes = [

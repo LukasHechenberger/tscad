@@ -1,4 +1,5 @@
 import { RootProvider } from 'fumadocs-ui/provider';
+import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import type { ReactNode } from 'react';
 import './global.css';
@@ -6,6 +7,15 @@ import './global.css';
 const inter = Inter({
   subsets: ['latin'],
 });
+
+export function generateMetadata() {
+  return {
+    title: {
+      default: 'tscad',
+      template: '%s · tscad',
+    },
+  } satisfies Metadata;
+}
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
