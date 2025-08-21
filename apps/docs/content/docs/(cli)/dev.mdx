@@ -3,6 +3,8 @@ title: dev
 description: Start the development server
 ---
 
+Running `tscad dev` starts a development server that serves the model file specified in the `model` argument. By default, it serves `src/model.ts` on port 4000. You can specify a different model file or port using the command line arguments.
+
 {/* #region usage */}
 {/* This section is generated. Do not edit manually! */}
 
@@ -22,6 +24,20 @@ description: Start the development server
 ```
 
 {/* #endregion usage */}
+
+This is how it looks like:
+
+```ansi
+$ tscad dev
+[1mStarting [35mtscad dev[39m[22m [2mv0.1.1[22m
+
+  [1m[32m→[39m[22m  [1mModel[22m:   [36msrc/model.ts[39m
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m4000[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+
+```
+
+Once the server is running you can open it in a browser. If you run it in a VSCode Terminal, an inline preview should be opened automatically by [our VSCode extension](/docs/get-started/ide-integration#vscode).
 
 {/* #region arguments */}
 {/* This section is generated. Do not edit manually! */}
