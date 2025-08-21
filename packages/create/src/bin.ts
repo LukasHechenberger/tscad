@@ -73,7 +73,7 @@ program
           name: 'projectName',
           message: 'What is the name of your project?',
           default: (answers: { dir: string }) =>
-            answers.dir === '.' ? 'my-tscad-project' : path.basename(answers.dir),
+            path.basename(answers.dir === '.' ? process.cwd() : answers.dir),
         },
       ],
       actions: [
