@@ -36,7 +36,8 @@
     "check": {
       "dependsOn": [
         "check:types",
-        "//#check:format"
+        "//#check:format",
+        "check:exports"
       ]
     },
     "test": {
@@ -50,7 +51,12 @@
         "^test:transit"
       ]
     },
-    "//#check:format": {}
+    "//#check:format": {},
+    "check:exports": {
+      "dependsOn": [
+        "build"
+      ]
+    }
   },
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui"

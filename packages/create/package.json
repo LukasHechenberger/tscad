@@ -14,6 +14,7 @@
   "scripts": {
     "build": "tsup",
     "build:readme": "pnpm update-section README.md usage \"\\`\\`\\`\n$(node out/bin.js --help)\n\\`\\`\\`\"",
+    "check:exports": "publint",
     "dev": "tsup --watch",
     "lint": "eslint --max-warnings 0 ."
   },
@@ -32,6 +33,7 @@
     "@tscad/commander": "workspace:*",
     "@types/node": "^22.15.32",
     "eslint": "^9.33.0",
+    "publint": "^0.3.12",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2",
     "which-pm-runs": "^1.1.0"
