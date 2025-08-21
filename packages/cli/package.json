@@ -19,7 +19,7 @@
     "check:exports": "publint",
     "check:types": "tsc --noEmit",
     "dev": "tsup --watch",
-    "dev:on-success": "node out/bin.js dev ../../examples/gridfinity-generator/src/model.ts",
+    "dev:on-success": "PORT=3999 node out/bin.js dev ../../examples/gridfinity-generator/src/model.ts",
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {

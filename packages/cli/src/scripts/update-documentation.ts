@@ -12,7 +12,7 @@ class RawTemplate extends Template {
 }
 
 const getArgumenDescription = (option: Argument | Option) => [
-  ...(option.defaultValue ? [`Default: \`${inspect(option.defaultValue)}\``] : []),
+  ...(option.defaultValue ? [`Default: \`${inspect(option.defaultValue)}{:js}\``] : []),
   option.description,
 ];
 
