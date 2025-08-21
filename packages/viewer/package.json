@@ -10,6 +10,7 @@
   },
   "license": "MIT",
   "scripts": {
+    "check:exports": "publint",
     "check:types": "tsc --noEmit",
     "dev": "echo 'Add dev script here'",
     "lint": "eslint . --max-warnings 0"
@@ -25,6 +26,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "eslint": "^9.29.0",
+    "publint": "^0.3.12",
     "react": "catalog:",
     "react-dom": "catalog:",
     "three": "^0.177.0",

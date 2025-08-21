@@ -30,8 +30,8 @@ importers:
         specifier: workspace:*
         version: link:packages/toolsync-plugin
       '@toolsync/builtin':
-        specifier: ^0.3.2
-        version: 0.3.2(ignore-sync@8.0.0)(prettier@3.5.3)
+        specifier: ^0.4.0
+        version: 0.4.0(ignore-sync@8.0.0)(prettier@3.5.3)(publint@0.3.12)
       '@toolsync/cli':
         specifier: 0.3.0
         version: 0.3.0
@@ -286,6 +286,9 @@ importers:
       eslint:
         specifier: ^9.33.0
         version: 9.33.0(jiti@2.4.2)
+      publint:
+        specifier: ^0.3.12
+        version: 0.3.12
       tsup:
         specifier: ^8.5.0
         version: 8.5.0(@microsoft/api-extractor@7.52.8(@types/node@22.15.32))(jiti@2.4.2)(postcss@8.5.6)(typescript@5.9.2)(yaml@2.8.1)
@@ -469,6 +472,9 @@ importers:
       eslint:
         specifier: ^9.29.0
         version: 9.29.0(jiti@2.4.2)
+      publint:
+        specifier: ^0.3.12
+        version: 0.3.12
       react:
         specifier: 'catalog:'
         version: 19.1.0
@@ -2453,16 +2459,19 @@ packages:
   '@textlint/types@15.2.1':
     resolution: {integrity: sha512-zyqNhSatK1cwxDUgosEEN43hFh3WCty9Zm2Vm3ogU566IYegifwqN54ey/CiRy/DiO4vMcFHykuQnh2Zwp6LLw==}
 
-  '@toolsync/builtin@0.3.2':
-    resolution: {integrity: sha512-TgK/2lmIrBtJi4LKGr8614t97pfhJ8n1ycp7R2bwWojcITSIpt5a1qr7uVOIB6e8Elcg8jlBz91xZMLat0e0GQ==}
+  '@toolsync/builtin@0.4.0':
+    resolution: {integrity: sha512-zZG4D1mkeq47uOkxNU1/FPq6bhT07Lo2y2CCpVrrtp8jrbu5HoqPLBPckqS7rCjLfEIpTE5sjqclOr7xx8O/yg==}
     engines: {node: '>=20.6.0'}
     peerDependencies:
       ignore-sync: ^8.0.0
       prettier: ^3.5.3
+      publint: ^0.3.12
     peerDependenciesMeta:
       ignore-sync:
         optional: true
       prettier:
+        optional: true
+      publint:
         optional: true
 
   '@toolsync/cli@0.3.0':
@@ -8972,7 +8981,7 @@ snapshots:
     dependencies:
       '@textlint/ast-node-types': 15.2.1
 
-  '@toolsync/builtin@0.3.2(ignore-sync@8.0.0)(prettier@3.5.3)':
+  '@toolsync/builtin@0.4.0(ignore-sync@8.0.0)(prettier@3.5.3)(publint@0.3.12)':
     dependencies:
       '@toolsync/core': 0.1.2
       '@toolsync/template': 0.1.1
@@ -8981,6 +8990,7 @@ snapshots:
     optionalDependencies:
       ignore-sync: 8.0.0
       prettier: 3.5.3
+      publint: 0.3.12
     transitivePeerDependencies:
       - supports-color
 

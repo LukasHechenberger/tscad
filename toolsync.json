@@ -23,7 +23,6 @@
     }
   },
   "@toolsync/builtin/vscode": {
-    "recommendations": ["mtsmfm.vscode-jscad-preview"],
     "settings": {
       "eslint.workingDirectories": ["examples/*", "apps/*", "packages/*"],
       "editor.codeActionsOnSave": {
@@ -31,5 +30,6 @@
       }
     }
   },
+  "@toolsync/builtin/publint": {},
   "@repo/toolsync-plugin": {}
 }
