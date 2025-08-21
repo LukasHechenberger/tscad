@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
-import { styleText } from 'node:util';
+import { inspect, styleText } from 'node:util';
 import { Template } from '@toolsync/template';
 import type { Command } from '@tscad/commander';
 import { cli } from '../index';
@@ -11,13 +11,21 @@ class RawTemplate extends Template {
   }
 }
 
+const getArgumentsDocumentation = (command: Command) =>
+  `${command.registeredArguments
+    .flatMap((option) => [
+      `### \`${option.name()}\``,
+      ...(option.defaultValue ? [`Default: \`${inspect(option.defaultValue)}\``] : []),
+      option.description,
+    ])
+    .join('\n\n')}`;
 const getOptionsDocumentation = (command: Command) =>
   `${command.options
-    .map(
-      (option) => `### \`${option.flags}\`
-
-${option.description}`,
-    )
+    .flatMap((option) => [
+      `### \`${option.flags}\``,
+      ...(option.defaultValue ? [`Default: \`${inspect(option.defaultValue)}\``] : []),
+      option.description,
+    ])
     .join('\n\n')}`;
 
 const logPrefix = styleText(['magenta'], 'DOC');
@@ -41,9 +49,22 @@ description: ${command.description()}
     section: 'usage',
     content: `
     \`\`\`ansi title="Terminal"
-${command.helpInformation({ error: false })}
+${command
+  .configureOutput({
+    // We don't need line breaks here...
+    getOutHelpWidth: () => 1000,
+  })
+  .helpInformation({ error: false })}
 \`\`\`
 `,
+    insert: 'bottom',
+  });
+
+  template.update({
+    section: 'arguments',
+    content: `## Arguments
+
+${getArgumentsDocumentation(command as Command)}`,
     insert: 'bottom',
   });
 

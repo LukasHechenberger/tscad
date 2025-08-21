@@ -1,11 +1,12 @@
 import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import { Command } from '@tscad/commander';
+import { styleText } from 'node:util';
+import { Command, InvalidArgumentError, Option } from '@tscad/commander';
 import viteReact from '@vitejs/plugin-react';
 import open from 'open';
 import { createServer } from 'vite';
-import { homepage } from '../../package.json';
+import { homepage, version } from '../../package.json';
 
 const { dirname, join, relative } = path;
 const { resolve } = createRequire(import.meta.url);
@@ -14,23 +15,36 @@ async function openVscodePreview() {
   await open(`vscode://tscad.tscad-vscode`, { wait: false });
 }
 
+function parseIntArgument(value: string) {
+  const parsedValue = Number.parseInt(value, 10);
+
+  if (Number.isNaN(parsedValue)) throw new InvalidArgumentError('not a number.');
+
+  return parsedValue;
+}
+
 export const devCommand = new Command('dev')
   .description('Start the development server')
   .argument('[model]', 'model file to serve', 'src/model.ts')
-  .option('-p, --port <port>', 'the port to listen at (default: 4000)')
-  .option('--open', 'open the browser once started', false)
-  .action(async function runDevelopmentCommand(model, options) {
-    const explicitPortString = options.port || process.env.PORT;
-    const explicitPort = explicitPortString ? Number.parseInt(explicitPortString, 10) : undefined;
-
+  .addOption(
+    new Option('-p, --port <port>', 'the port to listen at')
+      .argParser(parseIntArgument)
+      .default(4000)
+      .env('PORT'),
+  )
+  .addOption(new Option('--open', 'open the browser once started').default(false).env('OPEN'))
+  .action(async function runDevelopmentCommand(model, { ...serverOptions }) {
     const modelPath = join(process.cwd(), model);
     if (!existsSync(modelPath)) {
-      this.error(`Model file not found: ${model}`);
+      this.error(`Model file not found: ${model}`, { code: 'ENOENT' });
     }
-    console.debug('Model', relative(process.cwd(), modelPath));
+
+    console.info(
+      `${styleText(['bold'], `Starting ${styleText(['magenta'], 'tscad dev')}`)} ${styleText(['dim'], `v${version}`)}\n`,
+    );
 
     const root = join(dirname(resolve('@tscad/viewer/package.json')), 'src/vite-template');
-    console.debug('Using root', relative(process.cwd(), root));
+    // console.debug('Using root', relative(process.cwd(), root));
 
     const server = await createServer({
       configFile: false,
@@ -41,21 +55,18 @@ export const devCommand = new Command('dev')
         },
       },
       root,
-      server: {
-        port: explicitPort ?? 4000,
-        open: options.open,
-      },
+      server: { ...serverOptions, host: false }, // NOTE: We could also add a --host option
     });
 
     await server.listen();
 
     // Try to open vscode preview if terminal is vscode
-    if (process.env.TERM_PROGRAM === 'vscode') {
-      await openVscodePreview();
-    }
+    if (process.env.TERM_PROGRAM === 'vscode') await openVscodePreview();
 
+    console.info(
+      `  ${styleText(['bold', 'green'], '→')}  ${styleText(['bold'], 'Model')}:   ${styleText(['cyan'], relative(process.cwd(), modelPath))}`,
+    );
     server.printUrls();
-
     server.bindCLIShortcuts({
       print: true,
       customShortcuts: [
@@ -75,4 +86,5 @@ export const devCommand = new Command('dev')
         },
       ],
     });
+    console.info('');
   });

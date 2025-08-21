@@ -15,13 +15,26 @@ description: Start the development server
   [36mmodel[39m              model file to serve (default: "src/model.ts")
 
 [1mOptions:[22m
-  [36m-p, --port <port>[39m  the port to listen at (default: 4000)
-  [36m--open[39m             open the browser once started (default: false)
+  [36m-p, --port <port>[39m  the port to listen at (default: 4000, env: PORT)
+  [36m--open[39m             open the browser once started (default: false, env: OPEN)
   [36m-h, --help[39m         display help for command
 
 ```
 
 {/* #endregion usage */}
+
+{/* #region arguments */}
+{/* This section is generated. Do not edit manually! */}
+
+## Arguments
+
+### `model`
+
+Default: `'src/model.ts'`
+
+model file to serve
+
+{/* #endregion arguments */}
 
 {/* #region options */}
 {/* This section is generated. Do not edit manually! */}
@@ -30,7 +43,9 @@ description: Start the development server
 
 ### `-p, --port <port>`
 
-the port to listen at (default: 4000)
+Default: `4000`
+
+the port to listen at
 
 ### `--open`
 
