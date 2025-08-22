@@ -42,7 +42,7 @@ for (const command of cli.commands) {
   template.replace(
     /---[^]*---/m,
     `---
-title: ${command.name()}
+title: ${cli.name()} ${command.name()}
 description: ${command.description()}
 ---`,
   );
