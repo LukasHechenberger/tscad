@@ -1,9 +1,11 @@
 import { existsSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
-import { styleText } from 'node:util';
+import { inspect, styleText } from 'node:util';
 import { Template } from '@toolsync/template';
-import type { Command } from '@tscad/commander';
+import type { Argument, CommandUnknownOpts, Option } from '@tscad/commander';
 import { cli } from '../index';
+
+// NOTE: This script does not handle subcommands of subcommands
 
 class RawTemplate extends Template {
   replace(search: RegExp, replacement: string) {
@@ -11,14 +13,22 @@ class RawTemplate extends Template {
   }
 }
 
-const getOptionsDocumentation = (command: Command) =>
-  `${command.options
-    .map(
-      (option) => `### \`${option.flags}\`
+const getArgumentDescription = (option: Argument | Option) => [
+  ...(option.defaultValue ? [`Default: \`${inspect(option.defaultValue)}{:js}\``] : []),
+  option.description,
+];
 
-${option.description}`,
-    )
-    .join('\n\n')}`;
+const getArgumentsDocumentation = (command: CommandUnknownOpts) =>
+  command.registeredArguments.flatMap((option) => [
+    `### \`${option.name()}\``,
+    ...getArgumentDescription(option),
+  ]);
+
+const getOptionsDocumentation = (command: CommandUnknownOpts) =>
+  command.options.flatMap((option) => [
+    `### \`${option.flags}\``,
+    ...getArgumentDescription(option),
+  ]);
 
 const logPrefix = styleText(['magenta'], 'DOC');
 console.time(`${logPrefix} ⚡️ Build succeeded`);
@@ -32,7 +42,7 @@ for (const command of cli.commands) {
   template.replace(
     /---[^]*---/m,
     `---
-title: ${command.name()}
+title: ${cli.name()} ${command.name()}
 description: ${command.description()}
 ---`,
   );
@@ -41,17 +51,30 @@ description: ${command.description()}
     section: 'usage',
     content: `
     \`\`\`ansi title="Terminal"
-${command.helpInformation({ error: false })}
+${command
+  .configureOutput({
+    // We don't need line breaks here...
+    getOutHelpWidth: () => 1000,
+  })
+  .helpInformation({ error: false })}
 \`\`\`
 `,
     insert: 'bottom',
   });
 
   template.update({
-    section: 'options',
-    content: `## Options
+    section: 'arguments',
+    content: [
+      ...(command.registeredArguments.length > 0
+        ? [`## Arguments`, ...getArgumentsDocumentation(command)]
+        : ['{/* No arguments available. */}']),
+    ].join('\n\n'),
+    insert: 'bottom',
+  });
 
-${getOptionsDocumentation(command as Command)}`,
+  template.update({
+    section: 'options',
+    content: ['## Options', ...getOptionsDocumentation(command)].join('\n\n'),
     insert: 'bottom',
   });
 

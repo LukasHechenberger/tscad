@@ -1,7 +1,9 @@
 ---
-title: dev
+title: tscad dev
 description: Start the development server
 ---
+
+Running `tscad dev` starts a development server that serves the model file specified in the `model` argument. By default, it serves `src/model.ts` on port 4000. You can specify a different model file or port using the command line arguments.
 
 {/* #region usage */}
 {/* This section is generated. Do not edit manually! */}
@@ -12,16 +14,45 @@ description: Start the development server
 [2m> Start the development server[22m
 
 [1mArguments:[22m
-  [36mmodel[39m              model file to serve (default: "src/model.ts")
+  [36mmodel[39m              Where to find the tscad model (default: "src/model.ts")
 
 [1mOptions:[22m
-  [36m-p, --port <port>[39m  the port to listen at (default: 4000)
-  [36m--open[39m             open the browser once started (default: false)
-  [36m-h, --help[39m         display help for command
+  [36m-p, --port <port>[39m  The port to listen at (default: 4000, env: PORT)
+  [36m--open[39m             Open the browser once started (default: false, env: OPEN)
+  [36m-h, --help[39m         Display help for command
 
 ```
 
 {/* #endregion usage */}
+
+This is how it looks like:
+
+{/* NOTE: Generated with `FORCE_COLOR=1 timeout 1 node out/bin.js dev ../../examples/gridfinity-generator/src/model.ts | tee output.ansi` */}
+
+```ansi
+$ tscad dev
+[1mStarting [35mtscad dev[39m[22m [2mv0.1.1[22m
+
+  [1m[32m→[39m[22m  [1mModel[22m:   [36msrc/model.ts[39m
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m4000[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+
+```
+
+Once the server is running you can open it in a browser. If you run it in a VSCode Terminal, an inline preview should be opened automatically by [our VSCode extension](/docs/get-started/ide-integration#vscode).
+
+{/* #region arguments */}
+{/* This section is generated. Do not edit manually! */}
+
+## Arguments
+
+### `model`
+
+Default: `'src/model.ts'{:js}`
+
+Where to find the tscad model
+
+{/* #endregion arguments */}
 
 {/* #region options */}
 {/* This section is generated. Do not edit manually! */}
@@ -30,10 +61,12 @@ description: Start the development server
 
 ### `-p, --port <port>`
 
-the port to listen at (default: 4000)
+Default: `4000{:js}`
+
+The port to listen at
 
 ### `--open`
 
-open the browser once started
+Open the browser once started
 
 {/* #endregion options */}

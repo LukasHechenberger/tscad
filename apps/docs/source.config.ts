@@ -14,5 +14,12 @@ export const docs = defineDocs({
 export default defineConfig({
   mdxOptions: {
     // MDX options
+    rehypeCodeOptions: {
+      inline: 'tailing-curly-colon',
+      themes: {
+        light: 'github-light',
+        dark: 'github-dark',
+      },
+    },
   },
 });

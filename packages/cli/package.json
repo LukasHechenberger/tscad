@@ -19,13 +19,14 @@
     "check:exports": "publint",
     "check:types": "tsc --noEmit",
     "dev": "tsup --watch",
-    "dev:on-success": "node out/bin.js dev ../../examples/gridfinity-generator/src/model.ts",
+    "dev:on-success": "PORT=3999 node out/bin.js dev ../../examples/gridfinity-generator/src/model.ts",
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
     "@tscad/viewer": "workspace:*",
     "@vitejs/plugin-react": "^5.0.0",
     "commander": "^14.0.0",
+    "debug": "^4.4.1",
     "open": "^10.2.0",
     "vite": "^7.1.1"
   },
@@ -34,6 +35,7 @@
     "@repo/typescript-config": "workspace:*",
     "@toolsync/template": "^0.1.1",
     "@tscad/commander": "workspace:*",
+    "@types/debug": "^4.1.12",
     "@types/node": "^22.15.32",
     "eslint": "^9.29.0",
     "publint": "^0.3.12",

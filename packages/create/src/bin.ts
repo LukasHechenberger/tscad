@@ -41,7 +41,7 @@ const stringifyJsonSource = (source: unknown) => `${JSON.stringify(source, undef
 // Add general usage info
 program
   .name(selectedPmCommands.create ?? packageName)
-  .option('--force', 'overwrite existing files')
+  .option('--force', 'Overwrite existing files')
   .version(version)
   .description(description)
 

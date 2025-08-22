@@ -8,6 +8,5 @@ export async function GET() {
     createReadStream(
       path.join(`./node_modules/@tscad/modeling/out/standalone/index.js`),
     ) as unknown as BodyInit,
-    {},
   );
 }

@@ -37,12 +37,12 @@ Usage: tscad [options] [command]
 > A CLI tool for working with tscad models
 
 Options:
-  -V, --version          output the version number
-  -h, --help             display help for command
+  -V, --version          Output the version number
+  -h, --help             Display help for command
 
 Commands:
   dev [options] [model]  Start the development server
-  help [command]         display help for command
+  help [command]         Display help for command
 
 Documentation: https://tscad.vercel.app
 ```
