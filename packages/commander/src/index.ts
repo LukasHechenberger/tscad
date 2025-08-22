@@ -23,6 +23,34 @@ export class Command extends DefaultCommand {
       },
     });
   }
+
+  // #region title case help texts
+
+  helpCommand(command: string | boolean, description?: string) {
+    if (typeof command === 'boolean') {
+      return super.helpCommand(command);
+    }
+
+    return super.helpCommand(command, description ?? 'Display help for command');
+  }
+
+  helpOption(option: string | boolean, description?: string) {
+    if (typeof option === 'boolean') {
+      return super.helpOption(option);
+    }
+
+    return super.helpOption(option, description ?? 'Display help for command');
+  }
+
+  version(): string | undefined;
+  version(string: string, version?: string, description?: string): this;
+  version(string?: string, version?: string, description?: string) {
+    if (!string) return super.version();
+
+    return super.version(string, version, description ?? 'Output the version number');
+  }
+
+  // #endregion
 }
 
 // Add general usage info

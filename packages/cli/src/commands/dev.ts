@@ -25,14 +25,14 @@ function parseIntArgument(value: string) {
 
 export const devCommand = new Command('dev')
   .description('Start the development server')
-  .argument('[model]', 'model file to serve', 'src/model.ts')
+  .argument('[model]', 'Where to find the tscad model', 'src/model.ts')
   .addOption(
-    new Option('-p, --port <port>', 'the port to listen at')
+    new Option('-p, --port <port>', 'The port to listen at')
       .argParser(parseIntArgument)
       .default(4000)
       .env('PORT'),
   )
-  .addOption(new Option('--open', 'open the browser once started').default(false).env('OPEN'))
+  .addOption(new Option('--open', 'Open the browser once started').default(false).env('OPEN'))
   .action(async function runDevelopmentCommand(model, { ...serverOptions }) {
     const modelPath = join(process.cwd(), model);
     if (!existsSync(modelPath)) {
