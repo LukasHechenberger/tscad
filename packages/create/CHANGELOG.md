@@ -1,5 +1,11 @@
 # @tscad/create
 
+## 0.0.2
+
+### Patch Changes
+
+- c2d5898: Title case option descriptions
+
 ## 0.0.1
 
 ### Patch Changes
