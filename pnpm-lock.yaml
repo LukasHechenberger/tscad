@@ -196,6 +196,9 @@ importers:
       commander:
         specifier: ^14.0.0
         version: 14.0.0
+      debug:
+        specifier: ^4.4.1
+        version: 4.4.1(supports-color@8.1.1)
       open:
         specifier: ^10.2.0
         version: 10.2.0
@@ -215,6 +218,9 @@ importers:
       '@tscad/commander':
         specifier: workspace:*
         version: link:../commander
+      '@types/debug':
+        specifier: ^4.1.12
+        version: 4.1.12
       '@types/node':
         specifier: ^22.15.32
         version: 22.15.32

@@ -5,6 +5,8 @@ import { Template } from '@toolsync/template';
 import type { Argument, CommandUnknownOpts, Option } from '@tscad/commander';
 import { cli } from '../index';
 
+// NOTE: This script does not handle subcommands of subcommands
+
 class RawTemplate extends Template {
   replace(search: RegExp, replacement: string) {
     this.options.content = this.options.content.replace(search, replacement);

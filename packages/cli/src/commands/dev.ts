@@ -6,10 +6,13 @@ import { Command, InvalidArgumentError, Option } from '@tscad/commander';
 import viteReact from '@vitejs/plugin-react';
 import open from 'open';
 import { createServer } from 'vite';
+import { rootDebug } from '@/lib/log';
 import { homepage, version } from '../../package.json';
 
 const { dirname, join, relative } = path;
 const { resolve } = createRequire(import.meta.url);
+
+const debug = rootDebug.extend('dev');
 
 async function openVscodePreview() {
   await open(`vscode://tscad.tscad-vscode`, { wait: false });
@@ -44,7 +47,7 @@ export const devCommand = new Command('dev')
     );
 
     const root = join(dirname(resolve('@tscad/viewer/package.json')), 'src/vite-template');
-    // console.debug('Using root', relative(process.cwd(), root));
+    debug('Using root', relative(process.cwd(), root));
 
     const server = await createServer({
       configFile: false,

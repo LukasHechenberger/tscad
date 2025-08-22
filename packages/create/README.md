@@ -29,8 +29,8 @@ Usage: pnpm create @tscad [options]
 
 Options:
   --force        overwrite existing files
-  -V, --version  output the version number
-  -h, --help     display help for command
+  -V, --version  Output the version number
+  -h, --help     Display help for command
 
 Documentation: https://tscad.vercel.app
 ```
