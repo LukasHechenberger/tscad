@@ -13,7 +13,7 @@ class RawTemplate extends Template {
   }
 }
 
-const getArgumenDescription = (option: Argument | Option) => [
+const getArgumentDescription = (option: Argument | Option) => [
   ...(option.defaultValue ? [`Default: \`${inspect(option.defaultValue)}{:js}\``] : []),
   option.description,
 ];
@@ -21,13 +21,13 @@ const getArgumenDescription = (option: Argument | Option) => [
 const getArgumentsDocumentation = (command: CommandUnknownOpts) =>
   command.registeredArguments.flatMap((option) => [
     `### \`${option.name()}\``,
-    ...getArgumenDescription(option),
+    ...getArgumentDescription(option),
   ]);
 
 const getOptionsDocumentation = (command: CommandUnknownOpts) =>
   command.options.flatMap((option) => [
     `### \`${option.flags}\``,
-    ...getArgumenDescription(option),
+    ...getArgumentDescription(option),
   ]);
 
 const logPrefix = styleText(['magenta'], 'DOC');
