@@ -18,6 +18,7 @@
     }
   },
   "scripts": {
+    "check:types": "tsc --noEmit",
     "lint": "eslint . --max-warnings 0"
   },
   "devDependencies": {
