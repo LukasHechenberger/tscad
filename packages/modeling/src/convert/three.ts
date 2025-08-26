@@ -4,7 +4,9 @@ import { BufferGeometry, Float32BufferAttribute, Vector3 } from 'three';
 
 const { geom3 } = modeling.geometries;
 
-/** Convert @tscad/modeling geometries to three.js geometries */
+/** Convert @tscad/modeling geometries to three.js geometries
+ * @see {@link https://tscad.vercel.app/docs/modeling/convert#solidToThree}
+ */
 export function solidToThree(solid: Geom3): BufferGeometry {
   const positions: number[] = [];
   const normals: number[] = [];

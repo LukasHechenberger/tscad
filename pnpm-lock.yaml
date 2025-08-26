@@ -392,13 +392,13 @@ importers:
 
   packages/modeling:
     dependencies:
-      '@jscad/modeling':
-        specifier: ^2.12.5
-        version: 2.12.5
       three:
         specifier: ^0.177.0
         version: 0.177.0
     devDependencies:
+      '@jscad/modeling':
+        specifier: ^2.12.5
+        version: 2.12.5
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
