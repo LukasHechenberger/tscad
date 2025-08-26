@@ -4,10 +4,15 @@ import * as vscode from 'vscode';
 
 const openPreviewCommandId = 'tscad-vscode.open-preview';
 
-function openPreview() {
+type PreviewOptions = {
+  port?: string | number;
+};
+
+function openPreview(options: PreviewOptions) {
+  console.log(`Opening preview on port: ${options.port}`);
   const panel = vscode.window.createWebviewPanel(
     'tscadPreview',
-    'tscad preview',
+    `tscad preview (${options.port})`,
     vscode.ViewColumn.Two,
     {
       enableScripts: true, // needed for iframe interactions
@@ -33,7 +38,7 @@ function openPreview() {
       </style>
     </head>
     <body>
-      <iframe src="http://localhost:4000"></iframe>
+      <iframe src="http://localhost:${options.port}"></iframe>
     </body>
     </html>
   `;
@@ -42,9 +47,13 @@ function openPreview() {
 const uriHandler = {
   handleUri(uri) {
     console.log(`URI received: ${uri.toString()}`);
-    vscode.commands.executeCommand(
-      openPreviewCommandId /* Pass options, like port etc. 'http://localhost:4000' */,
-    );
+    const searchParameters = new URLSearchParams(uri.query);
+
+    const options: PreviewOptions = {
+      port: searchParameters.get('port') ?? undefined,
+    };
+
+    vscode.commands.executeCommand(openPreviewCommandId, options);
   },
 } satisfies vscode.UriHandler;
 

@@ -5,6 +5,9 @@
   "description": "A modern CAD modeller for programmers",
   "keywords": [],
   "homepage": "https://tscad.vercel.app",
+  "bugs": {
+    "url": "https://github.com/LukasHechenberger/tscad/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LukasHechenberger/tscad.git"
