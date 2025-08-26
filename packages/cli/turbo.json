@@ -3,7 +3,8 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": ["out/**", "README.md", "../../apps/docs/content/docs/\\(cli\\)/*.mdx"]
+      "outputs": ["out/**", "README.md", "../../apps/docs/content/docs/\\(cli\\)/*.mdx"],
+      "env": ["BUILD_ENV"]
     },
     "dev": {
       "passThroughEnv": ["PORT", "TERM_PROGRAM"]
