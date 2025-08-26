@@ -37,7 +37,9 @@
       }
     ]
   },
-  "activationEvents": [],
+  "activationEvents": [
+    "onUri"
+  ],
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
