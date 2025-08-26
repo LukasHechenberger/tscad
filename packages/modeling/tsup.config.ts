@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { addSeeTagPlugin } from 'esbuild-autodoc';
@@ -33,6 +34,12 @@ export default defineConfig([
               // Only handle esm files to just do it once
               if (file.path.endsWith('.js') && !file.path.includes('/scripts/')) {
                 const relativePath = `./${path.relative(process.cwd(), file.path)}`;
+
+                const sourcePath = path
+                  .join(process.cwd(), 'src/', path.relative('out', relativePath))
+                  .replaceAll('.js', '.ts');
+
+                if (!existsSync(sourcePath)) continue;
 
                 let exportPath =
                   path
