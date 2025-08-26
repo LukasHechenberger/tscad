@@ -12,10 +12,7 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./src/types.ts",
-      "default": "./src/index.ts"
-    }
+    ".": "./src/index.ts"
   },
   "scripts": {
     "check:types": "tsc --noEmit",
