@@ -6,17 +6,20 @@ import { Command, InvalidArgumentError, Option } from '@tscad/commander';
 import viteReact from '@vitejs/plugin-react';
 import open from 'open';
 import { createServer } from 'vite';
+import type { PreviewOptions } from '@/api';
 import { rootDebug } from '@/lib/log';
-import { homepage, version } from '../../package.json';
+import { homepage as defaultHomepage, version } from '../../package.json';
 
 const { dirname, join, relative } = path;
 const { resolve } = createRequire(import.meta.url);
 
 const debug = rootDebug.extend('dev');
-console.log('Rerendered');
+const homepageToOpen =
+  process.env.BUILD_ENV === 'development' ? 'http://localhost:3000' : defaultHomepage;
 
-async function openVscodePreview(options) {
-  console.dir({ open: options });
+async function openVscodePreview(options: PreviewOptions) {
+  debug('Open Preview with options:');
+  debug({ open: options });
   const parameters = new URLSearchParams(options).toString();
   await open(`vscode://tscad.tscad-vscode?${parameters}`, { wait: false });
 }
@@ -92,7 +95,7 @@ export const devCommand = new Command('dev')
           key: 'd',
           description: 'open documentation',
           async action() {
-            await open(homepage);
+            await open(homepageToOpen);
           },
         },
       ],

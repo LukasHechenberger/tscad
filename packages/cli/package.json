@@ -10,15 +10,21 @@
   },
   "license": "MIT",
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./out/api.d.ts",
+      "default": "./out/api.js"
+    }
+  },
   "bin": {
     "tscad": "./out/bin.js"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup --env.BUILD_ENV=production",
     "build:readme": "pnpm update-section README.md usage \"\\`\\`\\`\n$(node out/bin.js --help)\n\\`\\`\\`\"",
     "check:exports": "publint",
     "check:types": "tsc --noEmit",
-    "dev": "tsup --watch",
+    "dev": "tsup  --env.BUILD_ENV=development --watch",
     "dev:on-success": "PORT=3999 node out/bin.js dev ../../examples/gridfinity-generator/src/model.ts",
     "lint": "eslint . --max-warnings 0"
   },

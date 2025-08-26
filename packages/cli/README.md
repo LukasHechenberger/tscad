@@ -32,7 +32,6 @@ tscad --help
 <!-- This section is generated. Do not edit manually! -->
 
 ```
-Rerendered
 Usage: tscad [options] [command]
 
 > A CLI tool for working with tscad models
