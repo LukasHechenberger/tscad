@@ -1,21 +1,19 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+import type { PreviewOptions } from '@tscad/cli';
 import * as vscode from 'vscode';
 
 const openPreviewCommandId = 'tscad-vscode.open-preview';
-
-type PreviewOptions = {
-  port?: string | number;
-};
 
 function openPreview(options: PreviewOptions) {
   console.log(`Opening preview on port: ${options.port}`);
   const panel = vscode.window.createWebviewPanel(
     'tscadPreview',
     `tscad preview (${options.port})`,
-    vscode.ViewColumn.Two,
+    { viewColumn: vscode.ViewColumn.Two, preserveFocus: true },
     {
-      enableScripts: true, // needed for iframe interactions
+      // needed for iframe interactions
+      enableScripts: true,
     },
   );
 

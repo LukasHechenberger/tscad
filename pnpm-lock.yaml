@@ -505,6 +505,9 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@tscad/cli':
+        specifier: workspace:*
+        version: link:../cli
       '@types/mocha':
         specifier: ^10.0.10
         version: 10.0.10
