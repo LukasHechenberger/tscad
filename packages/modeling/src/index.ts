@@ -17,7 +17,9 @@ type AnyParameters = Record<string, AnyParameterDefinition>;
 type ResolvedParameters<Input extends AnyParameters> = {
   [K in keyof Input]: Input[K]['default'];
 };
-type BodyBuilder<T extends ModelType> = (parameters: ResolvedParameters<T['Parameters']>) => Geom3;
+type BodyBuilder<T extends ModelType> = (
+  parameters: AnyParameters extends T['Parameters'] ? object : ResolvedParameters<T['Parameters']>,
+) => Geom3;
 
 function resolveParameters<Input extends AnyParameters>(
   parameters: Input,
@@ -27,16 +29,13 @@ function resolveParameters<Input extends AnyParameters>(
   ) as ResolvedParameters<Input>;
 }
 
-export function defineModel(options: { body: BodyBuilder<{ Parameters: {} }> }): Geom3;
-export function defineModel<Parameters extends AnyParameters>(options: {
-  body: BodyBuilder<{ Parameters: Parameters }>;
-}): Geom3;
 /** Define a tscad model
  * @see {@link https://tscad.vercel.app/docs/modeling/#defineModel}
  */
-export function defineModel<Parameters extends AnyParameters>(options: {
-  parameters?: Parameters;
-  body: BodyBuilder<{ Parameters: Parameters }>;
-}) {
+export function defineModel<Parameters extends AnyParameters = AnyParameters>(
+  options: {
+    body: BodyBuilder<{ Parameters: Parameters }>;
+  } & (AnyParameters extends Parameters ? { parameters?: Parameters } : { parameters: Parameters }),
+) {
   return options.body(resolveParameters(options.parameters ?? ({} as Parameters)));
 }

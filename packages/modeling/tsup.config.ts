@@ -28,7 +28,9 @@ export default defineConfig([
               return;
             }
 
-            const exports: [string, Record<string, string | Record<string, string>>][] = [];
+            const exports: [string, string | Record<string, string | Record<string, string>>][] = [
+              ['./package.json', './package.json'],
+            ];
 
             for (const file of outputFiles) {
               // Only handle esm files to just do it once
@@ -39,7 +41,10 @@ export default defineConfig([
                   .join(process.cwd(), 'src/', path.relative('out', relativePath))
                   .replaceAll('.js', '.ts');
 
-                if (!existsSync(sourcePath)) continue;
+                if (!existsSync(sourcePath)) {
+                  console.debug('Skipping non-source file', file.path);
+                  continue;
+                }
 
                 let exportPath =
                   path

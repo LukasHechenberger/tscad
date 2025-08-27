@@ -27,6 +27,7 @@
       "types": "./out/convert/index.d.ts",
       "default": "./out/convert/index.js"
     },
+    "./package.json": "./package.json",
     "./primitives": {
       "require": {
         "types": "./out/primitives/index.d.cts",
