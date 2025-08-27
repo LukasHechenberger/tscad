@@ -1,4 +1,5 @@
 import type { Geom3 } from '@jscad/modeling/src/geometries/types';
+import { union } from '@jscad/modeling/src/operations/booleans';
 export type * from './types';
 
 /** Note: Change during development to adjust the preview */
@@ -19,7 +20,7 @@ type ResolvedParameters<Input extends AnyParameters> = {
 };
 type BodyBuilder<T extends ModelType> = (
   parameters: AnyParameters extends T['Parameters'] ? object : ResolvedParameters<T['Parameters']>,
-) => Geom3;
+) => Geom3 | Geom3[];
 
 function resolveParameters<Input extends AnyParameters>(
   parameters: Input,
@@ -29,13 +30,21 @@ function resolveParameters<Input extends AnyParameters>(
   ) as ResolvedParameters<Input>;
 }
 
+type ModelOptions<Parameters extends AnyParameters = AnyParameters> = {
+  body: BodyBuilder<{ Parameters: Parameters }>;
+} & (AnyParameters extends Parameters ? { parameters?: Parameters } : { parameters: Parameters });
+
+function resolveBody<Parameters extends AnyParameters>(options: ModelOptions<Parameters>): Geom3 {
+  const result = options.body(resolveParameters(options.parameters ?? ({} as Parameters)));
+
+  return Array.isArray(result) ? union(...result) : result;
+}
+
 /** Define a tscad model
  * @see {@link https://tscad.vercel.app/docs/modeling/#defineModel}
  */
 export function defineModel<Parameters extends AnyParameters = AnyParameters>(
-  options: {
-    body: BodyBuilder<{ Parameters: Parameters }>;
-  } & (AnyParameters extends Parameters ? { parameters?: Parameters } : { parameters: Parameters }),
+  options: ModelOptions<Parameters>,
 ) {
-  return options.body(resolveParameters(options.parameters ?? ({} as Parameters)));
+  return resolveBody(options);
 }
