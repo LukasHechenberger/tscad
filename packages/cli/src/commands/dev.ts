@@ -6,16 +6,22 @@ import { Command, InvalidArgumentError, Option } from '@tscad/commander';
 import viteReact from '@vitejs/plugin-react';
 import open from 'open';
 import { createServer } from 'vite';
+import type { PreviewOptions } from '@/api';
 import { rootDebug } from '@/lib/log';
-import { homepage, version } from '../../package.json';
+import { homepage as defaultHomepage, version } from '../../package.json';
 
 const { dirname, join, relative } = path;
 const { resolve } = createRequire(import.meta.url);
 
 const debug = rootDebug.extend('dev');
+const homepageToOpen =
+  process.env.BUILD_ENV === 'development' ? 'http://localhost:3000' : defaultHomepage;
 
-async function openVscodePreview() {
-  await open(`vscode://tscad.tscad-vscode`, { wait: false });
+async function openVscodePreview(options: PreviewOptions) {
+  debug('Open Preview with options:');
+  debug({ open: options });
+  const parameters = new URLSearchParams(options).toString();
+  await open(`vscode://tscad.tscad-vscode?${parameters}`, { wait: false });
 }
 
 function parseIntArgument(value: string) {
@@ -63,8 +69,13 @@ export const devCommand = new Command('dev')
 
     await server.listen();
 
+    const localPorts = (server.resolvedUrls?.local ?? []).map((url) => new URL(url).port);
+    const previewOptions = {
+      port: localPorts[0],
+    };
+
     // Try to open vscode preview if terminal is vscode
-    if (process.env.TERM_PROGRAM === 'vscode') await openVscodePreview();
+    if (process.env.TERM_PROGRAM === 'vscode') await openVscodePreview(previewOptions);
 
     console.info(
       `  ${styleText(['bold', 'green'], '→')}  ${styleText(['bold'], 'Model')}:   ${styleText(['cyan'], relative(process.cwd(), modelPath))}`,
@@ -77,14 +88,14 @@ export const devCommand = new Command('dev')
           key: 'v',
           description: 'open vscode preview',
           async action() {
-            await openVscodePreview();
+            await openVscodePreview(previewOptions);
           },
         },
         {
           key: 'd',
           description: 'open documentation',
           async action() {
-            await open(homepage);
+            await open(homepageToOpen);
           },
         },
       ],

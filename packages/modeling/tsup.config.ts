@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { addSeeTagPlugin } from 'esbuild-autodoc';
@@ -14,7 +15,7 @@ export default defineConfig([
       addSeeTagPlugin({
         baseUrl: 'https://tscad.vercel.app/docs/modeling/',
         getPathname: (source, name) => {
-          if (!source.includes('/primitives/')) return;
+          console.log(`Generating documentation for ${name} in ${source}`);
           return `${path.relative('src', path.dirname(source))}#${name}`;
         },
       }),
@@ -27,12 +28,23 @@ export default defineConfig([
               return;
             }
 
-            const exports: [string, Record<string, string | Record<string, string>>][] = [];
+            const exports: [string, string | Record<string, string | Record<string, string>>][] = [
+              ['./package.json', './package.json'],
+            ];
 
             for (const file of outputFiles) {
               // Only handle esm files to just do it once
               if (file.path.endsWith('.js') && !file.path.includes('/scripts/')) {
                 const relativePath = `./${path.relative(process.cwd(), file.path)}`;
+
+                const sourcePath = path
+                  .join(process.cwd(), 'src/', path.relative('out', relativePath))
+                  .replaceAll('.js', '.ts');
+
+                if (!existsSync(sourcePath)) {
+                  console.debug('Skipping non-source file', file.path);
+                  continue;
+                }
 
                 let exportPath =
                   path
@@ -56,7 +68,7 @@ export default defineConfig([
               }
             }
 
-            if (exports.length > 0) {
+            if (exports.length > 1) {
               const manifest = JSON.parse(await readFile('package.json', 'utf8'));
               manifest.exports = Object.fromEntries(
                 exports.sort((a, b) => a[0].localeCompare(b[0])),
@@ -70,12 +82,5 @@ export default defineConfig([
       },
     ],
     onSuccess: 'node ./out/scripts/update-readme.js',
-  },
-  {
-    entry: ['src/primitives/index.ts'],
-    format: 'esm',
-    outDir: 'out/standalone',
-    external: [],
-    noExternal: ['@jscad/modeling'],
   },
 ]);

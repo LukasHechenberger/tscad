@@ -27,6 +27,7 @@
       "types": "./out/convert/index.d.ts",
       "default": "./out/convert/index.js"
     },
+    "./package.json": "./package.json",
     "./primitives": {
       "require": {
         "types": "./out/primitives/index.d.cts",
@@ -52,10 +53,10 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "@jscad/modeling": "^2.12.5",
     "three": "^0.177.0"
   },
   "devDependencies": {
+    "@jscad/modeling": "^2.12.5",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@toolsync/template": "^0.1.1",

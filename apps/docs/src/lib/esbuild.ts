@@ -52,7 +52,6 @@ const resolveImports: esbuild.Plugin = {
   name: 'resolve-imports',
   setup(build) {
     build.onResolve({ filter: /^@tscad\/.*$/ }, ({ path }) => {
-      // console.log('resolving:', path);
 
       return {
         path: new URL(

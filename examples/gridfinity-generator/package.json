@@ -16,7 +16,7 @@
   "main": "out/index.js",
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch",
+    "dev": "tscad dev",
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
@@ -27,6 +27,7 @@
     "@jscad/cli": "^2.3.5",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@tscad/cli": "workspace:*",
     "@types/node": "^22.15.32",
     "eslint": "^9.29.0",
     "picocolors": "^1.1.1",

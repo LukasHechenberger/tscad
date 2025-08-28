@@ -37,10 +37,13 @@
       }
     ]
   },
-  "activationEvents": [],
+  "activationEvents": [
+    "onUri"
+  ],
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@tscad/cli": "workspace:*",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.15.32",
     "@types/vscode": "^1.102.0",

@@ -169,6 +169,9 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      '@tscad/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
       '@types/node':
         specifier: ^22.15.32
         version: 22.15.32
@@ -389,13 +392,13 @@ importers:
 
   packages/modeling:
     dependencies:
-      '@jscad/modeling':
-        specifier: ^2.12.5
-        version: 2.12.5
       three:
         specifier: ^0.177.0
         version: 0.177.0
     devDependencies:
+      '@jscad/modeling':
+        specifier: ^2.12.5
+        version: 2.12.5
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -502,6 +505,9 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@tscad/cli':
+        specifier: workspace:*
+        version: link:../cli
       '@types/mocha':
         specifier: ^10.0.10
         version: 10.0.10

@@ -27,6 +27,10 @@
       "eslint.workingDirectories": ["examples/*", "apps/*", "packages/*"],
       "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "explicit"
+      },
+      "search.exclude": {
+        "**/out/**": true,
+        "**/.next/**": true
       }
     }
   },
