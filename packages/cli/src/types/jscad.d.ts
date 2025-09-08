@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 declare module '@jscad/3mf-serializer' {
   export function serialize(options: any, ...objects: any[]): BlobPart[];
   export const mimeType: string;

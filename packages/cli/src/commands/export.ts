@@ -1,5 +1,5 @@
 import { writeFile } from 'node:fs/promises';
-import { extname, join, relative } from 'node:path';
+import path from 'node:path';
 import * as threeMf from '@jscad/3mf-serializer';
 import * as obj from '@jscad/obj-serializer';
 import * as stl from '@jscad/stl-serializer';
@@ -24,17 +24,17 @@ export const exportCommand = new Command('export')
   .action(async function runExportCommand(model, options) {
     debug(`Exporting model from ${model} to ${options.output}`);
 
-    const sourcePath = join(process.cwd(), model);
-    const outPath = join(process.cwd(), options.output);
+    const sourcePath = path.join(process.cwd(), model);
+    const outPath = path.join(process.cwd(), options.output);
 
-    const coder = coders[extname(outPath).toLowerCase() as keyof typeof coders];
-    if (!coder) this.error(`Unsupported output file type: ${extname(outPath)}`);
+    const coder = coders[path.extname(outPath).toLowerCase() as keyof typeof coders];
+    if (!coder) this.error(`Unsupported output file type: ${path.extname(outPath)}`);
     debug(`Using coder: ${coder.mimeType}`);
 
     let importPath = sourcePath;
 
     if (model.endsWith('.ts')) {
-      importPath = outPath.replace(extname(outPath), '.mjs');
+      importPath = outPath.replace(path.extname(outPath), '.mjs');
 
       debug('Building model...');
       await build({
@@ -43,7 +43,7 @@ export const exportCommand = new Command('export')
         format: 'esm',
         outfile: importPath,
       });
-      debug('Model built to', relative(process.cwd(), importPath));
+      debug('Model built to', path.relative(process.cwd(), importPath));
     }
 
     debug('Loading model');
@@ -58,9 +58,9 @@ export const exportCommand = new Command('export')
     const blob = new Blob(data, { type: coder.mimeType });
 
     await writeFile(outPath, Buffer.from(await blob.arrayBuffer()));
-    debug('File written to', relative(process.cwd(), outPath));
+    debug('File written to', path.relative(process.cwd(), outPath));
 
-    console.log(`👍 Exported model to ${relative(process.cwd(), outPath)}`);
+    console.log(`👍 Exported model to ${path.relative(process.cwd(), outPath)}`);
 
     if (options.slice) {
       await open(outPath, { app: { name: options.slice } });
