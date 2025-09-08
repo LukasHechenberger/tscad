@@ -1,10 +1,17 @@
 import { writeFile } from 'node:fs/promises';
 import { extname, join, relative } from 'node:path';
 import * as threeMf from '@jscad/3mf-serializer';
+import * as obj from '@jscad/obj-serializer';
 import * as stl from '@jscad/stl-serializer';
 import { Command } from '@tscad/commander';
 import { build } from 'esbuild';
 import open from 'open';
+
+const coders = {
+  '.3mf': { ...threeMf, options: {} },
+  '.stl': { ...stl, options: { binary: true } },
+  '.obj': { ...obj, options: {} },
+};
 
 export const exportCommand = new Command('export')
   .description('Export the model to a file')
@@ -12,8 +19,14 @@ export const exportCommand = new Command('export')
   .option('--output <filename>', 'The output file', 'out/model.3mf')
   .option('--slice <slicer>', 'Open the result in a slicer', false)
   .action(async function runExportCommand(model, options) {
+    console.log('Exporting model from', model, 'to', options.output);
+
     const sourcePath = join(process.cwd(), model);
     const outPath = join(process.cwd(), options.output);
+
+    const coder = coders[extname(outPath).toLowerCase() as keyof typeof coders];
+    if (!coder) this.error(`Unsupported output file type: ${extname(outPath)}`);
+    console.log('Using coder:', coder.mimeType);
 
     let importPath = sourcePath;
 
@@ -34,11 +47,8 @@ export const exportCommand = new Command('export')
     const geometry = await import(importPath).then((module_) => module_.default);
     console.timeEnd('Load model');
 
-    const coder = outPath.endsWith('.3mf') ? threeMf : stl;
-    console.log('Using coder:', coder.mimeType);
-
     console.time('Serialize model');
-    const data = coder.serialize({ binary: true }, geometry);
+    const data = coder.serialize(coder.options, ...geometry);
     console.timeEnd('Serialize model');
 
     console.time('Write file');

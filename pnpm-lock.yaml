@@ -190,6 +190,9 @@ importers:
       '@jscad/3mf-serializer':
         specifier: ^2.1.14
         version: 2.1.14
+      '@jscad/obj-serializer':
+        specifier: ^2.1.20
+        version: 2.1.20
       '@jscad/stl-serializer':
         specifier: ^2.1.20
         version: 2.1.20
