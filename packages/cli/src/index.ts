@@ -1,6 +1,7 @@
 import { program } from '@tscad/commander';
 import { devCommand as developmentCommand } from '@/commands/dev';
 import { description, version } from '../package.json';
+import { exportCommand } from './commands/export';
 
 // Add general usage info
 export const cli = program
@@ -9,4 +10,5 @@ export const cli = program
   .description(description)
 
   // Add commands
-  .addCommand(developmentCommand);
+  .addCommand(developmentCommand)
+  .addCommand(exportCommand);
