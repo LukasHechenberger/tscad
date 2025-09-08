@@ -23,6 +23,7 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
+    "@jscad/3mf-serializer": "^2.1.14",
     "@jscad/stl-serializer": "^2.1.20",
     "@tscad/viewer": "workspace:*",
     "@vitejs/plugin-react": "^5.0.0",

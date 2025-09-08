@@ -12,11 +12,12 @@ description: Export the model to a file
 [2m> Export the model to a file[22m
 
 [1mArguments:[22m
-  [36mmodel[39m       Where to find the tscad model (default: "./src/model.ts")
+  [36mmodel[39m                Where to find the tscad model (default: "./src/model.ts")
 
 [1mOptions:[22m
-  [36m--output[39m    The output file
-  [36m-h, --help[39m  Display help for command
+  [36m--output <filename>[39m  The output file (default: "out/model.3mf")
+  [36m--slice <slicer>[39m     Open the result in a slicer (default: false)
+  [36m-h, --help[39m           Display help for command
 
 ```
 
@@ -40,10 +41,14 @@ Where to find the tscad model
 
 ## Options
 
-### `--output`
+### `--output <filename>`
 
-Default: `'out/model.stl'{:js}`
+Default: `'out/model.3mf'{:js}`
 
 The output file
+
+### `--slice <slicer>`
+
+Open the result in a slicer
 
 {/* #endregion options */}
