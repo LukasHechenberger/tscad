@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { inspect, styleText } from 'node:util';
 import { Template } from '@toolsync/template';
-import type { Argument, CommandUnknownOpts, Option } from '@tscad/commander';
+import type { Argument, Command, Option } from '@tscad/commander';
 import { cli } from '../index';
 
 // NOTE: This script does not handle subcommands of subcommands
@@ -18,13 +18,13 @@ const getArgumentDescription = (option: Argument | Option) => [
   option.description,
 ];
 
-const getArgumentsDocumentation = (command: CommandUnknownOpts) =>
+const getArgumentsDocumentation = (command: Command) =>
   command.registeredArguments.flatMap((option) => [
     `### \`${option.name()}\``,
     ...getArgumentDescription(option),
   ]);
 
-const getOptionsDocumentation = (command: CommandUnknownOpts) =>
+const getOptionsDocumentation = (command: Command) =>
   command.options.flatMap((option) => [
     `### \`${option.flags}\``,
     ...getArgumentDescription(option),
