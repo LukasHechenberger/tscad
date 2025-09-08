@@ -6,6 +6,9 @@ import * as stl from '@jscad/stl-serializer';
 import { Command } from '@tscad/commander';
 import { build } from 'esbuild';
 import open from 'open';
+import { rootDebug } from '@/lib/log';
+
+const debug = rootDebug.extend('export');
 
 const coders = {
   '.3mf': { ...threeMf, options: {} },
@@ -19,45 +22,45 @@ export const exportCommand = new Command('export')
   .option('--output <filename>', 'The output file', 'out/model.3mf')
   .option('--slice <slicer>', 'Open the result in a slicer', false)
   .action(async function runExportCommand(model, options) {
-    console.log('Exporting model from', model, 'to', options.output);
+    debug(`Exporting model from ${model} to ${options.output}`);
 
     const sourcePath = join(process.cwd(), model);
     const outPath = join(process.cwd(), options.output);
 
     const coder = coders[extname(outPath).toLowerCase() as keyof typeof coders];
     if (!coder) this.error(`Unsupported output file type: ${extname(outPath)}`);
-    console.log('Using coder:', coder.mimeType);
+    debug(`Using coder: ${coder.mimeType}`);
 
     let importPath = sourcePath;
 
     if (model.endsWith('.ts')) {
       importPath = outPath.replace(extname(outPath), '.mjs');
 
-      console.time('Build model');
+      debug('Building model...');
       await build({
         entryPoints: [sourcePath],
         bundle: true,
         format: 'esm',
         outfile: importPath,
       });
-      console.timeEnd('Build model');
+      debug('Model built to', relative(process.cwd(), importPath));
     }
 
-    console.time('Load model');
+    debug('Loading model');
     const geometry = await import(importPath).then((module_) => module_.default);
-    console.timeEnd('Load model');
+    debug('Model loaded');
 
-    console.time('Serialize model');
-    const data = coder.serialize(coder.options, ...geometry);
-    console.timeEnd('Serialize model');
+    debug('Serializing model');
+    const data = coder.serialize(coder.options, geometry);
+    debug('Model serialized');
 
-    console.time('Write file');
+    debug('Writing to file');
     const blob = new Blob(data, { type: coder.mimeType });
 
     await writeFile(outPath, Buffer.from(await blob.arrayBuffer()));
-    console.timeEnd('Write file');
+    debug('File written to', relative(process.cwd(), outPath));
 
-    console.log(`Exported model to ${relative(process.cwd(), outPath)}`);
+    console.log(`👍 Exported model to ${relative(process.cwd(), outPath)}`);
 
     if (options.slice) {
       await open(outPath, { app: { name: options.slice } });
