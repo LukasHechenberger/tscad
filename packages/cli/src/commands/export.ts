@@ -19,22 +19,25 @@ const coders = {
 export const exportCommand = new Command('export')
   .description('Export the model to a file')
   .argument('[model]', 'Where to find the tscad model', './src/model.ts')
+  .option('--parts', 'Export each part to a separate file', false)
   .option('--output <filename>', 'The output file', 'out/model.stl')
   .option('--slice <slicer>', 'Open the result in a slicer', false)
   .action(async function runExportCommand(model, options) {
+    console.log(`🫡  Exporting model at ${path.relative(process.cwd(), model)}...`);
     debug(`Exporting model from ${model} to ${options.output}`);
 
     const sourcePath = path.join(process.cwd(), model);
     const outPath = path.join(process.cwd(), options.output);
+    const outPathExtname = path.extname(outPath);
 
-    const coder = coders[path.extname(outPath).toLowerCase() as keyof typeof coders];
-    if (!coder) this.error(`Unsupported output file type: ${path.extname(outPath)}`);
+    const coder = coders[outPathExtname.toLowerCase() as keyof typeof coders];
+    if (!coder) this.error(`Unsupported output file type: ${outPathExtname}`);
     debug(`Using coder: ${coder.mimeType}`);
 
     let importPath = sourcePath;
 
     if (model.endsWith('.ts')) {
-      importPath = outPath.replace(path.extname(outPath), '.mjs');
+      importPath = outPath.replace(outPathExtname, '.mjs');
 
       debug('Building model...');
       await build({
@@ -50,19 +53,42 @@ export const exportCommand = new Command('export')
     const geometry = await import(importPath).then((module_) => module_.default);
     debug('Model loaded');
 
-    debug('Serializing model');
-    const data = coder.serialize(coder.options, geometry);
-    debug('Model serialized');
+    const parts = Array.isArray(geometry) ? geometry : [geometry];
+    const exports = options.parts
+      ? parts.map((part, index) => {
+          const partName = part.name ?? `part-${index}`;
 
-    debug('Writing to file');
-    const blob = new Blob(data, { type: coder.mimeType });
+          return {
+            name: partName,
+            outPath: outPath.replace(
+              new RegExp(`${outPathExtname}$`),
+              `-${partName}${outPathExtname}`,
+            ),
+            geometry: part,
+          };
+        })
+      : [{ outPath, name: 'model', geometry: parts }];
 
-    await writeFile(outPath, Buffer.from(await blob.arrayBuffer()));
-    debug('File written to', path.relative(process.cwd(), outPath));
+    for (const { geometry, name, outPath } of exports) {
+      debug('Serializing model');
+      const data = coder.serialize(coder.options, geometry);
+      debug('Model serialized');
 
-    console.log(`👍 Exported model to ${path.relative(process.cwd(), outPath)}`);
+      debug('Writing to file');
+      const blob = new Blob(data, { type: coder.mimeType });
+
+      await writeFile(outPath, Buffer.from(await blob.arrayBuffer()));
+      debug('File written to', path.relative(process.cwd(), outPath));
+
+      console.log(`  👍 Exported ${name} to ${path.relative(process.cwd(), outPath)}`);
+    }
 
     if (options.slice) {
-      await open(outPath, { app: { name: options.slice } });
+      // NOTE: Only the first part is opened in the slicer
+      const fileToOpen = exports[0]!.outPath;
+      console.log(`🖥  Opening in slicer: ${path.relative(process.cwd(), fileToOpen)}`);
+      await open(fileToOpen, { app: { name: options.slice } });
     }
+
+    console.log('🎉 All done!');
   });
