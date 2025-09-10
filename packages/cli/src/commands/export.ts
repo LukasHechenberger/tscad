@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import * as threeMf from '@jscad/3mf-serializer';
 import * as obj from '@jscad/obj-serializer';
@@ -77,6 +77,7 @@ export const exportCommand = new Command('export')
       debug('Writing to file');
       const blob = new Blob(data, { type: coder.mimeType });
 
+      await mkdir(path.dirname(outPath), { recursive: true });
       await writeFile(outPath, Buffer.from(await blob.arrayBuffer()));
       debug('File written to', path.relative(process.cwd(), outPath));
 
