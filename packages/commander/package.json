@@ -1,6 +1,6 @@
 {
   "name": "@tscad/commander",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "Commander.js adaptions for tscad",
   "homepage": "https://tscad.vercel.app",

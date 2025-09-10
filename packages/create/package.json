@@ -1,6 +1,6 @@
 {
   "name": "@tscad/create",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Initializes new tscad projects",
   "homepage": "https://tscad.vercel.app",
   "repository": {
