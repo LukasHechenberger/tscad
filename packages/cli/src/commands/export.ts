@@ -19,7 +19,7 @@ const coders = {
 export const exportCommand = new Command('export')
   .description('Export the model to a file')
   .argument('[model]', 'Where to find the tscad model', './src/model.ts')
-  .option('--output <filename>', 'The output file', 'out/model.3mf')
+  .option('--output <filename>', 'The output file', 'out/model.stl')
   .option('--slice <slicer>', 'Open the result in a slicer', false)
   .action(async function runExportCommand(model, options) {
     debug(`Exporting model from ${model} to ${options.output}`);
