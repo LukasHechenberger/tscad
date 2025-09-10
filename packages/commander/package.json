@@ -13,7 +13,7 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./src/types.ts",
+      "types": "./src/index.ts",
       "default": "./src/index.ts"
     }
   },
