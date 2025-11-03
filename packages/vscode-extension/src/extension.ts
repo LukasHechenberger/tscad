@@ -2,7 +2,9 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
+// Constants
 const openPreviewCommandId = 'tscad-vscode.open-preview';
+const previewPanelViewType = 'tscadPreview';
 
 function openPreview(port: number = 4000) {
   const preserveFocus = true;
@@ -13,7 +15,7 @@ function openPreview(port: number = 4000) {
   console.log(`Opening preview for port ${port} in column ${viewColumn}`);
 
   const panel = vscode.window.createWebviewPanel(
-    'tscadPreview',
+    previewPanelViewType,
     `tscad preview (${port})`,
     { viewColumn, preserveFocus },
     {
