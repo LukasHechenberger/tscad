@@ -4,58 +4,97 @@ import * as vscode from 'vscode';
 
 // Constants
 const openPreviewCommandId = 'tscad-vscode.open-preview';
-const previewPanelViewType = 'tscadPreview';
 
-function openPreview(port: number = 4000) {
-  const preserveFocus = true;
-  const viewColumn = vscode.window.activeTextEditor?.viewColumn
-    ? vscode.window.activeTextEditor.viewColumn + 1
-    : vscode.ViewColumn.One;
+/** Manages the preview panels */
+class PreviewPanel {
+  private static readonly viewType = 'tscadPreview';
+  private static readonly panels = new Map<number, PreviewPanel>();
 
-  console.log(`Opening preview for port ${port} in column ${viewColumn}`);
+  constructor(private readonly panel: vscode.WebviewPanel) {
+    panel.onDidDispose(() => this.dispose());
+  }
 
-  const panel = vscode.window.createWebviewPanel(
-    previewPanelViewType,
-    `tscad preview (${port})`,
-    { viewColumn, preserveFocus },
-    {
-      enableScripts: true, // needed for iframe interactions
-    },
-  );
+  private dispose() {
+    for (const [port, panel] of PreviewPanel.panels.entries()) {
+      if (panel === this) {
+        console.debug(`Disposing preview panel for port ${port}`);
 
-  panel.webview.html = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>tscad preview (${port})</title>
-      <style>
-        html, body, iframe {
-          margin: 0;
-          padding: 0;
-          height: 100%;
-          width: 100%;
-          border: none;
-          overflow: hidden;
-        }
-      </style>
-    </head>
-    <body>
-      <iframe src="http://localhost:${port}"></iframe>
-    </body>
-    </html>
-  `;
+        PreviewPanel.panels.delete(port);
+        return;
+      }
+    }
 
-  panel.reveal(viewColumn, preserveFocus);
+    console.warn('Panel not found in registry during dispose');
+  }
+
+  public static createOrShow(port: number = 4000) {
+    const viewColumn = vscode.window.activeTextEditor?.viewColumn
+      ? vscode.window.activeTextEditor.viewColumn + 1
+      : vscode.ViewColumn.One;
+
+    // Reveal existing panel if it exists
+    const existingPanel = this.panels.get(port);
+    if (existingPanel) {
+      console.log('Got existing panel for port', port);
+      existingPanel.panel.reveal(undefined, true);
+      return;
+    }
+
+    // Otherwise create new panel
+    const panel = vscode.window.createWebviewPanel(
+      PreviewPanel.viewType,
+      `tscad preview (${port})`,
+      { viewColumn, preserveFocus: Boolean(vscode.window.activeTextEditor) },
+      {
+        enableScripts: true, // needed for iframe interactions
+      },
+    );
+
+    panel.webview.html = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'none';"> -->
+        <title>tscad preview (${port})</title>
+        <style>
+          html, body, iframe {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            border: none;
+            overflow: hidden;
+          }
+        </style>
+      </head>
+      <body>
+        <iframe src="http://localhost:${port}"></iframe>
+      </body>
+      </html>
+    `;
+
+    this.panels.set(port, new PreviewPanel(panel));
+  }
+}
+
+/** Parses port from string input, returns undefined if invalid */
+function getPort(input: string | undefined | null): number | undefined {
+  if (!input) return undefined;
+
+  const port = Number(input);
+  if (Number.isNaN(port)) return undefined;
+
+  return port;
 }
 
 const uriHandler = {
   handleUri(uri) {
     console.log(`URI received: ${uri.toString()}`);
 
-    const port = new URLSearchParams(uri.query).get('port');
-    openPreview(port ? Number(port) : undefined);
+    const port = getPort(new URLSearchParams(uri.query).get('port'));
+    PreviewPanel.createOrShow(port);
   },
 } satisfies vscode.UriHandler;
 
@@ -67,7 +106,8 @@ async function handleOpenCommand() {
     value: '4000',
     placeHolder: 'The port tscad dev server is running on',
     async validateInput(value) {
-      const portNumber = Number(value);
+      const portNumber = getPort(value);
+      if (!portNumber) return 'Please enter a valid port number';
 
       try {
         const response = await fetch(`http://localhost:${portNumber}`);
@@ -76,6 +116,7 @@ async function handleOpenCommand() {
           return `No server responding at port ${portNumber}`;
         }
 
+        // FIXME [>=1.0.0]: Validate this is a tscad server
         return {
           message: `Server is responding at port ${portNumber}`,
           severity: vscode.InputBoxValidationSeverity.Info,
@@ -89,7 +130,7 @@ async function handleOpenCommand() {
     },
   });
 
-  if (port) openPreview(Number(port));
+  if (port) PreviewPanel.createOrShow(getPort(port));
 }
 
 // This method is called when your extension is activated
