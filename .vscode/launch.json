@@ -9,7 +9,10 @@
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}/packages/vscode-extension"],
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode-extension",
+        "${workspaceFolder}/examples/gridfinity-generator"
+      ],
       "outFiles": ["${workspaceFolder}/packages/vscode-extension/out/**/*.js"]
     }
   ]
