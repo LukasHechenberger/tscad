@@ -3,7 +3,7 @@
 
 # tscad-vscode
 
-[![Homepage](https://img.shields.io/badge/docs-default)](https://tscad.vercel.app)
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/tscad.tscad-vscode?label=vscode)](https://marketplace.visualstudio.com/items?itemName=tscad.tscad-vscode) [![Homepage](https://img.shields.io/badge/docs-default)](https://tscad.vercel.app)
 
 The official tscad VSCode extension
 
