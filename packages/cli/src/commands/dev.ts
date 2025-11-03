@@ -63,13 +63,19 @@ export const devCommand = new Command('dev')
 
     await server.listen();
 
-    // Try to open vscode preview if terminal is vscode
-    if (process.env.TERM_PROGRAM === 'vscode') await openVscodePreview(serverOptions.port);
-
     console.info(
       `  ${styleText(['bold', 'green'], '→')}  ${styleText(['bold'], 'Model')}:   ${styleText(['cyan'], relative(process.cwd(), modelPath))}`,
     );
     server.printUrls();
+
+    // Try to open vscode preview if terminal is vscode
+    if (process.env.TERM_PROGRAM === 'vscode') {
+      console.info(
+        styleText(['dim'], `  →  opening preview in vscode...`), // `  ${styleText(['bold', 'green'], '→')}  ${styleText(['bold'], 'Model')}:   ${styleText(['cyan'], relative(process.cwd(), modelPath))}`,
+      );
+      await openVscodePreview(serverOptions.port);
+    }
+
     server.bindCLIShortcuts({
       print: true,
       customShortcuts: [
