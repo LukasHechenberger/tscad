@@ -4,11 +4,15 @@ import * as vscode from 'vscode';
 
 const openPreviewCommandId = 'tscad-vscode.open-preview';
 
-function openPreview() {
+function openPreview(port: number = 4000) {
+  const column = vscode.window.activeTextEditor?.viewColumn
+    ? vscode.window.activeTextEditor.viewColumn + 1
+    : undefined;
+
   const panel = vscode.window.createWebviewPanel(
     'tscadPreview',
-    'tscad preview',
-    vscode.ViewColumn.Two,
+    `tscad preview (${port})`,
+    column || vscode.ViewColumn.Beside,
     {
       enableScripts: true, // needed for iframe interactions
     },
@@ -20,7 +24,7 @@ function openPreview() {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>tscad preview</title>
+      <title>tscad preview (${port})</title>
       <style>
         html, body, iframe {
           margin: 0;
@@ -37,6 +41,8 @@ function openPreview() {
     </body>
     </html>
   `;
+
+  panel.reveal();
 }
 
 const uriHandler = {
