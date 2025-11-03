@@ -70,9 +70,7 @@ export const devCommand = new Command('dev')
 
     // Try to open vscode preview if terminal is vscode
     if (process.env.TERM_PROGRAM === 'vscode') {
-      console.info(
-        styleText(['dim'], `  →  opening preview in vscode...`), // `  ${styleText(['bold', 'green'], '→')}  ${styleText(['bold'], 'Model')}:   ${styleText(['cyan'], relative(process.cwd(), modelPath))}`,
-      );
+      console.info(styleText(['dim'], `  →  opening preview in vscode...`));
       await openVscodePreview(serverOptions.port);
     }
 
