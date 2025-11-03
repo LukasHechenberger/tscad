@@ -14,8 +14,8 @@ const { resolve } = createRequire(import.meta.url);
 
 const debug = rootDebug.extend('dev');
 
-async function openVscodePreview() {
-  await open(`vscode://tscad.tscad-vscode`, { wait: false });
+async function openVscodePreview(port?: number) {
+  await open(`vscode://tscad.tscad-vscode${port ? `?port=${port}` : ''}`, { wait: false });
 }
 
 function parseIntArgument(value: string) {
@@ -64,7 +64,7 @@ export const devCommand = new Command('dev')
     await server.listen();
 
     // Try to open vscode preview if terminal is vscode
-    if (process.env.TERM_PROGRAM === 'vscode') await openVscodePreview();
+    if (process.env.TERM_PROGRAM === 'vscode') await openVscodePreview(serverOptions.port);
 
     console.info(
       `  ${styleText(['bold', 'green'], '→')}  ${styleText(['bold'], 'Model')}:   ${styleText(['cyan'], relative(process.cwd(), modelPath))}`,
@@ -77,7 +77,7 @@ export const devCommand = new Command('dev')
           key: 'v',
           description: 'open vscode preview',
           async action() {
-            await openVscodePreview();
+            await openVscodePreview(serverOptions.port);
           },
         },
         {

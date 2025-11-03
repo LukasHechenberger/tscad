@@ -5,14 +5,17 @@ import * as vscode from 'vscode';
 const openPreviewCommandId = 'tscad-vscode.open-preview';
 
 function openPreview(port: number = 4000) {
-  const column = vscode.window.activeTextEditor?.viewColumn
+  const preserveFocus = true;
+  const viewColumn = vscode.window.activeTextEditor?.viewColumn
     ? vscode.window.activeTextEditor.viewColumn + 1
-    : undefined;
+    : vscode.ViewColumn.One;
+
+  console.log(`Opening preview for port ${port} in column ${viewColumn}`);
 
   const panel = vscode.window.createWebviewPanel(
     'tscadPreview',
     `tscad preview (${port})`,
-    column || vscode.ViewColumn.Beside,
+    { viewColumn, preserveFocus },
     {
       enableScripts: true, // needed for iframe interactions
     },
@@ -37,22 +40,55 @@ function openPreview(port: number = 4000) {
       </style>
     </head>
     <body>
-      <iframe src="http://localhost:4000"></iframe>
+      <iframe src="http://localhost:${port}"></iframe>
     </body>
     </html>
   `;
 
-  panel.reveal();
+  panel.reveal(viewColumn, preserveFocus);
 }
 
 const uriHandler = {
   handleUri(uri) {
     console.log(`URI received: ${uri.toString()}`);
-    vscode.commands.executeCommand(
-      openPreviewCommandId /* Pass options, like port etc. 'http://localhost:4000' */,
-    );
+
+    const port = new URLSearchParams(uri.query).get('port');
+    openPreview(port ? Number(port) : undefined);
   },
 } satisfies vscode.UriHandler;
+
+/** Called when a user manually runs "open tscad preview" */
+async function handleOpenCommand() {
+  // FIXME [>=1.0.0]: Does not validate initial value (4000 at the moment) - Use vscode.window.createInputBox() instead
+  const port = await vscode.window.showInputBox({
+    title: 'Enter preview port',
+    value: '4000',
+    placeHolder: 'The port tscad dev server is running on',
+    async validateInput(value) {
+      const portNumber = Number(value);
+
+      try {
+        const response = await fetch(`http://localhost:${portNumber}`);
+
+        if (!response.ok) {
+          return `No server responding at port ${portNumber}`;
+        }
+
+        return {
+          message: `Server is responding at port ${portNumber}`,
+          severity: vscode.InputBoxValidationSeverity.Info,
+        };
+      } catch {
+        return {
+          message: `No server responding at port ${portNumber}`,
+          severity: vscode.InputBoxValidationSeverity.Warning,
+        };
+      }
+    },
+  });
+
+  if (port) openPreview(Number(port));
+}
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -65,7 +101,7 @@ export function activate(context: vscode.ExtensionContext) {
     // Register a URI handler to handle incoming URIs
     vscode.window.registerUriHandler(uriHandler),
     // Command for custom webview
-    vscode.commands.registerCommand(openPreviewCommandId, openPreview),
+    vscode.commands.registerCommand(openPreviewCommandId, handleOpenCommand),
   );
 }
 
