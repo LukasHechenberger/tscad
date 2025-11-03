@@ -1,5 +1,11 @@
 # @tscad/cli
 
+## 0.3.0
+
+### Minor Changes
+
+- 1a4cb34: Open vscode preview for correct port
+
 ## 0.2.0
 
 ### Minor Changes
