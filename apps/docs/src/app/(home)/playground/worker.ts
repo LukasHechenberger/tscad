@@ -21,3 +21,6 @@ globalThis.onmessage = async (event) => {
     self.postMessage({ error: { message: error_.message, stack: error_.stack } });
   }
 };
+
+// Stop nextjs from nagging about CommonJS syntax...
+export {};
