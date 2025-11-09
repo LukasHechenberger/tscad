@@ -13,6 +13,10 @@ export default async function PlaygroundPage() {
       moduleName: '@tscad/modeling/primitives',
       source: await readFile('./node_modules/@tscad/modeling/out/primitives/index.d.ts', 'utf8'),
     },
+    {
+      moduleName: '@tscad/modeling/colors',
+      source: await readFile('./node_modules/@tscad/modeling/out/colors/index.d.ts', 'utf8'),
+    },
   ];
 
   return (

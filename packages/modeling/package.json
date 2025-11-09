@@ -19,6 +19,14 @@
       "types": "./out/index.d.ts",
       "default": "./out/index.js"
     },
+    "./colors": {
+      "require": {
+        "types": "./out/colors/index.d.cts",
+        "default": "./out/colors/index.cjs"
+      },
+      "types": "./out/colors/index.d.ts",
+      "default": "./out/colors/index.js"
+    },
     "./convert": {
       "require": {
         "types": "./out/convert/index.d.cts",
