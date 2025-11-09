@@ -13,6 +13,10 @@ export default async function PlaygroundPage() {
       moduleName: '@tscad/modeling/primitives',
       source: await readFile('./node_modules/@tscad/modeling/out/primitives/index.d.ts', 'utf8'),
     },
+    {
+      moduleName: '@tscad/modeling/colors',
+      source: await readFile('./node_modules/@tscad/modeling/out/colors/index.d.ts', 'utf8'),
+    },
   ];
 
   return (
@@ -21,11 +25,11 @@ export default async function PlaygroundPage() {
 
       <div className="relative pt-[var(--fd-nav-height)] h-screen">
         <ResizablePanelGroup direction="horizontal" className="relative">
-          <ResizablePanel>
+          <ResizablePanel defaultSize={1}>
             <PlaygroundEditor moduleTypes={moduleTypes} />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel>
+          <ResizablePanel defaultSize={1}>
             <PlaygroundPreview />
           </ResizablePanel>
         </ResizablePanelGroup>

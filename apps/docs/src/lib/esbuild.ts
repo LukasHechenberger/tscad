@@ -69,7 +69,15 @@ const resolveImports: esbuild.Plugin = {
     // this plugin.
     build.onResolve({ filter: /^https?:\/\// }, ({ path }) => ({ path, namespace: 'http-url' }));
 
-    build.onResolve({ filter: /./ }, ({ path }) => {
+    build.onResolve({ filter: /./ }, ({ path, importer }) => {
+      // Allow imports from @tscad modules
+      if (importer.startsWith(location.href)) {
+        return {
+          path: new URL(path, `${importer}/`).toString(),
+          namespace: 'http-url',
+        };
+      }
+
       throw new Error(
         `Cannot import ${path} in the playground. Only @tscad modules are supported.`,
       );

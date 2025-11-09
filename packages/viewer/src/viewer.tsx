@@ -4,6 +4,8 @@ import type { Model } from '@tscad/modeling';
 import { solidToThree } from '@tscad/modeling/convert';
 import { type ReactNode, useMemo } from 'react';
 
+const defaultColor = 'orange';
+
 function Entities({ model }: { model: Model }) {
   const geometries = useMemo(
     () => (Array.isArray(model) ? model : [model]).map((solid) => solidToThree(solid)),
@@ -12,10 +14,10 @@ function Entities({ model }: { model: Model }) {
 
   return (
     <>
-      {geometries.map((geometry, index) => (
+      {geometries.map(({ geometry, material }, index) => (
         // eslint-disable-next-line react/no-unknown-property
         <mesh key={index} castShadow geometry={geometry}>
-          <meshStandardMaterial color="orange" />
+          <meshStandardMaterial {...material} color={material.color ?? defaultColor} />
         </mesh>
       ))}
     </>

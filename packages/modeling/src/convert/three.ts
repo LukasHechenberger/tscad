@@ -1,11 +1,20 @@
 import modeling from '@jscad/modeling';
 import type { Geom3 } from '@jscad/modeling/src/geometries/types';
-import { BufferGeometry, Float32BufferAttribute, Vector3 } from 'three';
+import {
+  BufferGeometry,
+  Color,
+  Float32BufferAttribute,
+  type MeshStandardMaterialParameters,
+  Vector3,
+} from 'three';
 
 const { geom3 } = modeling.geometries;
 
 /** Convert @tscad/modeling geometries to three.js geometries */
-export function solidToThree(solid: Geom3): BufferGeometry {
+export function solidToThree(solid: Geom3): {
+  geometry: BufferGeometry;
+  material: MeshStandardMaterialParameters;
+} {
   const positions: number[] = [];
   const normals: number[] = [];
 
@@ -43,5 +52,15 @@ export function solidToThree(solid: Geom3): BufferGeometry {
   geometry.computeBoundingBox();
   geometry.computeBoundingSphere();
 
-  return geometry;
+  const color = solid.color && new Color(...solid.color);
+  const opacity = solid.color?.[3] ?? 1;
+
+  return {
+    geometry,
+    material: {
+      color,
+      transparent: opacity < 1,
+      opacity,
+    },
+  };
 }
