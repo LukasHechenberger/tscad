@@ -1,5 +1,12 @@
 # @tscad/cli
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [79ff9c8]
+  - @tscad/viewer@0.1.0
+
 ## 0.3.0
 
 ### Minor Changes
