@@ -25,11 +25,11 @@ export default async function PlaygroundPage() {
 
       <div className="relative pt-[var(--fd-nav-height)] h-screen">
         <ResizablePanelGroup direction="horizontal" className="relative">
-          <ResizablePanel defaultSize={1}>
+          <ResizablePanel defaultSize={50}>
             <PlaygroundEditor moduleTypes={moduleTypes} />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel defaultSize={1}>
+          <ResizablePanel defaultSize={50}>
             <PlaygroundPreview />
           </ResizablePanel>
         </ResizablePanelGroup>
