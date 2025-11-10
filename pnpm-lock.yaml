@@ -30,8 +30,8 @@ importers:
         specifier: workspace:*
         version: link:packages/toolsync-plugin
       '@toolsync/builtin':
-        specifier: ^0.5.0
-        version: 0.5.0(ignore-sync@8.0.0)(prettier@3.5.3)(publint@0.3.12)
+        specifier: ^0.5.1
+        version: 0.5.1(ignore-sync@8.0.0)(prettier@3.5.3)(publint@0.3.12)
       '@toolsync/cli':
         specifier: 0.3.1
         version: 0.3.1
@@ -2222,8 +2222,8 @@ packages:
   '@textlint/types@15.2.1':
     resolution: {integrity: sha512-zyqNhSatK1cwxDUgosEEN43hFh3WCty9Zm2Vm3ogU566IYegifwqN54ey/CiRy/DiO4vMcFHykuQnh2Zwp6LLw==}
 
-  '@toolsync/builtin@0.5.0':
-    resolution: {integrity: sha512-bCIqdNocIiVOpq0njmBCwfmX/x7zMp25i2bU/WuotJUwYfriAKgB0tscbqNvJWWcuEBdwmoQ0d+/E/FrFcrlYQ==}
+  '@toolsync/builtin@0.5.1':
+    resolution: {integrity: sha512-Nev16VuYO8TwiPQPgSZdZ20CQymgz/xJAEtiuFXI5ujr3RHtLeTYIzFViV0VYJf6fh2eaNioB6vlT7wF8yPpCg==}
     engines: {node: '>=20.6.0'}
     peerDependencies:
       ignore-sync: ^8.0.0
