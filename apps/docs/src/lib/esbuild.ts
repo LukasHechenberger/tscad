@@ -2,6 +2,25 @@
 import * as esbuild from 'esbuild-wasm';
 
 let initialized = false;
+const downloadCache = new Map<string, Promise<string>>();
+
+function cachedFetch(url: string): Promise<string> {
+  if (downloadCache.has(url)) {
+    console.debug('Already downloaded', url);
+  } else {
+    console.info('Downloading', url);
+    downloadCache.set(
+      url,
+      fetch(url).then((response) => {
+        if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
+
+        return response.text();
+      }),
+    );
+  }
+
+  return downloadCache.get(url)!;
+}
 
 export async function bundleCode(
   userCode: string,
@@ -44,6 +63,7 @@ export async function bundleCode(
       errors: result.errors,
     };
   } catch (error) {
+    console.error('Esbuild bundling error:', error);
     return error as esbuild.BuildFailure;
   }
 }
@@ -73,7 +93,7 @@ const resolveImports: esbuild.Plugin = {
       // Allow imports from @tscad modules
       if (importer.startsWith(location.href)) {
         return {
-          path: new URL(path, `${importer}/`).toString(),
+          path: new URL(path, importer.endsWith('.js') ? importer : `${importer}/`).toString(),
           namespace: 'http-url',
         };
       }
@@ -98,14 +118,7 @@ const resolveImports: esbuild.Plugin = {
     // handle the example import from unpkg.com but in reality this
     // would probably need to be more complex.
     build.onLoad({ filter: /.*/, namespace: 'http-url' }, async ({ path }) => {
-      console.log('Downloading:', path);
-      const response = await fetch(path);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch ${path}: ${response.statusText}`);
-      }
-
-      const contents = await response.text();
+      const contents = await cachedFetch(path);
 
       return { contents, loader: 'js' };
     });

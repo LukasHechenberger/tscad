@@ -10,6 +10,10 @@ export function generateMetadata() {
 export default async function PlaygroundPage() {
   const moduleTypes = [
     {
+      moduleName: '@tscad/modeling',
+      source: await readFile('./node_modules/@tscad/modeling/out/index.d.ts', 'utf8'),
+    },
+    {
       moduleName: '@tscad/modeling/primitives',
       source: await readFile('./node_modules/@tscad/modeling/out/primitives/index.d.ts', 'utf8'),
     },
