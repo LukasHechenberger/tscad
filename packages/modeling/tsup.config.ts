@@ -72,7 +72,7 @@ export default defineConfig([
     onSuccess: 'node ./out/scripts/update-readme.js',
   },
   {
-    entry: ['src/*/index.ts'],
+    entry: ['src/index.ts', 'src/*/index.ts'],
     format: 'esm',
     outDir: 'out/standalone',
     external: [],
