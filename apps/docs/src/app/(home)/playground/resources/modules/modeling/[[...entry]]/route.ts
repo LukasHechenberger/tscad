@@ -7,13 +7,20 @@ export const dynamic = 'force-static';
 export async function generateStaticParams() {
   const standaloneEntries = await readdir('./node_modules/@tscad/modeling/out/standalone');
 
-  return standaloneEntries.map((entry) => ({ entry }));
+  return [
+    // @tscad/modeling
+    { entry: [] },
+    // ...and it's nested entries
+    ...standaloneEntries.map((entry) => ({ entry: [entry] })),
+  ];
 }
 
-export async function GET(_: Request, { params }: { params: Promise<{ entry: string }> }) {
-  const { entry: entryName } = await params;
+export async function GET(_: Request, { params }: { params: Promise<{ entry: string[] }> }) {
+  const { entry: [entryName] = [] } = await params;
 
-  const filePath = entryName.endsWith('.js') ? entryName : `${entryName}/index.js`;
+  const filePath = entryName?.endsWith('.js')
+    ? entryName
+    : `${entryName ? `${entryName}/` : ''}index.js`;
 
   return new Response(
     createReadStream(
