@@ -2,15 +2,12 @@ import js from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import onlyWarn from 'eslint-plugin-only-warn';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import tsdocPlugin from 'eslint-plugin-tsdoc';
 import turboPlugin from 'eslint-plugin-turbo';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import tseslint from 'typescript-eslint';
 
-/**
- * A shared ESLint configuration for the repository.
- *
- * @type {import("eslint").Linter.Config[]}
- * */
+/** A shared ESLint configuration for the repository. */
 export const config = [
   js.configs.recommended,
   eslintConfigPrettier,
@@ -56,6 +53,25 @@ export const config = [
     },
   },
   {
-    ignores: ['dist/**', 'out/**', 'coverage/**', 'tsup.config.bundled*.mjs'],
+    files: ['**/*.ts', '**/*.tsx'],
+    plugins: {
+      tsdoc: tsdocPlugin,
+    },
+    rules: {
+      'tsdoc/syntax': 'error',
+    },
+  },
+  {
+    ignores: [
+      'dist/**',
+      'out/**',
+      'coverage/**',
+      'tsup.config.bundled*.mjs',
+      '.next/**',
+      'out/**',
+      'build/**',
+      'next-env.d.ts',
+      '.source/**',
+    ],
   },
 ];

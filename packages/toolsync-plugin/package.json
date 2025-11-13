@@ -19,12 +19,12 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@toolsync/core": "^0.1.3",
-    "eslint": "^9.33.0"
+    "eslint": "catalog:"
   }
 }

@@ -10,7 +10,7 @@ import {
 
 const { geom3 } = modeling.geometries;
 
-/** Convert @tscad/modeling geometries to three.js geometries */
+/** Convert tscad solids to three.js geometries */
 export function solidToThree(solid: Geom3): {
   geometry: BufferGeometry;
   material: MeshStandardMaterialParameters;
