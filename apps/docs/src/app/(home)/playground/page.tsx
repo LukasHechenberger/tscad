@@ -21,6 +21,14 @@ export default async function PlaygroundPage() {
       moduleName: '@tscad/modeling/colors',
       source: await readFile('./node_modules/@tscad/modeling/out/colors/index.d.ts', 'utf8'),
     },
+    // Dependencies
+    // {
+    //   moduleName: 'json-schema-to-ts',
+    //   source: await readFile(
+    //     '../../node_modules/.pnpm/json-schema-to-ts@3.1.1/node_modules/json-schema-to-ts/lib/types/index.d.ts',
+    //     'utf8',
+    //   ),
+    // },
   ];
 
   return (
