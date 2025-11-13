@@ -1,5 +1,3 @@
-/* eslint-disable jsdoc/require-jsdoc */
-
 import { MarkdownTemplate } from '@toolsync/template';
 import { markdownTable } from 'markdown-table';
 

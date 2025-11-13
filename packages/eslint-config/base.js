@@ -1,6 +1,5 @@
 import js from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
-import jsdocPlugin from 'eslint-plugin-jsdoc';
 import onlyWarn from 'eslint-plugin-only-warn';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import tsdocPlugin from 'eslint-plugin-tsdoc';
@@ -54,28 +53,12 @@ export const config = [
     },
   },
   {
+    files: ['**/*.ts', '**/*.tsx'],
     plugins: {
       tsdoc: tsdocPlugin,
-      jsdoc: jsdocPlugin,
     },
     rules: {
       'tsdoc/syntax': 'error',
-      ...jsdocPlugin.configs['flat/recommended-typescript'].rules,
-      'jsdoc/require-returns': 'off',
-      'jsdoc/check-examples': 'error',
-      'jsdoc/require-params': [
-        'error',
-        {
-          checkDestructured: false,
-        },
-      ],
-    },
-    settings: {
-      jsdoc: {
-        tagNamePreference: {
-          default: 'defaultValue',
-        },
-      },
     },
   },
   {
