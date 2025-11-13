@@ -31,6 +31,8 @@
       }
     }
   },
-  "@toolsync/builtin/publint": {},
+  "@toolsync/builtin/publint": {
+    "version": "catalog:"
+  },
   "@repo/toolsync-plugin": {}
 }
