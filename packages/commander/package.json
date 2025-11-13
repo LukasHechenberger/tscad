@@ -25,9 +25,9 @@
     "@commander-js/extra-typings": "^14.0.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^22.15.32",
-    "eslint": "^9.33.0",
-    "typescript": "^5.8.3"
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
   },
   "peerDependencies": {
     "commander": "^14.0.0"

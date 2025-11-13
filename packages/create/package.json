@@ -31,11 +31,11 @@
     "@repo/typescript-config": "workspace:*",
     "@toolsync/template": "^0.1.1",
     "@tscad/commander": "workspace:*",
-    "@types/node": "^22.15.32",
-    "eslint": "^9.33.0",
-    "publint": "^0.3.12",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "publint": "catalog:",
     "tsup": "^8.5.0",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "which-pm-runs": "^1.1.0"
   },
   "publishConfig": {

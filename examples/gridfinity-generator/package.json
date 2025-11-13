@@ -27,10 +27,10 @@
     "@jscad/cli": "^2.3.5",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^22.15.32",
-    "eslint": "^9.29.0",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
     "picocolors": "^1.1.1",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3"
+    "typescript": "catalog:"
   }
 }
