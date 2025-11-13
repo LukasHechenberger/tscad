@@ -62,6 +62,16 @@ export const config = [
     },
   },
   {
-    ignores: ['dist/**', 'out/**', 'coverage/**', 'tsup.config.bundled*.mjs'],
+    ignores: [
+      'dist/**',
+      'out/**',
+      'coverage/**',
+      'tsup.config.bundled*.mjs',
+      '.next/**',
+      'out/**',
+      'build/**',
+      'next-env.d.ts',
+      '.source/**',
+    ],
   },
 ];

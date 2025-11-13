@@ -16,7 +16,7 @@
     "check:types": "tsc --noEmit",
     "dev": "next dev --turbo",
     "postinstall": "fumadocs-mdx",
-    "lint": "next lint",
+    "lint": "eslint . --max-warnings 0",
     "start": "next start"
   },
   "dependencies": {

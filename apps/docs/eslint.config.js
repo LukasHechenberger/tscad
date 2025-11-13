@@ -8,6 +8,8 @@ export default [
         'error',
         {
           allowList: {
+            utils: true,
+            docs: true,
             props: true,
             generateStaticParams: true,
             dynamicParams: true,

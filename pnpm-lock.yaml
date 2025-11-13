@@ -16,7 +16,7 @@ catalogs:
       specifier: ^19.2.3
       version: 19.2.3
     eslint:
-      specifier: ^9.39.1
+      specifier: 9.39.1
       version: 9.39.1
     publint:
       specifier: ^0.3.15
