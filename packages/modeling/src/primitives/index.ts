@@ -1,6 +1,12 @@
 import modeling from '@jscad/modeling';
 import type { Vector3 } from '@/types';
 
+/**
+ * Methods to construct simple geometric primitives
+ *
+ * @packageDocumentation
+ */
+
 const { primitives } = modeling;
 
 /** Options used in the {@link cube} method. */

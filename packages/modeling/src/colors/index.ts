@@ -3,6 +3,12 @@ import type { RGB, RGBA } from '@jscad/modeling/src/colors';
 import type { Geometry } from '@jscad/modeling/src/geometries/types';
 
 /**
+ * Color related functions
+ *
+ * @packageDocumentation
+ */
+
+/**
  * Colorize an object. The color itself is defined as an array of 3 (RGB) or 4 (RGBA) numbers
  * between 0 and 1 corresponding to the red, green, blue, and (optional) alpha channels.
  *
