@@ -2,19 +2,10 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { addSeeTagPlugin } from 'esbuild-autodoc';
 import { defineConfig } from 'tsup';
-import { devDependencies } from './package.json';
 
 export default defineConfig([
   {
-    entry: ['src/scripts/*.ts'],
-    external: Object.keys(devDependencies),
-    outDir: 'out/scripts',
-    format: 'esm',
-    // onSuccess: 'node ./out/scripts/update-readme.js',
-    onSuccess: 'node ./out/scripts/update-api-docs.js',
-  },
-  {
-    entry: ['src/*.ts', 'src/*/index.ts'],
+    entry: ['src/*.ts', 'src/*/index.ts', 'src/scripts/*.ts'],
     format: ['esm', 'cjs'],
     outDir: 'out',
     dts: true,
@@ -78,6 +69,7 @@ export default defineConfig([
         },
       },
     ],
+    onSuccess: 'pnpm build-api-docs && node ./out/scripts/update-readme.js',
   },
   {
     entry: ['src/index.ts', 'src/*/index.ts'],

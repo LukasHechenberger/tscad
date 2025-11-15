@@ -1,0 +1,36 @@
+{
+  "name": "@repo/scripts",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Scripts used across the tscad repository",
+  "homepage": "https://tscad.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasHechenberger/tscad.git",
+    "directory": "packages/scripts"
+  },
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "build-api-docs": "./out/build-api-docs.js"
+  },
+  "scripts": {
+    "build": "rslib build",
+    "check:types": "tsc --noEmit",
+    "dev": "rslib dev --watch",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@microsoft/tsdoc": "^0.16.0",
+    "slugify": "^1.6.6",
+    "ts-morph": "^26.0.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@rslib/core": "^0.17.2",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  }
+}

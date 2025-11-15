@@ -1,12 +1,10 @@
-import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { DocDeclarationReference, DocNodeKind, ExcerptKind, TSDocParser } from '@microsoft/tsdoc';
 import { DocExcerpt, DocNode } from '@microsoft/tsdoc';
 import slugify from 'slugify';
 import { Node, Project, SyntaxKind, TypeFormatFlags } from 'ts-morph';
 import type { TypeNode } from '/Users/lukas/Documents/ls-age/projects/tscad/node_modules/.pnpm/fumadocs-ui@16.0.11_@types+react-dom@19.2.3_@types+react@19.2.4__@types+react@19.2.4_lu_e32d3c43b48130c6b05bd33213283fe7/node_modules/fumadocs-ui/dist/components/type-table.d.ts';
-
-const baseSourceUrl = 'https://github.com/LukasHechenberger/tscad/tree/main/packages/modeling';
 
 /** This is a simplistic solution until we implement proper DocNode rendering APIs. */
 class Formatter {
@@ -98,6 +96,17 @@ const slugGenerator = {
 };
 
 async function updateApiDocs() {
+  const manifest = JSON.parse(await readFile('package.json', 'utf8'));
+  const pathInRepository = manifest.repository.directory;
+  const pathInPackagesDirectory = path.relative('packages', pathInRepository);
+
+  const baseSourceUrl = new URL(
+    pathInRepository,
+    'https://github.com/LukasHechenberger/tscad/tree/main/',
+  ).toString();
+
+  console.log(`Building API docs for ${manifest.name}...`);
+
   console.time('create project');
   const project = new Project({
     tsConfigFilePath: 'tsconfig.json',
@@ -120,12 +129,13 @@ async function updateApiDocs() {
 
     const docsPath = path.join(
       process.cwd(),
-      '../../apps/docs/content/docs/api/modeling',
+      '../../apps/docs/content/docs/api/',
+      pathInPackagesDirectory,
       moduleNameComponents.join('/'),
       'index.mdx',
     );
 
-    const moduleName = ['@tscad/modeling', ...moduleNameComponents].join('/');
+    const moduleName = [manifest.name, ...moduleNameComponents].join('/');
     const title = moduleNameComponents.length > 0 ? moduleNameComponents.at(-1) : moduleName;
 
     console.log(`DOC ${title}`);
@@ -264,7 +274,7 @@ ${exportedItems
         text: `<TypeTable type={${JSON.stringify(
           {
             ...Object.fromEntries(
-              parameters.map((p, index) => [
+              parameters.map((p) => [
                 p.name,
                 {
                   description: p.description,
