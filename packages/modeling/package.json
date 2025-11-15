@@ -64,6 +64,7 @@
     "three": "^0.177.0"
   },
   "devDependencies": {
+    "@microsoft/tsdoc": "^0.16.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@toolsync/template": "^0.1.1",
@@ -73,6 +74,8 @@
     "eslint": "catalog:",
     "markdown-table": "^3.0.4",
     "publint": "catalog:",
+    "slugify": "^1.6.6",
+    "ts-morph": "^26.0.0",
     "tsup": "^8.5.0",
     "typescript": "catalog:"
   },

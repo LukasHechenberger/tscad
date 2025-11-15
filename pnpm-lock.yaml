@@ -429,6 +429,9 @@ importers:
         specifier: ^0.177.0
         version: 0.177.0
     devDependencies:
+      '@microsoft/tsdoc':
+        specifier: ^0.16.0
+        version: 0.16.0
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -456,6 +459,12 @@ importers:
       publint:
         specifier: 'catalog:'
         version: 0.3.15
+      slugify:
+        specifier: ^1.6.6
+        version: 1.6.6
+      ts-morph:
+        specifier: ^26.0.0
+        version: 26.0.0
       tsup:
         specifier: ^8.5.0
         version: 8.5.0(@microsoft/api-extractor@7.52.8(@types/node@22.19.1))(jiti@2.4.2)(postcss@8.5.6)(typescript@5.9.3)(yaml@2.8.1)
@@ -5670,6 +5679,10 @@ packages:
   slice-ansi@4.0.0:
     resolution: {integrity: sha512-qMCMfhY040cVHT43K9BFygqYbUPFZKHOg7K73mtTWJRb8pyP3fzf4Ixd5SzdEJQ6MRUg/WBnOLxghZtKKurENQ==}
     engines: {node: '>=10'}
+
+  slugify@1.6.6:
+    resolution: {integrity: sha512-h+z7HKHYXj6wJU+AnS/+IH8Uh9fdcX1Lrhg1/VMdf9PwoBQXFcXiAdsy2tSK0P6gKwJLXp02r90ahUCqHk9rrw==}
+    engines: {node: '>=8.0.0'}
 
   sonic-boom@4.2.0:
     resolution: {integrity: sha512-INb7TM37/mAcsGmc9hyyI6+QR3rR1zVRu36B0NeGXKnOOLiZOfER5SA+N7X7k3yUYRzLWafduTDvJAfDswwEww==}
@@ -12647,6 +12660,8 @@ snapshots:
       ansi-styles: 4.3.0
       astral-regex: 2.0.0
       is-fullwidth-code-point: 3.0.0
+
+  slugify@1.6.6: {}
 
   sonic-boom@4.2.0:
     dependencies:

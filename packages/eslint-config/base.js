@@ -12,12 +12,16 @@ export const config = [
   js.configs.recommended,
   eslintConfigPrettier,
   {
-    rules: { 'object-shorthand': 'error', 'prefer-template': 'error' },
+    rules: {
+      'object-shorthand': 'error',
+      'prefer-template': 'error',
+    },
   },
   {
     ...eslintPluginUnicorn.configs.recommended,
     rules: {
       ...eslintPluginUnicorn.configs.recommended.rules,
+      'unicorn/no-nested-ternary': 'off',
       'unicorn/expiring-todo-comments': [
         'error',
         {
