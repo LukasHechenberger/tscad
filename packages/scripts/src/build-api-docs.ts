@@ -16,19 +16,11 @@ class Formatter {
       }
 
       if (documentNode.kind === DocNodeKind.LinkTag) {
-        // const content = this.renderDocNodes(documentNode.getChildNodes());
-
         let title: string | undefined = undefined;
         let target: string | undefined = undefined;
 
         for (const childNode of documentNode.getChildNodes()) {
           const text = Formatter.renderDocNode(childNode);
-
-          // console.dir({
-          //   text,
-          //   kind: childNode.kind,
-          //   excerptKind: childNode instanceof DocExcerpt ? childNode.excerptKind : undefined,
-          // });
 
           if (childNode instanceof DocExcerpt) {
             if (childNode.excerptKind === ExcerptKind.LinkTag_UrlDestination) {
@@ -117,6 +109,7 @@ async function updateApiDocs() {
   console.timeEnd('create project');
 
   const sourceFiles = project.getSourceFiles('src/**/*.ts');
+  // TODO [>=1.0.0]: Get from manifest exports
   const exportedModules = sourceFiles.filter((sourceFile) =>
     sourceFile.getFilePath().endsWith('/index.ts'),
   );
