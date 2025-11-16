@@ -118,7 +118,9 @@ export type Model<S extends ParametersInput, Parameters> = {
 /**
  * Defines a model, including its parameters and model function.
  *
- * @example Simple model
+ * @example
+ *
+ * Simple Model
  *
  * ```ts
  * import { defineModel } from '@tscad/modeling';
@@ -129,7 +131,9 @@ export type Model<S extends ParametersInput, Parameters> = {
  * });
  * ```
  *
- * @example Parametric model
+ * @example
+ *
+ * Model with Parameters
  *
  * ```ts
  * import { defineModel } from '@tscad/modeling';
