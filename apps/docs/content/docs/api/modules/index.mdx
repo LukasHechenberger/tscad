@@ -1,0 +1,21 @@
+---
+title: Reference
+description: tscad API reference
+---
+
+import { getPageTreePeers } from 'fumadocs-core/page-tree';
+import { source } from '@/lib/source';
+
+tscad is a TypeScript library published via npm. If you want to run it locally, you can use the API directly by installing some modules.
+
+**Modules available:**
+
+<Cards>
+  {source.pageTree.children
+    .find((item) => item.index?.url === '/docs/api/modules')
+    ?.children?.map((child) => (
+      <Card href={child.index.url} key={child.index.url} title={child.index.name}>
+        {child.index.description}
+      </Card>
+    ))}
+</Cards>
