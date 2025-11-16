@@ -8,7 +8,11 @@ import type { Solid } from './types';
  * @remarks
  * Use `@tscad/modeling` to define your 3d models.
  *
- * > This is probably the most important package of tscad.
+ * <Callout>
+ *
+ * **This is probably the most important package of tscad.**
+ *
+ * </Callout>
  *
  * ## Introduction
  *
