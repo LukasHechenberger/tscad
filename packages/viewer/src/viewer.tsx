@@ -5,7 +5,7 @@ import { solidToThree } from '@tscad/modeling/convert';
 import type { JSONSchema } from 'json-schema-to-ts';
 import { Leva, useControls } from 'leva';
 import type { Schema } from 'leva/dist/declarations/src/types';
-import { type ComponentProps, type ReactNode, useEffect, useMemo, useState } from 'react';
+import { type ComponentProps, type ReactNode, useEffect, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useDebouncedState } from './hooks/use-debounced';
 
@@ -56,7 +56,7 @@ export function jsonSchemaToLevaInputOptions(schema: Exclude<JSONSchema, boolean
 
 export function jsonSchemaToLevaSchema(
   schema: ParametersInput,
-  defaults: Record<string, any>,
+  defaults: Record<string, unknown>,
 ): Schema {
   return Object.fromEntries(
     (
@@ -68,15 +68,15 @@ export function jsonSchemaToLevaSchema(
   );
 }
 
-function parametersToLevaSchema(model: Model<any, any>): Schema {
+function parametersToLevaSchema(model: Model<ParametersInput, Record<string, unknown>>): Schema {
   const defaults = model.resolveParameters({}, false);
-
-  console.log({ model, defaults });
 
   return jsonSchemaToLevaSchema(model.parametersSchema, defaults);
 }
 
-export const useModelControls = <P,>(model: Model<ParametersInput, P>): P => {
+export const useModelControls = <P extends Record<string, unknown>>(
+  model: Model<ParametersInput, P>,
+): P => {
   console.log('useModelControls', { model, params: parametersToLevaSchema(model) });
   return useControls(parametersToLevaSchema(model)) as P;
 };
@@ -105,7 +105,7 @@ export function ViewerCanvas({
   );
 }
 
-export default function Viewer<S extends ParametersInput, P>({
+export default function Viewer<S extends ParametersInput, P extends Record<string, unknown>>({
   model,
   children,
   viewcube = true,
