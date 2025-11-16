@@ -1,5 +1,6 @@
-import { booleans, colors, extrusions, primitives, transforms } from '@jscad/modeling';
+import { booleans, extrusions, primitives, transforms } from '@jscad/modeling';
 import { type Vector2, type Vector3 } from '@tscad/modeling';
+import { colorize } from '@tscad/modeling/colors';
 import { pattern } from './lib/modeling';
 import { slopedCuboid } from './lib/sloped-cuboid';
 import { mapVector } from './lib/vectors';
@@ -8,7 +9,6 @@ import { mapVector } from './lib/vectors';
 
 const { roundedRectangle } = primitives;
 const { translateZ } = transforms;
-const { colorize } = colors;
 const { subtract, union } = booleans;
 const { extrudeLinear } = extrusions;
 

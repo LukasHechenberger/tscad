@@ -5,12 +5,23 @@ import type { Geometry } from '@jscad/modeling/src/geometries/types';
 /**
  * Color related functions
  *
+ * @remarks
+ * Use these functions to apply colors to your 3D objects in the preview etc.
  * @packageDocumentation
  */
 
 /**
  * Colorize an object. The color itself is defined as an array of 3 (RGB) or 4 (RGBA) numbers
  * between 0 and 1 corresponding to the red, green, blue, and (optional) alpha channels.
+ *
+ * @example Coloring an object
+ *
+ * ```ts
+ * import { colorize } from '@tscad/modeling/colors';
+ * import { cube } from '@tscad/modeling/primitives';
+ *
+ * const coloredCube = colorize([1, 0, 0], cube({ size: 10 })); // Red cube
+ * ```
  *
  * @param color - The color to apply
  * @param object - The object to colorize
