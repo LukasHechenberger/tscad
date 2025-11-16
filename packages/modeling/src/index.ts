@@ -148,7 +148,7 @@ export type Model<S extends ParametersInput, Parameters> = {
  * ```
  *
  * @param modelDefinition - The model definition
- * @see {@link https://tscad.vercel.app/docs/api/modeling/#definemodel | Docs}
+ * @see {@link https://tscad.vercel.app/docs/api/modules/modeling/#definemodel | Docs}
  */
 export function defineModel<
   S extends ParametersInput = Record<string, never>,

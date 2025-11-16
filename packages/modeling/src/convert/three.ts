@@ -10,7 +10,10 @@ import {
 
 const { geom3 } = modeling.geometries;
 
-/** Convert tscad solids to three.js geometries */
+/**
+ * Convert tscad solids to three.js geometries
+ * @see {@link https://tscad.vercel.app/docs/api/modules/modeling/convert#solidToThree | Docs}
+ */
 export function solidToThree(solid: Geom3): {
   geometry: BufferGeometry;
   material: MeshStandardMaterialParameters;
