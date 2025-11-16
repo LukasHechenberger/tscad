@@ -2,9 +2,9 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { DocDeclarationReference, DocNodeKind, ExcerptKind, TSDocParser } from '@microsoft/tsdoc';
 import { DocExcerpt, DocNode } from '@microsoft/tsdoc';
+import type { TypeNode } from 'fumadocs-ui/components/type-table';
 import slugify from 'slugify';
 import { Node, Project, SyntaxKind, TypeFormatFlags } from 'ts-morph';
-import type { TypeNode } from '/Users/lukas/Documents/ls-age/projects/tscad/node_modules/.pnpm/fumadocs-ui@16.0.11_@types+react-dom@19.2.3_@types+react@19.2.4__@types+react@19.2.4_lu_e32d3c43b48130c6b05bd33213283fe7/node_modules/fumadocs-ui/dist/components/type-table.d.ts';
 
 /** This is a simplistic solution until we implement proper DocNode rendering APIs. */
 class Formatter {
