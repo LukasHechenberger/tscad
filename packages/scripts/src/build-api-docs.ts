@@ -88,6 +88,7 @@ const slugGenerator = {
 };
 
 async function updateApiDocs() {
+  console.time('build api docs');
   const manifest = JSON.parse(await readFile('package.json', 'utf8'));
   const pathInRepository = manifest.repository.directory;
   const pathInPackagesDirectory = path.relative('packages', pathInRepository);
@@ -311,29 +312,6 @@ ${d.text}`,
   })
   .join('\n\n')}
 
-<details>
-
-\`\`\`json
-${
-  // FIXME: Remove
-  JSON.stringify(
-    {
-      moduleName,
-      description,
-      exportedItems: exportedItems.map((item) => ({
-        ...item,
-        statement: undefined,
-        parserContext: undefined,
-      })),
-    },
-    undefined,
-    2,
-  )
-}
-\`\`\`
-
-</details>
-
 `;
 
     if (!packageDocumentation && exportedItems.length === 0) {
@@ -347,6 +325,8 @@ ${
       await writeFile(docsPath, content);
     }
   }
+
+  console.timeEnd('build api docs');
 }
 
 updateApiDocs().catch((error) => {
