@@ -1,6 +1,12 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { DocDeclarationReference, DocNodeKind, ExcerptKind, TSDocParser } from '@microsoft/tsdoc';
+import {
+  DocBlockTag,
+  DocDeclarationReference,
+  DocNodeKind,
+  ExcerptKind,
+  TSDocParser,
+} from '@microsoft/tsdoc';
 import { DocExcerpt, DocNode } from '@microsoft/tsdoc';
 import type { TypeNode } from 'fumadocs-ui/components/type-table';
 import slugify from 'slugify';
@@ -206,12 +212,19 @@ description: ${JSON.stringify(description)}
 ---
 
 import { TypeTable } from 'fumadocs-ui/components/type-table';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+
+${
+  packageDocumentation && packageDocumentation.parserContext.docComment.remarksBlock
+    ? Formatter.renderDocNode(
+        packageDocumentation.parserContext.docComment.remarksBlock.content,
+      )?.trim()
+    : ''
+}
 
 ${
   exportedItems.length > 0
-    ? `**Import**
-
-\`\`\`ts
+    ? `\`\`\`ts title="Import"
 import { ${exportedItems.map((index) => index.title).join(', ')} } from '${moduleName}';
 \`\`\``
     : ''
@@ -223,6 +236,41 @@ ${exportedItems
 
     const details = [] as { title: string; text: string }[];
     if (Node.isFunctionDeclaration(item.statement)) {
+      // Collect examples
+      const exampleBlocks = item.parserContext.docComment.customBlocks.filter(
+        (block) => block.blockTag.tagName === '@example',
+      );
+
+      const examples = [] as { title: string; text: string }[];
+      for (const block of exampleBlocks) {
+        if (block.content.nodes.length === 0) continue;
+
+        const exampleTitle = Formatter.renderDocNode(block.content.nodes[0]!) || 'Example';
+
+        examples.push({
+          title: exampleTitle,
+          text: Formatter.renderDocNodes(block.content.nodes.slice(1)).trim(),
+        });
+      }
+
+      if (examples.length > 0) {
+        details.push({
+          title: `Examples`,
+          text: `<Tabs items={${JSON.stringify(examples.map((ex) => ex.title))}}>
+${examples
+  .map(
+    (example) => `<Tab>
+
+${example.text}
+
+</Tab>`,
+  )
+  .join('\n\n')}
+</Tabs>`,
+        });
+      }
+
+      // Collect parameters
       const parameters = [] as {
         name: string;
         title: string;
@@ -261,7 +309,7 @@ ${exportedItems
       fullTitle = `${item.title}(${parameters.map((p) => p.title).join(', ')})`;
 
       details.push({
-        title: `Parameters [!toc] [#${slugGenerator.generate(`${item.slug} parameters`)}] `,
+        title: `Parameters`,
         text: `<TypeTable type={${JSON.stringify(
           {
             ...Object.fromEntries(
@@ -286,11 +334,12 @@ ${exportedItems
     const relativeSourcePath = path.relative(process.cwd(), sourceFile.getFilePath());
 
     return [
+      '---',
       `## ${fullTitle} [#${item.slug}]`,
       item.description,
 
       ...details.map(
-        (d) => `### ${d.title}
+        (d) => `**${d.title.trim()}**
         
 ${d.text}`,
       ),
