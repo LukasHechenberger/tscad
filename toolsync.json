@@ -20,7 +20,11 @@
       "printWidth": 100,
       "singleQuote": true,
       "tsdoc": true,
-      "plugins": ["prettier-plugin-packagejson", "prettier-plugin-jsdoc"]
+      "plugins": [
+        "prettier-plugin-packagejson",
+        "prettier-plugin-jsdoc",
+        "prettier-plugin-tailwindcss"
+      ]
     }
   },
   "@toolsync/builtin/vscode": {

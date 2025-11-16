@@ -175,7 +175,7 @@ export function PlaygroundPreview() {
   };
   return (
     <>
-      <div className="z-1 absolute w-[300px] top-4 right-4">
+      <div className="absolute top-4 right-4 z-1 w-[300px]">
         <Leva
           fill
           hideCopyButton
@@ -319,8 +319,8 @@ function Toast({
   }[variant];
 
   return (
-    <div className="fixed w-full z-50 bottom-2 flex items-center justify-center touch-none p-2">
-      <span className={`text-sm px-2 py-1 rounded-md ${variantClassName}`}>{children}</span>
+    <div className="fixed bottom-2 z-50 flex w-full touch-none items-center justify-center p-2">
+      <span className={`rounded-md px-2 py-1 text-sm ${variantClassName}`}>{children}</span>
     </div>
   );
 }

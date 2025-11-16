@@ -15,9 +15,9 @@ export default async function HomePage() {
   });
 
   return (
-    <div className="flex flex-1 justify-center items-center container p-4 mx-auto">
-      <main className="flex flex-1 flex-col gap-12 h-full">
-        <div className="flex items-center justify-center flex-col text-center mb-4 min-h-[30vh] flex-1">
+    <div className="container mx-auto flex flex-1 items-center justify-center p-4">
+      <main className="flex h-full flex-1 flex-col gap-12">
+        <div className="mb-4 flex min-h-[30vh] flex-1 flex-col items-center justify-center text-center">
           <h1 className="mb-4 text-2xl font-bold">tscad</h1>
           <p className="text-fd-muted-foreground mb-4">A modern CAD modeller for programmers.</p>
           <p className="text-fd-muted-foreground">
@@ -34,12 +34,12 @@ export default async function HomePage() {
         </div>
 
         <div>
-          <div className="flex gap-4 flex-wrap flex-col md:flex-row">
-            <CodeBlock className="self-stretch flex-1 w-full flex m-0">
+          <div className="flex flex-col flex-wrap gap-4 md:flex-row">
+            <CodeBlock className="m-0 flex w-full flex-1 self-stretch">
               <Pre className="h-full w-full">{rendered}</Pre>
             </CodeBlock>
 
-            <Card title="" className="flex-1 min-h-[300px] relative overflow-hidden">
+            <Card title="" className="relative min-h-[300px] flex-1 overflow-hidden">
               <SampleViewer />
             </Card>
           </div>
