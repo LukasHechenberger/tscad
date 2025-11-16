@@ -41,7 +41,7 @@ let currentToken = 0;
 globalThis.onmessage = async (event: MessageEvent<PrepareMessage | RenderMessage>) => {
   console.log('Worker received message', event);
   if (event.data.type === 'render') {
-    // FIXME: Check token matches currentToken
+    // Check token matches currentToken
     if (event.data.token !== currentToken) {
       console.warn(
         `Received build request for token ${event.data.token}, but current token is ${currentToken}`,
