@@ -121,16 +121,6 @@ const exportedModules = sourceFiles
     ),
   }));
 
-console.dir(
-  {
-    exportedModules: exportedModules.map((m) => ({
-      path: m.sourceFile.getFilePath(),
-      hasChild: m.hasChildPage,
-    })),
-  },
-  { depth: null },
-);
-
 for (const { sourceFile, hasChildPage } of exportedModules) {
   const moduleNameComponents = path
     .relative('src', path.dirname(sourceFile.getFilePath()))
