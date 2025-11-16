@@ -1,9 +1,9 @@
 ---
-title: Introduction
+title: Quick Start
 description: Welcome to the tscad documentation!
 ---
 
-## What is tscad?
+## Introduction
 
 tscad is a CAD modeller for programmers. It is designed to provide a modern developer experience with a focus on TypeScript and JavaScript, allowing users to create parametric CAD models using familiar programming languages and modern tools.
 
@@ -13,60 +13,90 @@ tscad is a CAD modeller for programmers. It is designed to provide a modern deve
   <Card title="Playground" href="/playground">
     Go ahead and try out the tscad playground to get a feel for how it works.
   </Card>
-  <Card title="Get Started" href="/docs/get-started">
+  <Card title="Usage" href="/docs/api">
     Learn how to get started with tscad, including installation and basic usage.
   </Card>
 </Cards>
 
-## Inspiration
-
-I want to have an open source parametric CAD solution with good developer tooling. I draw my inspiration from seeing other open source projects doing great work on the CAD front, but lacking the DX[^dx] a modern developer expects:
-
-### OpenSCAD
-
-OpenSCAD is great because it has tons of features and a pretty active community to help resolve issues.
-
-Sadly, they invented their own programming language and their own IDE, which lacks many basic features like autocompletion and cannot compete with modern AI-assisted IDEs. You can use your own IDE (e.g., VS Code with some plugins) and use the OpenSCAD app just for rendering, but it still uses its own programming language, and documentation is sparse. Also, performance can be really bad for some models.
-
-### JSCAD
-
-Similar to OpenSCAD, but they use JavaScript for coding.
-
-They lack the same DX essentials: Their own IDE (actually a website) has a very basic code editor with no autocompletion as well. The model preview is actually fine, but the documentation is not really up-to-date and is very basic. Using a "real" IDE helps a lot and the command line application is really handy for scripting. The API is stable, so we'll (re)use many of their APIs.
-
-<Callout>
-  I just want to add once more that these projects are my main inspiration and I totally admire
-  these developers for their work. You laid the groundwork for this project.
+<Callout title="Want to learn more?">
+  Check out the more detailed [What is tscad?](/docs/what-is-tscad) introduction.
 </Callout>
 
-## Goals
+## tscad models
 
-In order to achieve a better developer experience, I want to focus on these primary goals to increase the overall developer experience with parametric CAD:
+A model usually consists of a single TypeScript or JavaScript module, which exports a model:
 
-### Modern Programming
+{/* <div className="sticky top-16"> */}
 
-I want to use **TypeScript** in this project. It's a solid programming language with excellent tooling. You can also run it in a browser and use it on basically any OS, which is great for integrating other tools/services.
+```ts title="A simple tscad model"
+import { defineModel } from '@tscad/modeling';
 
-Since TypeScript is basically JavaScript with types, I also want to support JavaScript and the entire npm ecosystem to make things modular.
+export default defineModel({
+  // model definition goes here
+});
+```
 
-### Flexible Tooling
+{/* </div> */}
 
-First and foremost, I want to provide a stable, strongly typed TypeScript API for parametric CAD with good documentation. It should basically have the same functionality as JSCAD, just in TypeScript. A basic command line interface can be used to generate exports etc.
+### The model function
 
-> At this point, users can create CAD models and e.g., export them to STL.
+Each model needs a `model` function that returns the CAD geometry. You can use the built-in primitives and operations from tscad to create your model.
 
-Next, I want to create a flexible preview based on web technology. This way we can easily run it in a browser, on a server, or in a desktop app (with something like Tauri).
+```ts title="A simple tscad model"
+import { defineModel } from '@tscad/modeling';
+import { cube } from '@tscad/modeling/primitives';
 
-We can then integrate this preview into the command line application to build and preview our models. It basically runs a web server that updates the page when the underlying code changes.
+/** A simple model that renders as a cube */
+export default defineModel({
+  model: () => cube({ size: 10 }), // [!code highlight]
+});
+```
 
-> Now users are able to preview their models as they code. You can even use an in-IDE browser (like VSCode's Simple Browser) to preview code and preview side by side.
+### Previewing models
 
-Now we can also use the preview and put it in an online web application together with an online IDE.
+The simplest way to preview your model is to use the [online playground](/playground). Just copy-paste your code into the editor and see the result immediately.
 
-> Now we're talking: We're basically feature-complete with OpenSCAD and JSCAD.
+{/* <div className="sticky top-16"> */}
 
-### Good Documentation
+<Callout>TODO: Add playground screenshot</Callout>
 
-Alongside the online IDE, I want to host extensive documentation with good search functionality.
+{/* </div> */}
 
-[^dx]: developer experience
+### Define model parameters
+
+You can define parameters for your model using the `defineModel` function. This allows you to create parametric models that can be easily adjusted.
+
+```ts title="A parametric tscad model"
+export default defineModel({
+  parameters: { // [!code highlight:3]
+    width: { type: 'number', default: 10, min: 1, max: 100, step: 1 },
+  },
+  model: ...
+});
+```
+
+### Use model parameters
+
+As soon as parameters are defined, you can use them in your model function:
+
+```ts title="A parametric tscad model"
+export default defineModel({
+  parameters: {
+    width: { type: 'number', default: 10, min: 1, max: 100, step: 1 },
+  },
+  model: ({ width }) => cube({ size: width }), // [!code highlight]
+});
+```
+
+## Next steps
+
+🎉 Congratulations! You're ready to dive deeper into tscad!
+
+<Cards>
+  <Card title="Playground" href="/playground">
+    Go ahead and try out the tscad playground to get a feel for how it works.
+  </Card>
+  <Card title="Usage" href="/docs/api">
+    Learn how to get started with tscad, including installation and basic usage.
+  </Card>
+</Cards>

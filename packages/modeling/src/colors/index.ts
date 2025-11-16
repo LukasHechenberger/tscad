@@ -7,6 +7,10 @@ import type { Geometry } from '@jscad/modeling/src/geometries/types';
  *
  * @remarks
  * Use these functions to apply colors to your 3D objects in the preview etc.
+ *
+ * <Callout>
+ * Be sure to check out the [general modelling guide](/docs/api/modules/modeling) if you're new to tscad
+ * </Callout>
  * @packageDocumentation
  */
 

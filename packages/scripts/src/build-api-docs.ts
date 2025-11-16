@@ -110,11 +110,18 @@ console.timeEnd('create project');
 
 const sourceFiles = project.getSourceFiles('src/**/*.ts');
 // TODO [>=1.0.0]: Get from manifest exports
-const exportedModules = sourceFiles.filter((sourceFile) =>
-  sourceFile.getFilePath().endsWith('/index.ts'),
-);
+const exportedModules = sourceFiles
+  .filter((sourceFile) => sourceFile.getFilePath().endsWith('/index.ts'))
+  .map((sourceFile, _, all) => ({
+    sourceFile,
+    hasChildPage: all.some(
+      (f) =>
+        f !== sourceFile &&
+        f.getFilePath().includes(sourceFile.getFilePath().replace('index.ts', '')),
+    ),
+  }));
 
-for (const sourceFile of exportedModules) {
+for (const { sourceFile, hasChildPage } of exportedModules) {
   const moduleNameComponents = path
     .relative('src', path.dirname(sourceFile.getFilePath()))
     .split('/')
@@ -122,10 +129,9 @@ for (const sourceFile of exportedModules) {
 
   const docsPath = path.join(
     process.cwd(),
-    '../../apps/docs/content/docs/api/',
+    '../../apps/docs/content/docs/api/modules/',
     pathInPackagesDirectory,
-    moduleNameComponents.join('/'),
-    'index.mdx',
+    `${moduleNameComponents.join('/')}${hasChildPage ? '/index' : ''}.mdx`,
   );
 
   const moduleName = [manifest.name, ...moduleNameComponents].join('/');
@@ -184,6 +190,7 @@ for (const sourceFile of exportedModules) {
   const packageDocumentation = commentedItems.find((item) => item.isPackageDocumentation);
   if (!packageDocumentation)
     console.warn(`DOC   - WARNING: No package documentation found in ${moduleName}`);
+
   const description = packageDocumentation?.description.trim() ?? '';
 
   // Find exported functions
@@ -216,6 +223,10 @@ ${
     : ''
 }
 
+---
+
+## Methods and Properties [#@methods-and-props]
+
 ${
   exportedItems.length > 0
     ? `\`\`\`ts title="Import"
@@ -239,7 +250,9 @@ ${exportedItems
       for (const block of exampleBlocks) {
         if (block.content.nodes.length === 0) continue;
 
-        const exampleTitle = Formatter.renderDocNode(block.content.nodes[0]!) || 'Example';
+        const exampleTitle =
+          Formatter.renderDocNode(block.content.nodes[0]!).trim() ||
+          `Example ${examples.length + 1}`;
 
         examples.push({
           title: exampleTitle,
@@ -328,8 +341,7 @@ ${example.text}
     const relativeSourcePath = path.relative(process.cwd(), sourceFile.getFilePath());
 
     return [
-      '---',
-      `## ${fullTitle} [#${item.slug}]`,
+      `### ${fullTitle} [#${item.slug}]`,
       item.description,
 
       ...details.map(
@@ -349,7 +361,7 @@ ${d.text}`,
   })
   .join('\n\n')}
 
-`;
+`; // FIXME [>=1.0.0]: Add submodules section
 
   if (!packageDocumentation && exportedItems.length === 0) {
     console.info(
