@@ -87,123 +87,120 @@ const slugGenerator = {
   },
 };
 
-async function updateApiDocs() {
-  console.time('build api docs');
-  const manifest = JSON.parse(await readFile('package.json', 'utf8'));
-  const pathInRepository = manifest.repository.directory;
-  const pathInPackagesDirectory = path.relative('packages', pathInRepository);
+console.time('build api docs');
+const manifest = JSON.parse(await readFile('package.json', 'utf8'));
+const pathInRepository = manifest.repository.directory;
+const pathInPackagesDirectory = path.relative('packages', pathInRepository);
 
-  const baseSourceUrl = new URL(
-    pathInRepository,
-    'https://github.com/LukasHechenberger/tscad/tree/main/',
-  ).toString();
+const baseSourceUrl = new URL(
+  pathInRepository,
+  'https://github.com/LukasHechenberger/tscad/tree/main/',
+).toString();
 
-  console.log(`Building API docs for ${manifest.name}...`);
+console.log(`Building API docs for ${manifest.name}...`);
 
-  console.time('create project');
-  const project = new Project({
-    tsConfigFilePath: 'tsconfig.json',
-    // skipAddingFilesFromTsConfig: true,
-    skipLoadingLibFiles: true,
-    skipFileDependencyResolution: true,
-  });
-  console.timeEnd('create project');
+console.time('create project');
+const project = new Project({
+  tsConfigFilePath: 'tsconfig.json',
+  // skipAddingFilesFromTsConfig: true,
+  skipLoadingLibFiles: true,
+  skipFileDependencyResolution: true,
+});
+console.timeEnd('create project');
 
-  const sourceFiles = project.getSourceFiles('src/**/*.ts');
-  // TODO [>=1.0.0]: Get from manifest exports
-  const exportedModules = sourceFiles.filter((sourceFile) =>
-    sourceFile.getFilePath().endsWith('/index.ts'),
+const sourceFiles = project.getSourceFiles('src/**/*.ts');
+// TODO [>=1.0.0]: Get from manifest exports
+const exportedModules = sourceFiles.filter((sourceFile) =>
+  sourceFile.getFilePath().endsWith('/index.ts'),
+);
+
+for (const sourceFile of exportedModules) {
+  const moduleNameComponents = path
+    .relative('src', path.dirname(sourceFile.getFilePath()))
+    .split('/')
+    .filter(Boolean);
+
+  const docsPath = path.join(
+    process.cwd(),
+    '../../apps/docs/content/docs/api/',
+    pathInPackagesDirectory,
+    moduleNameComponents.join('/'),
+    'index.mdx',
   );
 
-  for (const sourceFile of exportedModules) {
-    const moduleNameComponents = path
-      .relative('src', path.dirname(sourceFile.getFilePath()))
-      .split('/')
-      .filter(Boolean);
+  const moduleName = [manifest.name, ...moduleNameComponents].join('/');
+  const title = moduleNameComponents.length > 0 ? moduleNameComponents.at(-1) : moduleName;
 
-    const docsPath = path.join(
-      process.cwd(),
-      '../../apps/docs/content/docs/api/',
-      pathInPackagesDirectory,
-      moduleNameComponents.join('/'),
-      'index.mdx',
-    );
+  console.log(`DOC ${title}`);
 
-    const moduleName = [manifest.name, ...moduleNameComponents].join('/');
-    const title = moduleNameComponents.length > 0 ? moduleNameComponents.at(-1) : moduleName;
+  const commentedItems = sourceFile.getStatementsWithComments().flatMap((statement) => {
+    return statement.getLeadingCommentRanges().flatMap((range) => {
+      const text = range.getText();
+      const parserContext = new TSDocParser().parseString(text);
 
-    console.log(`DOC ${title}`);
+      if (parserContext.log.messages.length > 0) {
+        console.warn(`DOC   - Warning: TSDoc parse issues in ${moduleName}`);
+        console.warn(parserContext.log.messages.map((message) => message.text).join('\n'));
+      }
 
-    const commentedItems = sourceFile.getStatementsWithComments().flatMap((statement) => {
-      return statement.getLeadingCommentRanges().flatMap((range) => {
-        const text = range.getText();
-        const parserContext = new TSDocParser().parseString(text);
+      const isPackageDocumentation =
+        parserContext.docComment.modifierTagSet.isPackageDocumentation();
 
-        if (parserContext.log.messages.length > 0) {
-          console.warn(`DOC   - Warning: TSDoc parse issues in ${moduleName}`);
-          console.warn(parserContext.log.messages.map((message) => message.text).join('\n'));
-        }
+      // Ensure the statement is exported
+      const title = statement.isKind(SyntaxKind.FunctionDeclaration)
+        ? statement.getName() || 'anonymous'
+        : statement.isKind(SyntaxKind.InterfaceDeclaration)
+          ? statement.getName()
+          : `\`${statement.getKindName()}\``;
 
-        const isPackageDocumentation =
-          parserContext.docComment.modifierTagSet.isPackageDocumentation();
+      const description = Formatter.renderDocNode(parserContext.docComment.summarySection)?.trim();
+      const slug = parserContext.docComment.modifierTagSet.isPackageDocumentation()
+        ? '@index'
+        : slugGenerator.generate(title);
 
-        // Ensure the statement is exported
-        const title = statement.isKind(SyntaxKind.FunctionDeclaration)
-          ? statement.getName() || 'anonymous'
-          : statement.isKind(SyntaxKind.InterfaceDeclaration)
-            ? statement.getName()
-            : `\`${statement.getKindName()}\``;
+      console.log(`DOC      - ${title}: ${description} [${slug}]`);
 
-        const description = Formatter.renderDocNode(
-          parserContext.docComment.summarySection,
-        )?.trim();
-        const slug = parserContext.docComment.modifierTagSet.isPackageDocumentation()
-          ? '@index'
-          : slugGenerator.generate(title);
-
-        console.log(`DOC      - ${title}: ${description} [${slug}]`);
-
-        return [
-          {
-            statement,
-            parserContext,
-            source: {
-              line: statement.getStartLineNumber(),
-            },
-            kind: statement.getKindName(),
-            title,
-            slug,
-            description,
-            text,
-            isPackageDocumentation,
-            isType:
-              statement.isKind(SyntaxKind.InterfaceDeclaration) ||
-              statement.isKind(SyntaxKind.TypeAliasDeclaration),
+      return [
+        {
+          statement,
+          parserContext,
+          source: {
+            line: statement.getStartLineNumber(),
           },
-        ];
-      });
+          kind: statement.getKindName(),
+          title,
+          slug,
+          description,
+          text,
+          isPackageDocumentation,
+          isType:
+            statement.isKind(SyntaxKind.InterfaceDeclaration) ||
+            statement.isKind(SyntaxKind.TypeAliasDeclaration),
+        },
+      ];
     });
+  });
 
-    const packageDocumentation = commentedItems.find((item) => item.isPackageDocumentation);
-    if (!packageDocumentation)
-      console.warn(`DOC   - WARNING: No package documentation found in ${moduleName}`);
-    const description = packageDocumentation?.description.trim() ?? '';
+  const packageDocumentation = commentedItems.find((item) => item.isPackageDocumentation);
+  if (!packageDocumentation)
+    console.warn(`DOC   - WARNING: No package documentation found in ${moduleName}`);
+  const description = packageDocumentation?.description.trim() ?? '';
 
-    // Find exported functions
-    const exportedItems = commentedItems
+  // Find exported functions
+  const exportedItems = commentedItems
 
-      // Order types last
-      .sort((a, b) => {
-        if (a.isType && !b.isType) return 1;
-        if (!a.isType && b.isType) return -1;
+    // Order types last
+    .sort((a, b) => {
+      if (a.isType && !b.isType) return 1;
+      if (!a.isType && b.isType) return -1;
 
-        return 0;
-      })
-      .filter((item) => item !== packageDocumentation);
+      return 0;
+    })
+    .filter((item) => item !== packageDocumentation);
 
-    console.log(`DOC  - Found ${exportedItems.length} exported items`);
+  console.log(`DOC  - Found ${exportedItems.length} exported items`);
 
-    const content = `---
+  const content = `---
 title: ${JSON.stringify(title)}
 description: ${JSON.stringify(description)}
 ---
@@ -303,9 +300,6 @@ ${d.text}`,
 > [Defined in ${relativeSourcePath}:${item.source.line}](${new URL(`${relativeSourcePath}#L${item.source.line}`, `${baseSourceUrl}/`)})
  
 </small>`,
-
-      // FIXME: Remove
-      `{/* kind:${item.statement.getKindName()} */}`,
     ]
       .filter(Boolean)
       .join('\n\n');
@@ -314,22 +308,16 @@ ${d.text}`,
 
 `;
 
-    if (!packageDocumentation && exportedItems.length === 0) {
-      console.info(
-        `Removing ${path.relative(process.cwd(), docsPath)} because there are no exported items`,
-      );
-      await rm(docsPath).catch(() => {});
-    } else {
-      console.info(`Writing to ${path.relative(process.cwd(), docsPath)}\n`);
-      await mkdir(path.dirname(docsPath), { recursive: true });
-      await writeFile(docsPath, content);
-    }
+  if (!packageDocumentation && exportedItems.length === 0) {
+    console.info(
+      `Removing ${path.relative(process.cwd(), docsPath)} because there are no exported items`,
+    );
+    await rm(docsPath).catch(() => {});
+  } else {
+    console.info(`Writing to ${path.relative(process.cwd(), docsPath)}\n`);
+    await mkdir(path.dirname(docsPath), { recursive: true });
+    await writeFile(docsPath, content);
   }
-
-  console.timeEnd('build api docs');
 }
 
-updateApiDocs().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+console.timeEnd('build api docs');
