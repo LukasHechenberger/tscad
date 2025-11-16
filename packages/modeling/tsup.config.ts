@@ -69,7 +69,7 @@ export default defineConfig([
         },
       },
     ],
-    onSuccess: 'pnpm build-api-docs && node ./out/scripts/update-readme.js',
+    onSuccess: 'node ../scripts/out/build-api-docs.js && node ./out/scripts/update-readme.js',
   },
   {
     entry: ['src/index.ts', 'src/*/index.ts'],
