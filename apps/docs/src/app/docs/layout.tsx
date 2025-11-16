@@ -17,10 +17,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   const options = {
     tree: source.pageTree,
     ...baseOptions,
-    nav: {
-      ...baseOptions.nav,
-      mode: 'top',
-    },
   } satisfies DocsLayoutProps;
 
   return <DocsLayout {...options}>{children}</DocsLayout>;

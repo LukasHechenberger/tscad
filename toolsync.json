@@ -19,7 +19,8 @@
     "settings": {
       "printWidth": 100,
       "singleQuote": true,
-      "plugins": ["prettier-plugin-packagejson"]
+      "tsdoc": true,
+      "plugins": ["prettier-plugin-packagejson", "prettier-plugin-jsdoc"]
     }
   },
   "@toolsync/builtin/vscode": {
@@ -30,6 +31,8 @@
       }
     }
   },
-  "@toolsync/builtin/publint": {},
+  "@toolsync/builtin/publint": {
+    "version": "catalog:"
+  },
   "@repo/toolsync-plugin": {}
 }

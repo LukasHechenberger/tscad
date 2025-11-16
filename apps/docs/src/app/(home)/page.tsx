@@ -1,7 +1,6 @@
 import { highlight } from 'fumadocs-core/highlight';
 import { Card } from 'fumadocs-ui/components/card';
 import { CodeBlock, Pre } from 'fumadocs-ui/components/codeblock';
-import { DocsPage } from 'fumadocs-ui/page';
 import Link from 'next/link';
 import { defaultCode } from '@/lib/playground';
 import { SampleViewer } from './page.client';
@@ -16,7 +15,7 @@ export default async function HomePage() {
   });
 
   return (
-    <DocsPage>
+    <div className="flex flex-1 justify-center items-center container p-4 mx-auto">
       <main className="flex flex-1 flex-col gap-12 h-full">
         <div className="flex items-center justify-center flex-col text-center mb-4 min-h-[30vh] flex-1">
           <h1 className="mb-4 text-2xl font-bold">tscad</h1>
@@ -46,6 +45,6 @@ export default async function HomePage() {
           </div>
         </div>
       </main>
-    </DocsPage>
+    </div>
   );
 }

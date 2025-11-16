@@ -64,17 +64,21 @@
     "three": "^0.177.0"
   },
   "devDependencies": {
+    "@microsoft/tsdoc": "^0.16.0",
     "@repo/eslint-config": "workspace:*",
+    "@repo/scripts": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@toolsync/template": "^0.1.1",
-    "@types/node": "^22.15.32",
+    "@types/node": "catalog:",
     "@types/three": "^0.177.0",
     "esbuild-autodoc": "workspace:*",
-    "eslint": "^9.29.0",
+    "eslint": "catalog:",
     "markdown-table": "^3.0.4",
-    "publint": "^0.3.12",
+    "publint": "catalog:",
+    "slugify": "^1.6.6",
+    "ts-morph": "^26.0.0",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3"
+    "typescript": "catalog:"
   },
   "publishConfig": {
     "access": "public"

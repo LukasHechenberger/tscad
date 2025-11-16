@@ -2,6 +2,7 @@
 .contentlayer
 .content-collections
 .source
+/content/docs/api
 
 # test & build
 /coverage

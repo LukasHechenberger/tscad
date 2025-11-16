@@ -1,12 +1,12 @@
 import { GizmoHelper, GizmoViewcube, OrbitControls, Stage } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import type { Model } from '@tscad/modeling';
+import type { Solid } from '@tscad/modeling';
 import { solidToThree } from '@tscad/modeling/convert';
 import { type ReactNode, useMemo } from 'react';
 
 const defaultColor = 'orange';
 
-function Entities({ model }: { model: Model }) {
+function Entities({ model }: { model: Solid | Solid[] }) {
   const geometries = useMemo(
     () => (Array.isArray(model) ? model : [model]).map((solid) => solidToThree(solid)),
     [model],
@@ -29,7 +29,7 @@ export default function Viewer({
   children,
   viewcube = true,
 }: {
-  model: Model;
+  model: Solid | Solid[];
   viewcube?: boolean;
   children?: ReactNode;
 }) {

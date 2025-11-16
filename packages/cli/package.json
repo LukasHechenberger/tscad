@@ -40,11 +40,11 @@
     "@toolsync/template": "^0.1.1",
     "@tscad/commander": "workspace:*",
     "@types/debug": "^4.1.12",
-    "@types/node": "^22.15.32",
-    "eslint": "^9.29.0",
-    "publint": "^0.3.12",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "publint": "catalog:",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3"
+    "typescript": "catalog:"
   },
   "publishConfig": {
     "access": "public"

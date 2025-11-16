@@ -12,7 +12,7 @@ export default defineConfig([
     sourcemap: true,
     esbuildPlugins: [
       addSeeTagPlugin({
-        baseUrl: 'https://tscad.vercel.app/docs/modeling/',
+        baseUrl: 'https://tscad.vercel.app/docs/api/modeling/',
         getPathname: (source, name) => {
           if (!source.includes('/primitives/')) return;
           return `${path.relative('src', path.dirname(source))}#${name}`;
@@ -69,7 +69,7 @@ export default defineConfig([
         },
       },
     ],
-    onSuccess: 'node ./out/scripts/update-readme.js',
+    onSuccess: 'node ../scripts/out/build-api-docs.js && node ./out/scripts/update-readme.js',
   },
   {
     entry: ['src/index.ts', 'src/*/index.ts'],
