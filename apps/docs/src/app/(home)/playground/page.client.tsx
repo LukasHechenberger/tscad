@@ -6,21 +6,16 @@ import { use$ } from '@legendapp/state/react';
 import { syncObservable } from '@legendapp/state/sync';
 import Editor, { type Monaco, type OnMount, useMonaco } from '@monaco-editor/react';
 import { Grid } from '@react-three/drei';
-import type { Model, RenderedModel, Solid, Vector2 } from '@tscad/modeling';
-import Viewer, {
-  jsonSchemaToLevaSchema,
-  RenderedSolids,
-  useModelControls,
-  ViewerCanvas,
-} from '@tscad/viewer/src/viewer';
+import type { RenderedModel, Vector2 } from '@tscad/modeling';
+import { jsonSchemaToLevaSchema, RenderedSolids, ViewerCanvas } from '@tscad/viewer/src/viewer';
 import type * as esbuild from 'esbuild-wasm';
-import { button, folder, Leva, useControls } from 'leva';
+import { button, Leva, useControls } from 'leva';
 import { useTheme } from 'next-themes';
 import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { bundleCode } from '@/lib/esbuild';
 import { defaultCode } from '@/lib/playground';
 import { homepage } from '../../../../package.json';
-import type { PreparedModel, PreparedModelResponse, WorkerResponse } from './worker';
+import type { PreparedModel, WorkerResponse } from './worker';
 
 const documentationOrigin = new URL(homepage).host;
 
@@ -288,10 +283,6 @@ export function PlaygroundPreview() {
     { collapsed: true, order: 0 },
     [viewOptions],
   );
-
-  // useEffect(() => {
-  //   console.log({ ca: preparedModel });
-  // }, [preparedModel]);
 
   const parameters = useControls(
     'Model Parameters',
