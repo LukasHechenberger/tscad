@@ -1,6 +1,6 @@
 import type { Model, ParametersInput, RenderedModel } from '@tscad/modeling';
 
-let model: Model<unknown, unknown>;
+let model: Model<ParametersInput, Record<string, unknown>>;
 
 type ResponsePayload<R> = {
   result?: R;
