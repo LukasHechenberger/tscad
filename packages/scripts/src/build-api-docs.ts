@@ -1,12 +1,6 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import {
-  DocBlockTag,
-  DocDeclarationReference,
-  DocNodeKind,
-  ExcerptKind,
-  TSDocParser,
-} from '@microsoft/tsdoc';
+import { DocDeclarationReference, DocNodeKind, ExcerptKind, TSDocParser } from '@microsoft/tsdoc';
 import { DocExcerpt, DocNode } from '@microsoft/tsdoc';
 import type { TypeNode } from 'fumadocs-ui/components/type-table';
 import slugify from 'slugify';
