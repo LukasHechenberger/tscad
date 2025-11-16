@@ -1,4 +1,5 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
+import { repository } from '../../package.json';
 
 /**
  * Shared layout configurations
@@ -9,7 +10,10 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
  * - Docs Layout: app/docs/layout.tsx
  */
 export const baseOptions: BaseLayoutProps = {
+  githubUrl: repository.url.replace(/\.git$/, '').replace('git+', ''),
   nav: {
+    transparentMode: 'always',
+
     title: (
       <>
         <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" aria-label="Logo">
