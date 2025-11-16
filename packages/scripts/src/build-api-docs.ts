@@ -110,11 +110,28 @@ console.timeEnd('create project');
 
 const sourceFiles = project.getSourceFiles('src/**/*.ts');
 // TODO [>=1.0.0]: Get from manifest exports
-const exportedModules = sourceFiles.filter((sourceFile) =>
-  sourceFile.getFilePath().endsWith('/index.ts'),
+const exportedModules = sourceFiles
+  .filter((sourceFile) => sourceFile.getFilePath().endsWith('/index.ts'))
+  .map((sourceFile, _, all) => ({
+    sourceFile,
+    hasChildPage: all.some(
+      (f) =>
+        f !== sourceFile &&
+        f.getFilePath().includes(sourceFile.getFilePath().replace('index.ts', '')),
+    ),
+  }));
+
+console.dir(
+  {
+    exportedModules: exportedModules.map((m) => ({
+      path: m.sourceFile.getFilePath(),
+      hasChild: m.hasChildPage,
+    })),
+  },
+  { depth: null },
 );
 
-for (const sourceFile of exportedModules) {
+for (const { sourceFile, hasChildPage } of exportedModules) {
   const moduleNameComponents = path
     .relative('src', path.dirname(sourceFile.getFilePath()))
     .split('/')
@@ -124,8 +141,7 @@ for (const sourceFile of exportedModules) {
     process.cwd(),
     '../../apps/docs/content/docs/api/',
     pathInPackagesDirectory,
-    moduleNameComponents.join('/'),
-    'index.mdx',
+    `${moduleNameComponents.join('/')}${hasChildPage ? '/index' : ''}.mdx`,
   );
 
   const moduleName = [manifest.name, ...moduleNameComponents].join('/');
@@ -239,7 +255,9 @@ ${exportedItems
       for (const block of exampleBlocks) {
         if (block.content.nodes.length === 0) continue;
 
-        const exampleTitle = Formatter.renderDocNode(block.content.nodes[0]!) || 'Example';
+        const exampleTitle =
+          Formatter.renderDocNode(block.content.nodes[0]!).trim() ||
+          `Example ${examples.length + 1}`;
 
         examples.push({
           title: exampleTitle,
