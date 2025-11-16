@@ -1,7 +1,6 @@
 import { highlight } from 'fumadocs-core/highlight';
 import { Card } from 'fumadocs-ui/components/card';
 import { CodeBlock, Pre } from 'fumadocs-ui/components/codeblock';
-import { DocsPage } from 'fumadocs-ui/page';
 import Link from 'next/link';
 import { defaultCode } from '@/lib/playground';
 import { SampleViewer } from './page.client';
