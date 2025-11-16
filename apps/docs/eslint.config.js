@@ -10,6 +10,7 @@ export default [
           allowList: {
             utils: true,
             docs: true,
+            Docs: true,
             props: true,
             generateStaticParams: true,
             dynamicParams: true,

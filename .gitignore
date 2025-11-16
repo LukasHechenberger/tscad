@@ -7,7 +7,8 @@
 apps/docs/**/.contentlayer
 apps/docs/**/.content-collections
 apps/docs/**/.source
-apps/docs/content/docs/api
+apps/docs/content/docs/api/modules/*
+!apps/docs/content/docs/api/modules/index.mdx
 
 # test & build
 apps/docs/coverage

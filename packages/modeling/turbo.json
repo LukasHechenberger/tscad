@@ -7,7 +7,7 @@
         ".next/**",
         "!.next/cache/**",
         "out/**",
-        "../../apps/docs/content/docs/api/modeling/**"
+        "../../apps/docs/content/docs/api/modules/modeling/**"
       ]
     }
   }

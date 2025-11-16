@@ -129,7 +129,7 @@ for (const { sourceFile, hasChildPage } of exportedModules) {
 
   const docsPath = path.join(
     process.cwd(),
-    '../../apps/docs/content/docs/api/',
+    '../../apps/docs/content/docs/api/modules/',
     pathInPackagesDirectory,
     `${moduleNameComponents.join('/')}${hasChildPage ? '/index' : ''}.mdx`,
   );
@@ -190,6 +190,7 @@ for (const { sourceFile, hasChildPage } of exportedModules) {
   const packageDocumentation = commentedItems.find((item) => item.isPackageDocumentation);
   if (!packageDocumentation)
     console.warn(`DOC   - WARNING: No package documentation found in ${moduleName}`);
+
   const description = packageDocumentation?.description.trim() ?? '';
 
   // Find exported functions
@@ -221,6 +222,10 @@ ${
       )?.trim()
     : ''
 }
+
+---
+
+## Methods and Properties [#@methods-and-props]
 
 ${
   exportedItems.length > 0
@@ -336,8 +341,7 @@ ${example.text}
     const relativeSourcePath = path.relative(process.cwd(), sourceFile.getFilePath());
 
     return [
-      '---',
-      `## ${fullTitle} [#${item.slug}]`,
+      `### ${fullTitle} [#${item.slug}]`,
       item.description,
 
       ...details.map(
@@ -357,7 +361,7 @@ ${d.text}`,
   })
   .join('\n\n')}
 
-`;
+`; // FIXME [>=1.0.0]: Add submodules section
 
   if (!packageDocumentation && exportedItems.length === 0) {
     console.info(

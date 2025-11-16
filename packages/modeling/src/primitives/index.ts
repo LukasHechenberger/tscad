@@ -4,6 +4,10 @@ import type { Vector3 } from '@/types';
 /**
  * Methods to construct simple geometric primitives
  *
+ * @remarks
+ * <Callout>
+ * Be sure to check out the [general modelling guide](/docs/api/modules/modeling) if you're new to tscad
+ * </Callout>
  * @packageDocumentation
  */
 

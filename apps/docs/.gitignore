@@ -2,7 +2,8 @@
 .contentlayer
 .content-collections
 .source
-/content/docs/api
+/content/docs/api/modules/*
+!/content/docs/api/modules/index.mdx
 
 # test & build
 /coverage
