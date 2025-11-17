@@ -1,6 +1,6 @@
-import type { RsbuildPlugin } from '@rsbuild/core';
 import { exec as _exec } from 'node:child_process';
 import { promisify } from 'node:util';
+import type { RsbuildPlugin } from '@rsbuild/core';
 
 const exec = promisify(_exec);
 

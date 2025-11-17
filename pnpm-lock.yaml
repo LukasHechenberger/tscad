@@ -485,6 +485,10 @@ importers:
         version: 5.9.3
 
   packages/rsbuild-exec:
+    dependencies:
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.1(jiti@2.6.1)
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -495,9 +499,6 @@ importers:
       '@rsbuild/core':
         specifier: ^1.6.6
         version: 1.6.6
-      '@rslib/core':
-        specifier: ^0.17.2
-        version: 0.17.2(@microsoft/api-extractor@7.52.8(@types/node@22.19.1))(typescript@5.9.3)
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.1
