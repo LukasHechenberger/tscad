@@ -42,7 +42,7 @@ fi
       },
     };
   },
-  async setupPackage(package_, {}) {
+  async setupPackage(package_) {
     if (!package_.isRoot) {
       const { homepage } = package_.packageJson;
 
