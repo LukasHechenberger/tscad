@@ -8,16 +8,17 @@ export default defineConfig([
     entry: ['src/*.ts', 'src/*/index.ts', 'src/scripts/*.ts'],
     format: ['esm', 'cjs'],
     outDir: 'out',
-    dts: true,
+    dts: {
+      banner: '/** Just checking... @packageDocumentation */',
+    },
     sourcemap: true,
     esbuildPlugins: [
-      addSeeTagPlugin({
-        baseUrl: 'https://tscad.vercel.app/docs/api/modeling/',
-        getPathname: (source, name) => {
-          if (!source.includes('/primitives/')) return;
-          return `${path.relative('src', path.dirname(source))}#${name}`;
-        },
-      }),
+      // addSeeTagPlugin({
+      //   baseUrl: 'https://tscad.vercel.app/docs/api/modules/modeling/',
+      //   getPathname: (source, name) => {
+      //     return `${path.relative('src', path.dirname(source))}#${name}`;
+      //   },
+      // }),
       {
         name: 'add-exports',
         setup({ onEnd }) {
