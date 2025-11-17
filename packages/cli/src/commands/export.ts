@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import * as threeMf from '@jscad/3mf-serializer';
 import * as obj from '@jscad/obj-serializer';
@@ -50,7 +50,13 @@ export const exportCommand = new Command('export')
     }
 
     debug('Loading model');
-    const geometry = await import(importPath).then((module_) => module_.default);
+    let geometry = await import(importPath).then((module_) => module_.default ?? module_.main);
+
+    if (typeof geometry === 'function') {
+      debug('Executing model function');
+      geometry = await geometry();
+    }
+
     debug('Model loaded');
 
     const parts = Array.isArray(geometry) ? geometry : [geometry];
