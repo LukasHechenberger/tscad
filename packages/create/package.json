@@ -17,9 +17,6 @@
     "dev": "rslib dev --watch",
     "lint": "eslint --max-warnings 0 ."
   },
-  "eslintConfig": {
-    "extends": "@repo/eslint-config/base"
-  },
   "dependencies": {
     "commander": "^14.0.0",
     "execa": "^9.6.0",
