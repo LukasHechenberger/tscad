@@ -1,4 +1,3 @@
-import { stderr, type stdout } from 'node:process';
 import type { RsbuildPlugin } from '@rsbuild/core';
 import { execaCommand, type Options } from 'execa';
 
