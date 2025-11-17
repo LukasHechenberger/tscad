@@ -45,7 +45,6 @@ Commands:
   export [options] [model]  Export the model to a file
   help [command]            Display help for command
 
-Documentation: https://tscad.vercel.app
 ```
 
 <!-- #endregion usage -->
