@@ -67,12 +67,12 @@ export default defineConfig({
               await updateReadme();
               console.timeEnd('UPDATE README');
 
-              // console.time('BUILD API DOCS');
+              console.time('BUILD API DOCS');
 
-              // await exec('pnpm build-api-docs');
-              // api.logger.ready('built api docs');
+              await exec('pnpm build-api-docs');
+              api.logger.ready('built api docs');
 
-              // console.timeEnd('BUILD API DOCS');
+              console.timeEnd('BUILD API DOCS');
             });
           },
         } satisfies RsbuildPlugin,

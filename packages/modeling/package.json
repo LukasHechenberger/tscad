@@ -12,44 +12,24 @@
   "type": "module",
   "exports": {
     ".": {
-      "require": {
-        "types": "./out/index.d.cts",
-        "default": "./out/index.cjs"
-      },
       "types": "./out/index.d.ts",
+      "require": "./out/index.cjs",
       "default": "./out/index.js"
     },
     "./colors": {
-      "require": {
-        "types": "./out/colors/index.d.cts",
-        "default": "./out/colors/index.cjs"
-      },
       "types": "./out/colors/index.d.ts",
+      "require": "./out/colors/index.cjs",
       "default": "./out/colors/index.js"
     },
     "./convert": {
-      "require": {
-        "types": "./out/convert/index.d.cts",
-        "default": "./out/convert/index.cjs"
-      },
       "types": "./out/convert/index.d.ts",
+      "require": "./out/convert/index.cjs",
       "default": "./out/convert/index.js"
     },
     "./primitives": {
-      "require": {
-        "types": "./out/primitives/index.d.cts",
-        "default": "./out/primitives/index.cjs"
-      },
       "types": "./out/primitives/index.d.ts",
+      "require": "./out/primitives/index.cjs",
       "default": "./out/primitives/index.js"
-    },
-    "./types": {
-      "require": {
-        "types": "./out/types.d.cts",
-        "default": "./out/types.cjs"
-      },
-      "types": "./out/types.d.ts",
-      "default": "./out/types.js"
     }
   },
   "scripts": {
