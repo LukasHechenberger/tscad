@@ -14,7 +14,8 @@ class RawTemplate extends Template {
 }
 
 const getArgumentsDocumentation = (command: Command) =>
-  `<TypeTable type={${JSON.stringify(
+  `{/* prettier-ignore */}
+<TypeTable type={${JSON.stringify(
     Object.fromEntries(
       command.registeredArguments.map((argument) => [
         argument.name(),
@@ -31,7 +32,8 @@ const getArgumentsDocumentation = (command: Command) =>
   )}} />`;
 
 const getOptionsDocumentation = (command: Command) =>
-  `<TypeTable type={${JSON.stringify(
+  `{/* prettier-ignore */}
+<TypeTable type={${JSON.stringify(
     Object.fromEntries(
       command.options.map((argument) => [
         `--${argument.name()}`,
