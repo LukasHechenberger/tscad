@@ -266,6 +266,9 @@ importers:
       publint:
         specifier: 'catalog:'
         version: 0.3.15
+      rsbuild-exec:
+        specifier: workspace:*
+        version: link:../rsbuild-exec
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

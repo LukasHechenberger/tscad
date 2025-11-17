@@ -43,6 +43,7 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "publint": "catalog:",
+    "rsbuild-exec": "workspace:*",
     "typescript": "catalog:"
   },
   "publishConfig": {
