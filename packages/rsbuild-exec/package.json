@@ -34,6 +34,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@rsbuild/core": "^1.6.6",
+    "@rslib/core": "^0.17.2",
     "@types/node": "catalog:",
     "publint": "catalog:",
     "typescript": "^5.9.3"
