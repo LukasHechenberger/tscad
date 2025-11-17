@@ -33,6 +33,10 @@ const getOptionsDocumentation = (command: Command) =>
 const logPrefix = styleText(['magenta'], 'DOC');
 console.time(`${logPrefix} ⚡️ Build succeeded`);
 
+// eslint-disable-next-line turbo/no-undeclared-env-vars
+delete process.env.FORCE_COLOR;
+// eslint-disable-next-line turbo/no-undeclared-env-vars
+process.env.NO_COLOR = '1';
 await MarkdownTemplate.update('README.md', {
   section: 'usage',
   content: `\`\`\`
@@ -41,6 +45,8 @@ ${cli.helpInformation({ error: false })}
 });
 
 // Force color output
+// eslint-disable-next-line turbo/no-undeclared-env-vars
+delete process.env.NO_COLOR;
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 process.env.FORCE_COLOR = '1';
 

@@ -3,6 +3,7 @@ import { promisify } from 'node:util';
 import { defineConfig, type RsbuildPlugin } from '@rslib/core';
 import { MarkdownTemplate } from '@toolsync/template';
 import { markdownTable } from 'markdown-table';
+import { pluginRsbuildExec } from 'rsbuild-exec';
 
 const exec = promisify(_exec);
 
@@ -66,16 +67,13 @@ export default defineConfig({
               console.time('UPDATE README');
               await updateReadme();
               console.timeEnd('UPDATE README');
-
-              console.time('BUILD API DOCS');
-
-              await exec('pnpm build-api-docs');
-              api.logger.ready('built api docs');
-
-              console.timeEnd('BUILD API DOCS');
             });
           },
         } satisfies RsbuildPlugin,
+        pluginRsbuildExec({
+          title: 'api-docs',
+          command: 'pnpm build-api-docs',
+        }),
       ],
     },
     {

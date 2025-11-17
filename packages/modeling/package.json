@@ -56,6 +56,7 @@
     "eslint": "catalog:",
     "markdown-table": "^3.0.4",
     "publint": "catalog:",
+    "rsbuild-exec": "workspace:*",
     "slugify": "^1.6.6",
     "ts-morph": "^26.0.0",
     "typescript": "catalog:"
