@@ -8,6 +8,7 @@
   },
   "@toolsync/builtin/package-readme": {},
   "@toolsync/builtin/turbo": {
+    "concurrency": "15",
     "tasks": {
       "test:integration": {
         "dependsOn": ["build"]
@@ -19,7 +20,6 @@
     "settings": {
       "printWidth": 100,
       "singleQuote": true,
-      "tsdoc": true,
       "plugins": ["prettier-plugin-packagejson", "prettier-plugin-tailwindcss"]
     }
   },
