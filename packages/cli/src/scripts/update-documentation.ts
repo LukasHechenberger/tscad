@@ -37,6 +37,7 @@ console.time(`${logPrefix} ⚡️ Build succeeded`);
 delete process.env.FORCE_COLOR;
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 process.env.NO_COLOR = '1';
+
 await MarkdownTemplate.update('README.md', {
   section: 'usage',
   content: `\`\`\`
