@@ -5,7 +5,7 @@ description: Export the model to a file
 
 ## Overview
 
-Use `tscad export` to export your tscad model to a file format suitable for 3D printing or further processing. By default, it exports the model defined in `./src/model.ts` to `out/model.stl`. You can customize the output file name, choose to export each part separately, or even open the exported model directly in a slicer application.
+Use `tscad export` to export your tscad model to a file format suitable for 3D printing or further processing. By default, it exports the model defined in `./src/model.ts` to `./out/model.stl`. You can customize the output file name, choose to export each part separately, or even open the exported model directly in a slicer application.
 
 {/* #region usage */}
 {/* This section is generated. Do not edit manually! */}
@@ -20,7 +20,7 @@ Use `tscad export` to export your tscad model to a file format suitable for 3D p
 
 [1mOptions:[22m
   [36m--parts[39m              Export each part to a separate file (default: false)
-  [36m--output <filename>[39m  The output file (default: "out/model.stl")
+  [36m--output <filename>[39m  The output file (default: "./out/model.stl")
   [36m--slice <slicer>[39m     Open the result in a slicer (default: false)
   [36m-h, --help[39m           Display help for command
 
@@ -68,7 +68,7 @@ import { TypeTable } from 'fumadocs-ui/components/type-table';
     "type": "string",
     "required": true,
     "description": "The output file",
-    "default": "out/model.stl"
+    "default": "./out/model.stl"
   },
   "--slice": {
     "type": "boolean",

@@ -20,7 +20,7 @@ export const exportCommand = new Command('export')
   .description('Export the model to a file')
   .argument('[model]', 'Where to find the tscad model', './src/model.ts')
   .option('--parts', 'Export each part to a separate file', false)
-  .option('--output <filename>', 'The output file', 'out/model.stl')
+  .option('--output <filename>', 'The output file', './out/model.stl')
   .option('--slice <slicer>', 'Open the result in a slicer', false)
   .action(async function runExportCommand(model, options) {
     console.log(`🫡  Exporting model at ${path.relative(process.cwd(), model)}...`);
