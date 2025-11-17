@@ -1,11 +1,7 @@
-import { exec as _exec } from 'node:child_process';
-import { promisify } from 'node:util';
 import { defineConfig, type RsbuildPlugin } from '@rslib/core';
 import { MarkdownTemplate } from '@toolsync/template';
 import { markdownTable } from 'markdown-table';
 import { pluginRsbuildExec } from 'rsbuild-exec';
-
-const exec = promisify(_exec);
 
 async function updateReadme() {
   const {
