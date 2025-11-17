@@ -1,4 +1,5 @@
 {
+  "concurrency": "15",
   "tasks": {
     "test:integration": {
       "dependsOn": [
