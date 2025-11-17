@@ -485,10 +485,6 @@ importers:
         version: 5.9.3
 
   packages/rsbuild-exec:
-    dependencies:
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.1(jiti@2.6.1)
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -505,6 +501,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.1(jiti@2.6.1)
       publint:
         specifier: 'catalog:'
         version: 0.3.15
