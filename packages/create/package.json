@@ -12,10 +12,9 @@
   "type": "module",
   "bin": "./out/bin.js",
   "scripts": {
-    "build": "tsup",
-    "build:readme": "pnpm update-section README.md usage \"\\`\\`\\`\n$(node out/bin.js --help)\n\\`\\`\\`\"",
+    "build": "rslib build",
     "check:exports": "publint",
-    "dev": "tsup --watch",
+    "dev": "rslib dev --watch",
     "lint": "eslint --max-warnings 0 ."
   },
   "eslintConfig": {
@@ -29,12 +28,13 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@rslib/core": "^0.17.2",
     "@toolsync/template": "^0.1.1",
     "@tscad/commander": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "publint": "catalog:",
-    "tsup": "^8.5.0",
+    "rsbuild-exec": "workspace:*",
     "typescript": "^5.9.3",
     "which-pm-runs": "^1.1.0"
   },
