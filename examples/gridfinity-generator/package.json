@@ -15,8 +15,8 @@
   "type": "commonjs",
   "main": "out/index.js",
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "build": "rslib build",
+    "dev": "rslib dev --watch",
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
@@ -27,10 +27,11 @@
     "@jscad/cli": "^2.3.5",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@rslib/core": "^0.17.2",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "picocolors": "^1.1.1",
-    "tsup": "^8.5.0",
+    "rsbuild-exec": "workspace:*",
     "typescript": "catalog:"
   }
 }

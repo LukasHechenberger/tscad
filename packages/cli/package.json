@@ -14,11 +14,10 @@
     "tscad": "./out/bin.js"
   },
   "scripts": {
-    "build": "tsup",
-    "build:readme": "pnpm update-section README.md usage \"\\`\\`\\`\n$(node out/bin.js --help)\n\\`\\`\\`\"",
+    "build": "rslib build",
     "check:exports": "publint",
     "check:types": "tsc --noEmit",
-    "dev": "tsup --watch",
+    "dev": "rslib dev --watch",
     "dev:on-success": "PORT=3999 node out/bin.js dev ../../examples/gridfinity-generator/src/model.ts",
     "lint": "eslint . --max-warnings 0"
   },
@@ -37,13 +36,14 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@rslib/core": "^0.17.2",
     "@toolsync/template": "^0.1.1",
     "@tscad/commander": "workspace:*",
     "@types/debug": "^4.1.12",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "publint": "catalog:",
-    "tsup": "^8.5.0",
+    "rsbuild-exec": "workspace:*",
     "typescript": "catalog:"
   },
   "publishConfig": {

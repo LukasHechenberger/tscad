@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { inspect, styleText } from 'node:util';
-import { Template } from '@toolsync/template';
+import { MarkdownTemplate, Template } from '@toolsync/template';
 import type { Argument, Command, Option } from '@tscad/commander';
 import { cli } from '../index';
 
@@ -32,6 +32,18 @@ const getOptionsDocumentation = (command: Command) =>
 
 const logPrefix = styleText(['magenta'], 'DOC');
 console.time(`${logPrefix} ⚡️ Build succeeded`);
+
+await MarkdownTemplate.update('README.md', {
+  section: 'usage',
+  content: `\`\`\`
+${cli.helpInformation({ error: false })}
+\`\`\``,
+});
+
+// Force color output
+// eslint-disable-next-line turbo/no-undeclared-env-vars
+process.env.FORCE_COLOR = '1';
+
 for (const command of cli.commands) {
   const path = `../../apps/docs/content/docs/(cli)/${command.name()}.mdx`;
   console.info(`${logPrefix} Documenting \`${command.name()}\` command...`);

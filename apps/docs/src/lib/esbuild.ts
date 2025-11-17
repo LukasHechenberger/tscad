@@ -1,4 +1,3 @@
-// lib/bundler.ts
 import * as esbuild from 'esbuild-wasm';
 
 let initialized = false;

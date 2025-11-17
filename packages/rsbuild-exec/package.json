@@ -1,39 +1,41 @@
 {
-  "name": "@tscad/create",
-  "version": "0.0.2",
-  "description": "Initializes new tscad projects",
+  "name": "rsbuild-exec",
+  "version": "0.0.0",
+  "description": "Execute shell commands during your rsbuild",
   "homepage": "https://tscad.vercel.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LukasHechenberger/tscad.git",
-    "directory": "packages/create"
+    "directory": "packages/rsbuild-exec"
   },
   "license": "MIT",
   "type": "module",
-  "bin": "./out/bin.js",
+  "exports": {
+    ".": {
+      "types": "./out/index.d.ts",
+      "import": "./out/index.js",
+      "default": "./out/index.js"
+    }
+  },
   "scripts": {
     "build": "rslib build",
     "check:exports": "publint",
+    "check:types": "tsc --noEmit",
     "dev": "rslib dev --watch",
     "lint": "eslint --max-warnings 0 ."
-  },
-  "dependencies": {
-    "commander": "^14.0.0",
-    "execa": "^9.6.0",
-    "node-plop": "^0.32.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@rsbuild/core": "^1.6.6",
     "@rslib/core": "^0.17.2",
-    "@toolsync/template": "^0.1.1",
-    "@tscad/commander": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "publint": "catalog:",
-    "rsbuild-exec": "workspace:*",
-    "typescript": "^5.9.3",
-    "which-pm-runs": "^1.1.0"
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "@rsbuild/core": "^1.6.6"
   },
   "publishConfig": {
     "access": "public"
