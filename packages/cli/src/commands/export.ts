@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import * as threeMf from '@jscad/3mf-serializer';
 import * as obj from '@jscad/obj-serializer';
