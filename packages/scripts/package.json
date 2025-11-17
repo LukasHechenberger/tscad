@@ -12,7 +12,7 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "build-api-docs": "./out/build-api-docs.js"
+    "build-api-docs": "./bin/build-api-docs.js"
   },
   "scripts": {
     "build": "rslib build",

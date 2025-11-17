@@ -1,17 +1,16 @@
-import { exec as _exec } from 'node:child_process';
-import { promisify } from 'node:util';
 import type { RsbuildPlugin } from '@rsbuild/core';
-
-const exec = promisify(_exec);
+import { execaCommand, type Options } from 'execa';
 
 export function pluginExec({
   command,
   title = 'script',
+  options,
 }: {
   /** The command to execute */
   command: string;
   /** Use a custom title for your script */
   title?: string;
+  options?: Options;
 }): RsbuildPlugin {
   return {
     name: 'rsbuild-exec',
@@ -21,10 +20,8 @@ export function pluginExec({
         api.logger.start(`${title} started...`);
 
         try {
-          const { stdout, stderr } = await exec(command);
+          await execaCommand(command, { stdout: 'inherit', stderr: 'inherit', ...options });
 
-          if (stdout) api.logger.info(stdout);
-          if (stderr) api.logger.warn(stderr);
           api.logger.ready(
             `${title} finished in ${((performance.now() - start) / 1000).toFixed(2)} s`,
           );

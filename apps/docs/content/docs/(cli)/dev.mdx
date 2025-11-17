@@ -3,6 +3,8 @@ title: tscad dev
 description: Start the development server
 ---
 
+## Overview
+
 Running `tscad dev` starts a development server that serves the model file specified in the `model` argument. By default, it serves `src/model.ts` on port 4000. You can specify a different model file or port using the command line arguments.
 
 {/* #region usage */}
@@ -44,29 +46,45 @@ Once the server is running you can open it in a browser. If you run it in a VSCo
 {/* #region arguments */}
 {/* This section is generated. Do not edit manually! */}
 
-## Arguments
+import { TypeTable } from 'fumadocs-ui/components/type-table';
 
-### `model`
+## API
 
-Default: `'src/model.ts'{:js}`
+`tscad dev [options] [model]`
 
-Where to find the tscad model
+### Arguments [!toc]
+
+{/* prettier-ignore */}
+<TypeTable type={{
+  "model": {
+    "type": "string",
+    "required": false,
+    "description": "Where to find the tscad model",
+    "default": "src/model.ts"
+  }
+}} />
 
 {/* #endregion arguments */}
 
 {/* #region options */}
 {/* This section is generated. Do not edit manually! */}
 
-## Options
+### Options [!toc]
 
-### `-p, --port <port>`
-
-Default: `4000{:js}`
-
-The port to listen at
-
-### `--open`
-
-Open the browser once started
+{/* prettier-ignore */}
+<TypeTable type={{
+  "--port": {
+    "type": "number",
+    "required": true,
+    "description": "The port to listen at",
+    "default": 4000
+  },
+  "--open": {
+    "type": "boolean",
+    "required": false,
+    "description": "Open the browser once started",
+    "default": false
+  }
+}} />
 
 {/* #endregion options */}

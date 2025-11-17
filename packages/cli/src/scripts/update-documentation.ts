@@ -1,8 +1,8 @@
 import { existsSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
-import { inspect, styleText } from 'node:util';
+import { styleText } from 'node:util';
 import { MarkdownTemplate, Template } from '@toolsync/template';
-import type { Argument, Command, Option } from '@tscad/commander';
+import type { Command } from '@tscad/commander';
 import { cli } from '../index';
 
 // NOTE: This script does not handle subcommands of subcommands
@@ -13,25 +13,49 @@ class RawTemplate extends Template {
   }
 }
 
-const getArgumentDescription = (option: Argument | Option) => [
-  ...(option.defaultValue ? [`Default: \`${inspect(option.defaultValue)}{:js}\``] : []),
-  option.description,
-];
-
 const getArgumentsDocumentation = (command: Command) =>
-  command.registeredArguments.flatMap((option) => [
-    `### \`${option.name()}\``,
-    ...getArgumentDescription(option),
-  ]);
+  `{/* prettier-ignore */}
+<TypeTable type={${JSON.stringify(
+    Object.fromEntries(
+      command.registeredArguments.map((argument) => [
+        argument.name(),
+        {
+          type: 'string',
+          required: argument.required,
+          description: argument.description,
+          default: argument.defaultValue,
+        },
+      ]),
+    ),
+    undefined,
+    2,
+  )}} />`;
 
 const getOptionsDocumentation = (command: Command) =>
-  command.options.flatMap((option) => [
-    `### \`${option.flags}\``,
-    ...getArgumentDescription(option),
-  ]);
+  `{/* prettier-ignore */}
+<TypeTable type={${JSON.stringify(
+    Object.fromEntries(
+      command.options.map((argument) => [
+        `--${argument.name()}`,
+        {
+          type: typeof argument.defaultValue,
+          required: argument.required,
+          description: argument.description,
+          default: argument.defaultValue,
+        },
+      ]),
+    ),
+    undefined,
+    2,
+  )}} />`;
 
 const logPrefix = styleText(['magenta'], 'DOC');
 console.time(`${logPrefix} ⚡️ Build succeeded`);
+
+// eslint-disable-next-line turbo/no-undeclared-env-vars
+delete process.env.FORCE_COLOR;
+// eslint-disable-next-line turbo/no-undeclared-env-vars
+process.env.NO_COLOR = '1';
 
 await MarkdownTemplate.update('README.md', {
   section: 'usage',
@@ -41,6 +65,8 @@ ${cli.helpInformation({ error: false })}
 });
 
 // Force color output
+// eslint-disable-next-line turbo/no-undeclared-env-vars
+delete process.env.NO_COLOR;
 // eslint-disable-next-line turbo/no-undeclared-env-vars
 process.env.FORCE_COLOR = '1';
 
@@ -77,8 +103,14 @@ ${command
   template.update({
     section: 'arguments',
     content: [
+      "import { TypeTable } from 'fumadocs-ui/components/type-table';",
       ...(command.registeredArguments.length > 0
-        ? [`## Arguments`, ...getArgumentsDocumentation(command)]
+        ? [
+            '## API',
+            `\`${cli.name()} ${command.name()} ${command.usage()}\``,
+            `### Arguments [!toc]`,
+            getArgumentsDocumentation(command),
+          ]
         : ['{/* No arguments available. */}']),
     ].join('\n\n'),
     insert: 'bottom',
@@ -86,7 +118,7 @@ ${command
 
   template.update({
     section: 'options',
-    content: ['## Options', ...getOptionsDocumentation(command)].join('\n\n'),
+    content: ['### Options [!toc]', getOptionsDocumentation(command)].join('\n\n'),
     insert: 'bottom',
   });
 

@@ -12,51 +12,31 @@
   "type": "module",
   "exports": {
     ".": {
-      "require": {
-        "types": "./out/index.d.cts",
-        "default": "./out/index.cjs"
-      },
       "types": "./out/index.d.ts",
+      "require": "./out/index.cjs",
       "default": "./out/index.js"
     },
     "./colors": {
-      "require": {
-        "types": "./out/colors/index.d.cts",
-        "default": "./out/colors/index.cjs"
-      },
       "types": "./out/colors/index.d.ts",
+      "require": "./out/colors/index.cjs",
       "default": "./out/colors/index.js"
     },
     "./convert": {
-      "require": {
-        "types": "./out/convert/index.d.cts",
-        "default": "./out/convert/index.cjs"
-      },
       "types": "./out/convert/index.d.ts",
+      "require": "./out/convert/index.cjs",
       "default": "./out/convert/index.js"
     },
     "./primitives": {
-      "require": {
-        "types": "./out/primitives/index.d.cts",
-        "default": "./out/primitives/index.cjs"
-      },
       "types": "./out/primitives/index.d.ts",
+      "require": "./out/primitives/index.cjs",
       "default": "./out/primitives/index.js"
-    },
-    "./types": {
-      "require": {
-        "types": "./out/types.d.cts",
-        "default": "./out/types.cjs"
-      },
-      "types": "./out/types.d.ts",
-      "default": "./out/types.js"
     }
   },
   "scripts": {
-    "build": "tsup",
+    "build": "rslib build",
     "check:exports": "publint",
     "check:types": "tsc --noEmit",
-    "dev": "tsup --watch",
+    "dev": "rslib dev --watch",
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
@@ -68,6 +48,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/scripts": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@rslib/core": "^0.17.2",
     "@toolsync/template": "^0.1.1",
     "@types/node": "catalog:",
     "@types/three": "^0.177.0",
@@ -75,9 +56,9 @@
     "eslint": "catalog:",
     "markdown-table": "^3.0.4",
     "publint": "catalog:",
+    "rsbuild-exec": "workspace:*",
     "slugify": "^1.6.6",
     "ts-morph": "^26.0.0",
-    "tsup": "^8.5.0",
     "typescript": "catalog:"
   },
   "publishConfig": {

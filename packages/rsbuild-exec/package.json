@@ -24,6 +24,9 @@
     "dev": "rslib dev --watch",
     "lint": "eslint --max-warnings 0 ."
   },
+  "dependencies": {
+    "execa": "^9.6.0"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
