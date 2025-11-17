@@ -192,9 +192,7 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
         if (outdated) {
           console.info('Skipping state update, component is outdated');
         } else {
-          console.dir({ renderedModel: result });
           setRenderedModel(result);
-          // setRenderedModel(result);
           setBuilding(false);
         }
       } catch (error) {
