@@ -2,7 +2,7 @@
   "name": "esbuild-autodoc",
   "version": "0.0.0",
   "private": true,
-  "description": "Automatically update JSDoc comments in your codebase",
+  "description": "_deprecated_ Automatically update JSDoc comments in your codebase",
   "homepage": "https://tscad.vercel.app",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "lint": "eslint . --max-warnings 0",
-    "test": "vitest"
+    "test:disabled": "vitest"
   },
   "dependencies": {
     "ts-morph": "^26.0.0"
