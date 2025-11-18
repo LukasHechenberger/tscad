@@ -159,12 +159,15 @@ importers:
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
+      rsbuild-exec:
+        specifier: workspace:*
+        version: link:../../packages/rsbuild-exec
       tailwindcss:
-        specifier: ^4.1.10
-        version: 4.1.10
+        specifier: ^4.1.17
+        version: 4.1.17
       tw-animate-css:
-        specifier: ^1.3.4
-        version: 1.3.4
+        specifier: ^1.4.0
+        version: 1.4.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
