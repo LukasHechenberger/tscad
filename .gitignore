@@ -8,6 +8,7 @@ apps/docs/**/.contentlayer
 apps/docs/**/.content-collections
 apps/docs/**/.source
 apps/docs/content/docs/api/modules/*
+!apps/docs/content/docs/api/modules/meta.json
 !apps/docs/content/docs/api/modules/index.mdx
 
 # test & build

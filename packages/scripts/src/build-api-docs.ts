@@ -127,11 +127,18 @@ for (const { sourceFile, hasChildPage } of exportedModules) {
     .split('/')
     .filter(Boolean);
 
+  const docsFilename =
+    moduleNameComponents.length === 0 && !hasChildPage
+      ? `${pathInPackagesDirectory}.mdx`
+      : path.join(
+          pathInPackagesDirectory,
+          `${moduleNameComponents.join('/')}${hasChildPage ? '/index.mdx' : '.mdx'}`,
+        );
+
   const docsPath = path.join(
     process.cwd(),
     '../../apps/docs/content/docs/api/modules/',
-    pathInPackagesDirectory,
-    `${moduleNameComponents.join('/')}${hasChildPage ? '/index' : ''}.mdx`,
+    docsFilename,
   );
 
   const moduleName = [manifest.name, ...moduleNameComponents].join('/');
@@ -159,7 +166,9 @@ for (const { sourceFile, hasChildPage } of exportedModules) {
           ? statement.getName()
           : `\`${statement.getKindName()}\``;
 
-      const description = Formatter.renderDocNode(parserContext.docComment.summarySection)?.trim();
+      const description =
+        Formatter.renderDocNode(parserContext.docComment.summarySection)?.trim() ||
+        manifest.description;
       const slug = parserContext.docComment.modifierTagSet.isPackageDocumentation()
         ? '@index'
         : slugGenerator.generate(title);

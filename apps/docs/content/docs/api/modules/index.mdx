@@ -13,9 +13,10 @@ tscad is a TypeScript library published via npm. If you want to run it locally, 
 <Cards>
   {source.pageTree.children
     .find((item) => item.index?.url === '/docs/api/modules')
-    ?.children?.map((child) => (
-      <Card href={child.index.url} key={child.index.url} title={child.index.name}>
-        {child.index.description}
+    ?.children?.map((child) => child.index ?? child)
+    .map((child) => (
+      <Card href={child?.url} key={child?.url} title={child?.name}>
+        {child?.description}
       </Card>
     ))}
 </Cards>

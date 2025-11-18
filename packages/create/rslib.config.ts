@@ -15,6 +15,7 @@ export default defineConfig({
       title: 'readme',
       command:
         'pnpm update-section README.md usage "\\`\\`\\`\n$(node out/bin.js --help)\n\\`\\`\\`"',
+      options: { shell: true },
     }),
   ],
   lib: [{ format: 'esm' }],

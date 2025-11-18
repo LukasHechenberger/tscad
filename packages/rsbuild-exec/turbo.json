@@ -1,0 +1,15 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "out/**",
+        "../../apps/docs/content/docs/api/modules/rsbuild-exec.*",
+        "../../apps/docs/content/docs/api/modules/rsbuild-exec/**"
+      ]
+    }
+  }
+}

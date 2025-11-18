@@ -12,10 +12,9 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "next build",
+    "build": "fumadocs-mdx && next build",
     "check:types": "tsc --noEmit",
     "dev": "next dev --turbo",
-    "postinstall": "fumadocs-mdx",
     "lint": "eslint . --max-warnings 0",
     "start": "next start"
   },
@@ -39,7 +38,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-resizable-panels": "^3.0.3",
-    "shiki": "3.6.0",
+    "shiki": "3.15.0",
     "tailwind-merge": "^3.3.1",
     "three": "^0.177.0"
   },
@@ -53,6 +52,7 @@
     "@types/react-dom": "catalog:",
     "eslint": "catalog:",
     "postcss": "^8.5.6",
+    "rsbuild-exec": "workspace:*",
     "tailwindcss": "^4.1.10",
     "tw-animate-css": "^1.3.4",
     "typescript": "catalog:"

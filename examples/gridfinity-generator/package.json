@@ -28,6 +28,7 @@
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@rslib/core": "^0.17.2",
+    "@tscad/cli": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "picocolors": "^1.1.1",
