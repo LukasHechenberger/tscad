@@ -132,7 +132,7 @@ for (const { sourceFile, hasChildPage } of exportedModules) {
       ? `${pathInPackagesDirectory}.mdx`
       : path.join(
           pathInPackagesDirectory,
-          `${moduleNameComponents.join('/')}${hasChildPage}` ? '/index.mdx' : '.mdx',
+          `${moduleNameComponents.join('/')}${hasChildPage ? '/index.mdx' : '.mdx'}`,
         );
 
   const docsPath = path.join(
