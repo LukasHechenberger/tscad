@@ -7,6 +7,11 @@ import type { Schema } from 'leva/dist/declarations/src/types';
 import { type ComponentProps, type ReactNode, useEffect, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { RenderedSolids, RenderedSolidsProvider } from './components/rendered-solids';
+import {
+  useViewerSettings,
+  useViewerSettingsContext,
+  ViewerSettingsProvider,
+} from './contexts/settings';
 import { useDebouncedState } from './hooks/use-debounced';
 
 export function Entities<P>({
@@ -68,7 +73,7 @@ function parametersToLevaSchema(model: Model<ParametersInput, Record<string, unk
 export const useModelControls = <P extends Record<string, unknown>>(
   model: Model<ParametersInput, P>,
 ): P => {
-  return useControls(parametersToLevaSchema(model)) as P;
+  return useControls('Model Parameters', parametersToLevaSchema(model)) as P;
 };
 
 const gridSize = [10, 10] as Vector2; // TODO [>=1.0.0]: Make this configurable
@@ -83,9 +88,11 @@ const gridConfig = {
 export function ViewerCanvas({
   children,
   viewcube = true,
-  grid = false,
+
   ...canvasProperties
 }: { children: ReactNode; viewcube?: boolean; grid?: boolean } & ComponentProps<typeof Canvas>) {
+  const { gridEnabled: grid } = useViewerSettings();
+
   return (
     <ErrorBoundary
       fallbackRender={({ error, resetErrorBoundary }) => (
@@ -130,13 +137,16 @@ export default function Viewer<S extends ParametersInput, P extends Record<strin
   leva?: LevaProperties;
 }) {
   const parameters = useModelControls(model);
+  const settings = useControls('View options', useViewerSettingsContext().settings, {
+    collapsed: true,
+  });
 
   // Debounce parameter changes to avoid excessive re-renders
   const [debouncedParameters, setDebouncedParameters] = useDebouncedState(parameters, 100);
   useEffect(() => setDebouncedParameters(parameters), [parameters, setDebouncedParameters]);
 
   return (
-    <>
+    <ViewerSettingsProvider value={{ settings }}>
       <Leva {...defaultLevaProperties} {...leva} />
 
       <ViewerCanvas
@@ -150,6 +160,6 @@ export default function Viewer<S extends ParametersInput, P extends Record<strin
 
         {children}
       </ViewerCanvas>
-    </>
+    </ViewerSettingsProvider>
   );
 }
