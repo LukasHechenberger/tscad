@@ -12,10 +12,9 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "next build",
+    "build": "fumadocs-mdx && next build",
     "check:types": "tsc --noEmit",
     "dev": "next dev --turbo",
-    "postinstall": "fumadocs-mdx",
     "lint": "eslint . --max-warnings 0",
     "start": "next start"
   },
