@@ -1,5 +1,6 @@
 import { GizmoHelper, GizmoViewcube, OrbitControls, Stage } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
+import { type ThreeElements } from '@react-three/fiber';
 import type { Model, ParametersInput, Solid } from '@tscad/modeling';
 import { solidToThree } from '@tscad/modeling/convert';
 import type { JSONSchema } from 'json-schema-to-ts';
@@ -10,6 +11,17 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { useDebouncedState } from './hooks/use-debounced';
 
 const defaultColor = 'orange';
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace React {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace JSX {
+      // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+      interface IntrinsicElements extends ThreeElements {}
+    }
+  }
+}
 
 export function RenderedSolids({ solid }: { solid: Solid | Solid[] }) {
   const geometries = useMemo(() => {
