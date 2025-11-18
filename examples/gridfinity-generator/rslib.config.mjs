@@ -21,6 +21,7 @@ export default defineConfig((c) => ({
         pluginRsbuildExec({
           title: 'examples',
           command: `node --enable-source-maps ./out/scripts/build-examples.js ${c.envMode}`,
+          options: { shell: true },
         }),
       ],
     },
