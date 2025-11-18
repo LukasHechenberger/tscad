@@ -1,5 +1,5 @@
 import type { RsbuildPlugin } from '@rsbuild/core';
-import { execaCommand, type Options } from 'execa';
+import { execaCommand, type ExecaError, type Options } from 'execa';
 
 /**
  * @remarks
@@ -66,6 +66,7 @@ export function pluginExec(pluginOptions: {
         } catch (error) {
           api.logger.error(`${title} failed.`);
           api.logger.error(error);
+          process.exitCode = (error as ExecaError).exitCode ?? 1;
         }
       });
     },
