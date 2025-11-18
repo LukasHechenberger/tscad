@@ -1,5 +1,12 @@
 # @tscad/cli
 
+## 0.3.2
+
+### Patch Changes
+
+- fa7537d: Add stub bin entry
+- 711bf27: Allow model function in model
+
 ## 0.3.1
 
 ### Patch Changes
