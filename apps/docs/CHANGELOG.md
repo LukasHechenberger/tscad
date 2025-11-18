@@ -1,5 +1,12 @@
 # @tscad/docs
 
+## 0.0.3
+
+### Patch Changes
+
+- 858b2a8: Cache module downloads in playground
+  - @tscad/modeling@0.3.0
+
 ## 0.0.2
 
 ### Patch Changes
