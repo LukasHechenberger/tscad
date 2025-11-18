@@ -14,6 +14,9 @@ export const docs = defineDocs({
 export default defineConfig({
   lastModifiedTime: 'git',
   mdxOptions: {
+    remarkNpmOptions: {
+      persist: { id: 'pm' },
+    },
     // MDX options
     rehypeCodeOptions: {
       inline: 'tailing-curly-colon',

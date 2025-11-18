@@ -236,7 +236,13 @@ ${
 
 ---
 
-## Methods and Properties [#@methods-and-props]
+## Installation [#install]
+
+\`\`\`npm
+npm install ${manifest.name}
+\`\`\`
+
+## Methods and Properties [#exports]
 
 ${
   exportedItems.length > 0
