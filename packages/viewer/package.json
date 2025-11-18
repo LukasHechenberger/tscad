@@ -9,6 +9,12 @@
     "directory": "packages/viewer"
   },
   "license": "MIT",
+  "exports": {
+    ".": null,
+    "./viewer": {
+      "default": "./out/viewer.js"
+    }
+  },
   "scripts": {
     "check:exports": "publint",
     "check:types": "tsc --noEmit",
