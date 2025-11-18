@@ -6,7 +6,7 @@ export default defineConfig({
   lib: [{ format: 'esm', dts: true }],
   plugins: [
     pluginRsbuildExec({
-      command: 'node --enable-source-maps ../scripts/out/build-api-docs.js',
+      command: 'pnpm build-api-docs',
       title: 'api-docs',
     }),
   ],

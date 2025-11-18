@@ -19,6 +19,7 @@
   },
   "scripts": {
     "build": "rslib build",
+    "build-api-docs": "node --enable-source-maps ../scripts/out/build-api-docs.js",
     "check:exports": "publint",
     "check:types": "tsc --noEmit",
     "dev": "rslib dev --watch",
