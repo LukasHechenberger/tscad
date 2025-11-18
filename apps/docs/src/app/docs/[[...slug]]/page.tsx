@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import { source } from '@/lib/source';
 import { getMDXComponents } from '@/mdx-components';
 
+export const dynamic = 'force-static';
+
 export default async function Page(props: { params: Promise<{ slug?: string[] }> }) {
   const parameters = await props.params;
   const page = source.getPage(parameters.slug);
@@ -28,7 +30,9 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
 }
 
 export async function generateStaticParams() {
-  return source.generateParams();
+  const parameters = source.generateParams();
+
+  return [{ slug: ['api', 'modules'] }, ...parameters];
 }
 
 export async function generateMetadata(props: { params: Promise<{ slug?: string[] }> }) {
