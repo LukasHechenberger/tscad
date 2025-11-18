@@ -1,13 +1,5 @@
 {
-  "@toolsync/builtin/github-actions": {
-    "workflows": {
-      "ci": {
-        "on": {
-          "pull_request": { "branches": ["*"] }
-        }
-      }
-    }
-  },
+  "@toolsync/builtin/github-actions": {},
   "@toolsync/builtin/ignore-sync": {},
   "@toolsync/builtin/package-meta": {
     "publishConfig": {
