@@ -20,7 +20,10 @@ export function pluginExec({
         api.logger.start(`${title} started...`);
 
         try {
-          await execaCommand(command, { stdout: 'inherit', stderr: 'inherit', ...options });
+          await execaCommand(command, {
+            ...(options?.stdio ? {} : { stdout: 'inherit', stderr: 'inherit' }),
+            ...options,
+          });
 
           api.logger.ready(
             `${title} finished in ${((performance.now() - start) / 1000).toFixed(2)} s`,

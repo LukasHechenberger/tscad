@@ -23,6 +23,11 @@ export default defineConfig({
       title: 'my-command',
       // The command to execute
       command: 'echo "Hello, World!"',
+      // (optional) Exec options
+      options: {
+        // (just an example)
+        env: { CUSTOM_ENV_VAR: 'value' },
+      },
     }),
   ],
 });
