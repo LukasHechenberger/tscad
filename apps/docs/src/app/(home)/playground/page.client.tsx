@@ -50,8 +50,6 @@ async function prepareModelInWorker(tsCode: string) {
 
       const { result, error } = data as { error?: Error; result?: PreparedModel };
 
-      console.dir({ result });
-
       if (result) resolve(result);
       else if (error) {
         const remoteError = new WorkerError(error.message, error.stack);
@@ -155,8 +153,6 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
         } else {
           console.dir({ preparedModel: result });
           setPreparedModel(result);
-          // setRenderedModel(result);
-          // setBuilding(false);
         }
       } catch (error) {
         if (!outdated) {
@@ -263,24 +259,7 @@ export function PlaygroundPreview() {
   const viewOptions = use$(settings$);
   const { renderedModel, preparedModel, building, setParameters } = useContext(PlaygroundContext);
 
-  useControls(
-    'View Options',
-    // settingsSchema,
-    // jsonSchemaToLevaSchema(settingsSchema, defaultSettings),
-    Object.fromEntries(
-      Object.entries(settingsSchema).map(([key, settings]) => [
-        key,
-        {
-          ...settings,
-          value: settings[key] ?? settings.default,
-          title: `key: ${key}`,
-          onChange: (value) => (settings$ as Observable)[key].set(value),
-        },
-      ]),
-    ),
-    { collapsed: true, order: 0 },
-    [viewOptions],
-  );
+  useControls('View Options', settingsSchema, { collapsed: true, order: 0 }, [viewOptions]);
 
   const parameters = useControls(
     'Model Parameters',
@@ -288,7 +267,7 @@ export function PlaygroundPreview() {
       ...(preparedModel
         ? jsonSchemaToLevaSchema(
             preparedModel.parametersSchema,
-            preparedModel?.defaultParameters ?? {},
+            (preparedModel?.defaultParameters ?? {}) as Record<string, unknown>,
           )
         : {}),
       // reset parameters button
