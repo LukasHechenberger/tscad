@@ -5,6 +5,7 @@ import {
   Color,
   Float32BufferAttribute,
   type MeshStandardMaterialParameters,
+  type NormalBufferAttributes,
   Vector3,
 } from 'three';
 
@@ -15,7 +16,7 @@ const { geom3 } = modeling.geometries;
  * @see {@link https://tscad.vercel.app/docs/api/modules/modeling/convert#solidToThree | Docs}
  */
 export function solidToThree(solid: Geom3): {
-  geometry: BufferGeometry;
+  geometry: Readonly<BufferGeometry<NormalBufferAttributes>>;
   material: MeshStandardMaterialParameters;
 } {
   const positions: number[] = [];

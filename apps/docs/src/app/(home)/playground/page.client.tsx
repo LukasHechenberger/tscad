@@ -5,8 +5,7 @@ import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/
 import { use$ } from '@legendapp/state/react';
 import { syncObservable } from '@legendapp/state/sync';
 import Editor, { type Monaco, type OnMount, useMonaco } from '@monaco-editor/react';
-import { Grid } from '@react-three/drei';
-import type { RenderedModel, Vector2 } from '@tscad/modeling';
+import type { RenderedModel } from '@tscad/modeling';
 import { jsonSchemaToLevaSchema, RenderedSolids, ViewerCanvas } from '@tscad/viewer/src/viewer';
 import type * as esbuild from 'esbuild-wasm';
 import { button, Leva, useControls } from 'leva';
@@ -224,27 +223,9 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
 }
 
 const defaultSettings = {
-  // grid: { enabled: true },
   gridEnabled: true,
-  inputDebounce: 50, // { type: 'number', min: 50, max: 2000, default: 200 },
 };
-const settingsSchema = jsonSchemaToLevaSchema(
-  {
-    gridEnabled: { type: 'boolean', default: true },
-    inputDebounce: {
-      description: 'How many milliseconds to wait before updating the model',
-      type: 'number',
-      minimum: 50,
-      maximum: 2000,
-      default: 200,
-    },
-  },
-  defaultSettings,
-);
 
-// const folderNames = { grid: 'Grid', inputDebounce: 'Input Debounce' } satisfies {
-//   [K in keyof typeof defaultSettings]: string;
-// };
 const settings$ = observable(defaultSettings);
 
 // Persist the observable to the named key of the global persist plugin
@@ -259,7 +240,14 @@ export function PlaygroundPreview() {
   const viewOptions = use$(settings$);
   const { renderedModel, preparedModel, building, setParameters } = useContext(PlaygroundContext);
 
-  useControls('View Options', settingsSchema, { collapsed: true, order: 0 }, [viewOptions]);
+  const appliedViewOptions = useControls('View Options', {
+    gridEnabled: {
+      value: viewOptions.gridEnabled ?? defaultSettings.gridEnabled,
+      label: 'Show Grid',
+    },
+  }) as typeof defaultSettings;
+
+  useEffect(() => settings$.set(appliedViewOptions), [appliedViewOptions]);
 
   const parameters = useControls(
     'Model Parameters',
@@ -277,19 +265,8 @@ export function PlaygroundPreview() {
     },
     [preparedModel],
   );
-  useEffect(() => console.log({ parameters, preparedModel }), [parameters, preparedModel]);
+
   useEffect(() => setParameters(parameters), [parameters, setParameters]);
-
-  const { gridEnabled } = viewOptions;
-
-  const gridSize = [10, 10] as Vector2; // TODO [>=1.0.0]: Make this configurable
-  const gridConfig = {
-    infiniteGrid: true,
-    cellSize: 1,
-    sectionSize: 10,
-    followCamera: true,
-    // FIXME [>=1.0.0]: Colors from theme
-  };
 
   return (
     <>
@@ -313,8 +290,6 @@ export function PlaygroundPreview() {
               lg: 'var(--radius-md)',
             },
           }}
-          // collapsed
-          // titleBar={{ drag: false, title: 'View Options' }}
         />
       </div>
 
@@ -323,9 +298,8 @@ export function PlaygroundPreview() {
           transition: 'opacity 0.1s ease-in-out',
           opacity: building ? 0.5 : 1,
         }}
+        grid={appliedViewOptions.gridEnabled}
       >
-        {gridEnabled && <Grid side={2} position={[0, 0, 0]} args={gridSize} {...gridConfig} />}
-
         {renderedModel && <RenderedSolids solid={renderedModel.solids} />}
       </ViewerCanvas>
     </>

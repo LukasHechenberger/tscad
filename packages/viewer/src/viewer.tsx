@@ -1,7 +1,7 @@
-import { GizmoHelper, GizmoViewcube, OrbitControls, Stage } from '@react-three/drei';
+import { GizmoHelper, GizmoViewcube, Grid, OrbitControls, Stage } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { type ThreeElements } from '@react-three/fiber';
-import type { Model, ParametersInput, Solid } from '@tscad/modeling';
+import type { Model, ParametersInput, Solid, Vector2 } from '@tscad/modeling';
 import { solidToThree } from '@tscad/modeling/convert';
 import type { JSONSchema } from 'json-schema-to-ts';
 import { Leva, useControls } from 'leva';
@@ -10,7 +10,7 @@ import { type ComponentProps, type ReactNode, useEffect, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useDebouncedState } from './hooks/use-debounced';
 
-const defaultColor = 'orange';
+const defaultColor: string = 'orange';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -100,11 +100,21 @@ export const useModelControls = <P extends Record<string, unknown>>(
 
 export function ViewerProvider() {}
 
+const gridSize = [10, 10] as Vector2; // TODO [>=1.0.0]: Make this configurable
+const gridConfig = {
+  infiniteGrid: true,
+  cellSize: 1,
+  sectionSize: 10,
+  followCamera: true,
+  // FIXME [>=1.0.0]: Colors from theme
+};
+
 export function ViewerCanvas({
   children,
   viewcube = true,
+  grid = false,
   ...canvasProperties
-}: { children: ReactNode; viewcube?: boolean } & ComponentProps<typeof Canvas>) {
+}: { children: ReactNode; viewcube?: boolean; grid?: boolean } & ComponentProps<typeof Canvas>) {
   return (
     <ErrorBoundary
       fallbackRender={({ error, resetErrorBoundary }) => (
@@ -130,6 +140,8 @@ export function ViewerCanvas({
             </GizmoHelper>
           )}
         </Stage>
+
+        {grid && <Grid side={2} position={[0, 0, 0]} args={gridSize} {...gridConfig} />}
       </Canvas>
     </ErrorBoundary>
   );
