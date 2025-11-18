@@ -6,7 +6,11 @@ import { use$ } from '@legendapp/state/react';
 import { syncObservable } from '@legendapp/state/sync';
 import Editor, { type Monaco, type OnMount, useMonaco } from '@monaco-editor/react';
 import type { RenderedModel } from '@tscad/modeling';
-import { jsonSchemaToLevaSchema, RenderedSolids, ViewerCanvas } from '@tscad/viewer/src/viewer';
+import {
+  RenderedSolids,
+  RenderedSolidsProvider,
+} from '@tscad/viewer/src/components/rendered-solids';
+import { jsonSchemaToLevaSchema, ViewerCanvas } from '@tscad/viewer/src/viewer';
 import type * as esbuild from 'esbuild-wasm';
 import { button, Leva, useControls } from 'leva';
 import { useTheme } from 'next-themes';
@@ -303,7 +307,9 @@ export function PlaygroundPreview() {
         }}
         grid={appliedViewOptions.gridEnabled}
       >
-        {renderedModel && <RenderedSolids solid={renderedModel.solids} />}
+        <RenderedSolidsProvider value={{ solids: renderedModel?.solids }}>
+          <RenderedSolids />
+        </RenderedSolidsProvider>
       </ViewerCanvas>
     </>
   );
