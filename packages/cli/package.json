@@ -11,7 +11,7 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "tscad": "./bin.js"
+    "tscad": "./out/bin.js"
   },
   "scripts": {
     "build": "rslib build",
