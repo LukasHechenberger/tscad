@@ -1,6 +1,6 @@
 'use client';
 
-import { type Observable, observable } from '@legendapp/state';
+import { observable } from '@legendapp/state';
 import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/local-storage';
 import { use$ } from '@legendapp/state/react';
 import { syncObservable } from '@legendapp/state/sync';
