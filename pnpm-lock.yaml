@@ -193,6 +193,9 @@ importers:
       '@rslib/core':
         specifier: ^0.17.2
         version: 0.17.2(@microsoft/api-extractor@7.52.8(@types/node@22.19.1))(typescript@5.9.3)
+      '@tscad/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.1
