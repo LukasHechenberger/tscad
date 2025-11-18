@@ -77,7 +77,6 @@ function parametersToLevaSchema(model: Model<ParametersInput, Record<string, unk
 export const useModelControls = <P extends Record<string, unknown>>(
   model: Model<ParametersInput, P>,
 ): P => {
-  console.log('useModelControls', { model, params: parametersToLevaSchema(model) });
   return useControls(parametersToLevaSchema(model)) as P;
 };
 
