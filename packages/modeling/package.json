@@ -42,7 +42,8 @@
   },
   "dependencies": {
     "@jscad/modeling": "^2.12.5",
-    "three": "^0.177.0"
+    "json-schema-to-ts": "^3.1.1",
+    "three": "^0.181.1"
   },
   "devDependencies": {
     "@microsoft/tsdoc": "^0.16.0",
@@ -52,7 +53,8 @@
     "@rslib/core": "^0.17.2",
     "@toolsync/template": "^0.1.1",
     "@types/node": "catalog:",
-    "@types/three": "^0.177.0",
+    "@types/three": "^0.181.0",
+    "ajv": "^8.17.1",
     "esbuild-autodoc": "workspace:*",
     "eslint": "catalog:",
     "markdown-table": "^3.0.4",

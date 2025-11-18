@@ -4,6 +4,6 @@ import App from './app';
 
 createRoot(document.querySelector('#root')!).render(
   <StrictMode>
-    <App />,
+    <App />
   </StrictMode>,
 );

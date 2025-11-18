@@ -1,28 +1,24 @@
 'use client';
 
-import { type Observable, observable } from '@legendapp/state';
+import { observable } from '@legendapp/state';
 import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/local-storage';
 import { use$ } from '@legendapp/state/react';
 import { syncObservable } from '@legendapp/state/sync';
 import Editor, { type Monaco, type OnMount, useMonaco } from '@monaco-editor/react';
-import { Grid } from '@react-three/drei';
-import type { Vector2 } from '@tscad/modeling';
-import Viewer from '@tscad/viewer/src/viewer';
+import type { RenderedModel } from '@tscad/modeling';
+import { jsonSchemaToLevaSchema, RenderedSolids, ViewerCanvas } from '@tscad/viewer/src/viewer';
 import type * as esbuild from 'esbuild-wasm';
-import { folder, Leva, useControls } from 'leva';
+import { button, Leva, useControls } from 'leva';
 import { useTheme } from 'next-themes';
 import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { bundleCode } from '@/lib/esbuild';
 import { defaultCode } from '@/lib/playground';
 import { homepage } from '../../../../package.json';
+import type { PreparedModel, WorkerResponse } from './worker';
 
 const documentationOrigin = new URL(homepage).host;
 
 let worker: Worker;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Solid = any;
-type Model = Solid | Solid[];
 
 class WorkerError extends Error {
   constructor(
@@ -34,7 +30,7 @@ class WorkerError extends Error {
   }
 }
 
-async function runInSandbox(tsCode: string): Promise<Model> {
+async function prepareModelInWorker(tsCode: string) {
   worker ??= new Worker(new URL('worker.ts', import.meta.url), { type: 'module' });
 
   let jsCode: string;
@@ -43,10 +39,15 @@ async function runInSandbox(tsCode: string): Promise<Model> {
   if (result.text) jsCode = result.text;
   else throw result;
 
-  return new Promise((resolve, reject) => {
+  return new Promise<PreparedModel>((resolve, reject) => {
     // eslint-disable-next-line unicorn/prefer-add-event-listener
-    worker.onmessage = ({ data }) => {
-      const { result, error } = data;
+    worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => {
+      if (data.type !== 'prepared') {
+        reject(new Error(`Unexpected response type: ${data.type}`));
+        return;
+      }
+
+      const { result, error } = data as { error?: Error; result?: PreparedModel };
 
       if (result) resolve(result);
       else if (error) {
@@ -57,14 +58,47 @@ async function runInSandbox(tsCode: string): Promise<Model> {
         reject(new Error(`Unexpected response: ${JSON.stringify(data)}`));
       }
     };
-    worker.postMessage({ code: jsCode });
+    worker.postMessage({ type: 'prepare', code: jsCode });
+  });
+}
+
+async function renderModelInWorker({
+  model,
+  parameters,
+}: {
+  model: PreparedModel;
+  parameters: unknown;
+}) {
+  worker ??= new Worker(new URL('worker.ts', import.meta.url), { type: 'module' });
+
+  return new Promise<RenderedModel<unknown>>((resolve, reject) => {
+    // eslint-disable-next-line unicorn/prefer-add-event-listener
+    worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => {
+      if (data.type !== 'rendered') {
+        reject(new Error(`Unexpected response type: ${data.type}`));
+        return;
+      }
+      const { result, error } = data as { error?: Error; result?: RenderedModel<unknown> };
+
+      if (result) resolve(result);
+      else if (error) {
+        const remoteError = new WorkerError(error.message, error.stack);
+
+        reject(remoteError);
+      } else {
+        reject(new Error(`Unexpected response: ${JSON.stringify(data)}`));
+      }
+    };
+    worker.postMessage({ type: 'render', token: model.token, parameters });
   });
 }
 
 type PlaygroundContextType = {
   code: string;
   setCode: (code: string) => void;
-  geometries: Model;
+  preparedModel?: PreparedModel;
+  renderedModel?: RenderedModel<unknown>;
+  setParameters: (parameters: unknown) => void;
   building: boolean;
   error?: Error;
 };
@@ -82,23 +116,78 @@ syncObservable(code$, {
 });
 
 export function PlaygroundProvider({ children }: { children: ReactNode }) {
-  const [geometries, setGeometries] = useState<Model>([]);
+  // The parameters, as set by the user
   const code = use$(code$);
+  const [debouncedCode, setDebouncedCode] = useState(code);
+
   const [building, setBuilding] = useState(false);
   const [error, setError] = useState<Error | undefined>();
+  const [preparedModel, setPreparedModel] = useState<PreparedModel | undefined>();
 
+  const [inputParameters, setInputParameters] = useState<unknown>({});
+  const [debouncedParameters, setDebouncedParameters] = useState<unknown>({});
+  const [renderedModel, setRenderedModel] = useState<RenderedModel<unknown> | undefined>();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedCode(code), 50);
+    return () => clearTimeout(timer);
+  }, [code]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedParameters(inputParameters), 50);
+    return () => clearTimeout(timer);
+  }, [inputParameters]);
+
+  // Prepare the model when the code changes
   useEffect(() => {
     setBuilding(true);
     setError(undefined);
 
     let outdated = false;
-    const updateGeometries = async () => {
+    const prepareModel = async () => {
       try {
-        const result = await runInSandbox(code);
+        const result = await prepareModelInWorker(debouncedCode);
         if (outdated) {
           console.info('Skipping state update, component is outdated');
         } else {
-          setGeometries(result);
+          console.dir({ preparedModel: result });
+          setPreparedModel(result);
+        }
+      } catch (error) {
+        if (!outdated) {
+          setError(error as Error);
+          setBuilding(false);
+          setPreparedModel(undefined);
+        }
+      }
+    };
+
+    prepareModel();
+
+    return () => {
+      outdated = true; // Mark as outdated to prevent state updates after unmount
+    };
+  }, [debouncedCode]);
+
+  // Build the model when the prepared model or parameters change
+  useEffect(() => {
+    if (!preparedModel) return;
+
+    setBuilding(true);
+    setError(undefined);
+
+    let outdated = false;
+    const buildModel = async () => {
+      console.log('Building model in worker with parameters', debouncedParameters);
+      try {
+        const result = await renderModelInWorker({
+          model: preparedModel,
+          parameters: debouncedParameters,
+        });
+        if (outdated) {
+          console.info('Skipping state update, component is outdated');
+        } else {
+          setRenderedModel(result);
           setBuilding(false);
         }
       } catch (error) {
@@ -109,22 +198,34 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    updateGeometries();
+    buildModel();
 
     return () => {
       outdated = true; // Mark as outdated to prevent state updates after unmount
     };
-  }, [code]);
+  }, [preparedModel, debouncedParameters]);
 
   return (
-    <PlaygroundContext.Provider value={{ code, setCode: code$.set, geometries, building, error }}>
+    <PlaygroundContext.Provider
+      value={{
+        code,
+        setCode: code$.set,
+        preparedModel,
+        setParameters: setInputParameters,
+        renderedModel,
+        building,
+        error,
+      }}
+    >
       {children}
     </PlaygroundContext.Provider>
   );
 }
 
-const defaultSettings = { grid: { enabled: true } };
-const folderNames = { grid: 'Grid' } satisfies { [K in keyof typeof defaultSettings]: string };
+const defaultSettings = {
+  gridEnabled: true,
+};
+
 const settings$ = observable(defaultSettings);
 
 // Persist the observable to the named key of the global persist plugin
@@ -136,47 +237,42 @@ syncObservable(settings$, {
 });
 
 export function PlaygroundPreview() {
-  const values = use$(settings$);
-  const { geometries } = useContext(PlaygroundContext);
+  const viewOptions = use$(settings$);
+  const { renderedModel, preparedModel, building, setParameters } = useContext(PlaygroundContext);
 
-  useControls(
-    Object.fromEntries(
-      Object.entries(values).map(([folderKey, settings]) => [
-        folderNames[folderKey as keyof typeof folderNames],
-        folder(
-          Object.fromEntries(
-            Object.entries(settings).map(([key, value]) => [
-              key,
-              {
-                value,
-                onChange: (value) => (settings$ as Observable)[folderKey][key].set(value),
-              },
-            ]),
-          ),
-          {
-            collapsed: false,
-          },
-        ),
-      ]),
-    ),
-    { collapsed: false },
-    [values],
+  const appliedViewOptions = useControls('View Options', {
+    gridEnabled: {
+      value: viewOptions.gridEnabled ?? defaultSettings.gridEnabled,
+      label: 'Show Grid',
+    },
+  }) as typeof defaultSettings;
+
+  useEffect(() => settings$.set(appliedViewOptions), [appliedViewOptions]);
+
+  const parameters = useControls(
+    'Model Parameters',
+    {
+      ...(preparedModel
+        ? jsonSchemaToLevaSchema(
+            preparedModel.parametersSchema,
+            (preparedModel?.defaultParameters ?? {}) as Record<string, unknown>,
+          )
+        : {}),
+      // reset parameters button
+      reset: button(() => {
+        setParameters(preparedModel?.defaultParameters ?? {});
+      }),
+    },
+    [preparedModel],
   );
 
-  const { enabled: gridEnabled } = values.grid;
+  useEffect(() => setParameters(parameters), [parameters, setParameters]);
 
-  const gridSize = [10, 10] as Vector2; // TODO [>=1.0.0]: Make this configurable
-  const gridConfig = {
-    infiniteGrid: true,
-    cellSize: 1,
-    sectionSize: 10,
-    followCamera: true,
-    // FIXME [>=1.0.0]: Colors from theme
-  };
   return (
     <>
       <div className="absolute top-4 right-4 z-1 w-[300px]">
         <Leva
+          titleBar={{ title: 'Options' }}
           fill
           hideCopyButton
           theme={{
@@ -194,14 +290,18 @@ export function PlaygroundPreview() {
               lg: 'var(--radius-md)',
             },
           }}
-          collapsed
-          titleBar={{ drag: false, title: 'View Options' }}
         />
       </div>
 
-      <Viewer model={geometries}>
-        {gridEnabled && <Grid side={2} position={[0, 0, 0]} args={gridSize} {...gridConfig} />}
-      </Viewer>
+      <ViewerCanvas
+        style={{
+          transition: 'opacity 0.1s ease-in-out',
+          opacity: building ? 0.5 : 1,
+        }}
+        grid={appliedViewOptions.gridEnabled}
+      >
+        {renderedModel && <RenderedSolids solid={renderedModel.solids} />}
+      </ViewerCanvas>
     </>
   );
 }
@@ -222,8 +322,8 @@ export function PlaygroundEditor({
   function beforeMount(monaco: Monaco) {
     // validation settings
     monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-      noSemanticValidation: true,
-      noSyntaxValidation: true,
+      // noSemanticValidation: true,
+      // noSyntaxValidation: true,
     });
 
     monaco.editor.registerLinkOpener({
@@ -246,7 +346,7 @@ export function PlaygroundEditor({
       const librarySource = `declare module '${moduleName}' {
 ${source}
   }`;
-      const libraryUri = monaco.Uri.file(`/node_modules/${moduleName}/primitives.d.ts`);
+      const libraryUri = monaco.Uri.file(`/node_modules/${moduleName}/index.d.ts`);
 
       monaco.languages.typescript.javascriptDefaults.addExtraLib(
         librarySource,

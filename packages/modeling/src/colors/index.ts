@@ -12,6 +12,7 @@ import type { Geometry } from '@jscad/modeling/src/geometries/types';
  * Be sure to check out the [general modelling guide](/docs/api/modules/modeling) if you're new to tscad
  * </Callout>
  * @packageDocumentation
+ * @see {@link https://tscad.vercel.app/docs/api/modules/modeling/colors/#colorize | Docs}
  */
 
 /**
@@ -29,7 +30,7 @@ import type { Geometry } from '@jscad/modeling/src/geometries/types';
  *
  * @param color - The color to apply
  * @param object - The object to colorize
- * @see {@link https://tscad.vercel.app/docs/api/modeling/colors#colorize | Online Documentation}
+ * @see {@link https://tscad.vercel.app/docs/api/modules/modeling/colors/#colorize | Docs}
  */
 export function colorize<T extends Geometry>(color: RGB | RGBA, object: T): T {
   return modeling.colors.colorize(color, object);

@@ -42,7 +42,7 @@ export function addSeeTagPlugin({
               continue;
             }
             const documentUrl = new URL(documentPath, DOCS_BASE_URL).toString();
-            const seeContent = `{@link ${documentUrl}}`;
+            const seeContent = `{@link ${documentUrl} | Docs}`;
             const seeText = `@see ${seeContent}`;
 
             if (existingSee) {

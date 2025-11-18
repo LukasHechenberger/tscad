@@ -18,7 +18,7 @@ export async function generateStaticParams() {
 export async function GET(_: Request, { params }: { params: Promise<{ entry?: string[] }> }) {
   const { entry: [entryName] = [] } = await params;
 
-  const filePath = entryName?.endsWith('.js')
+  const filePath = entryName?.match(/\..+/)
     ? entryName
     : `${entryName ? `${entryName}/` : ''}index.js`;
 

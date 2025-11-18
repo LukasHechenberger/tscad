@@ -32,7 +32,7 @@ jobs:
         run: pnpm install
       - id: checks
         name: Code Quality Checks
-        run: pnpm turbo check lint test build
+        run: pnpm turbo check lint test build --continue
       - id: ensure-clean
         name: Ensure there are no uncommitted changes
         run: git diff --exit-code || (echo "There are uncommitted changes!" && exit 1)
