@@ -41,11 +41,11 @@ import { execaCommand, type ExecaError, type Options } from 'execa';
 export function pluginExec(pluginOptions: {
   /** The command to execute */
   command: string;
-  /** Use a custom title for your script */
+  /** Use a custom title for your script, defaults to the command */
   title?: string;
   options?: Options;
 }): RsbuildPlugin {
-  const { command, title = 'script', options } = pluginOptions;
+  const { command, title = command, options } = pluginOptions;
 
   return {
     name: 'rsbuild-exec',
