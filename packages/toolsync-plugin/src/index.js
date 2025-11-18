@@ -17,6 +17,14 @@ const repoPlugin = definePlugin({
                 build: {
                   steps: [
                     {
+                      '@update': {
+                        id: 'checks',
+                        data: {
+                          run: 'pnpm turbo check lint test build --continue',
+                        },
+                      },
+                    },
+                    {
                       '@insert': {
                         after: 'changesets',
                         data: {
