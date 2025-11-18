@@ -127,11 +127,18 @@ for (const { sourceFile, hasChildPage } of exportedModules) {
     .split('/')
     .filter(Boolean);
 
+  const docsFilename =
+    moduleNameComponents.length === 0 && !hasChildPage
+      ? `${pathInPackagesDirectory}.mdx`
+      : path.join(
+          pathInPackagesDirectory,
+          `${moduleNameComponents.join('/')}${hasChildPage}` ? '/index.mdx' : '.mdx',
+        );
+
   const docsPath = path.join(
     process.cwd(),
     '../../apps/docs/content/docs/api/modules/',
-    pathInPackagesDirectory,
-    `${moduleNameComponents.join('/')}${moduleNameComponents.length === 0 || hasChildPage ? '/index' : ''}.mdx`,
+    docsFilename,
   );
 
   const moduleName = [manifest.name, ...moduleNameComponents].join('/');
