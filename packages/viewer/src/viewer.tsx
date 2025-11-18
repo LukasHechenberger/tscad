@@ -40,7 +40,13 @@ export function RenderedSolids({ solid }: { solid: Solid | Solid[] }) {
   );
 }
 
-function Entities<P>({ model, parameters }: { model: Model<ParametersInput, P>; parameters: P }) {
+export function Entities<P>({
+  model,
+  parameters,
+}: {
+  model: Model<ParametersInput, P>;
+  parameters: P;
+}) {
   // FIXME [>=1.0.0]: Run in worker
   const solids = useMemo(() => model.render(parameters).solids, [model, parameters]);
 
@@ -100,19 +106,32 @@ export function ViewerCanvas({
   ...canvasProperties
 }: { children: ReactNode; viewcube?: boolean } & ComponentProps<typeof Canvas>) {
   return (
-    <Canvas shadows camera={{ position: [25, 25, 50] }} {...canvasProperties}>
-      <OrbitControls makeDefault />
+    <ErrorBoundary
+      fallbackRender={({ error, resetErrorBoundary }) => (
+        <div className="text-muted-foreground flex h-full w-full flex-1 flex-col items-center justify-center">
+          <p>Something went wrong while rendering the model</p>
+          <pre>{error.message}</pre>
+          <button onClick={resetErrorBoundary}>reload</button>
+        </div>
+      )}
+      onReset={() => {
+        globalThis.location.reload();
+      }}
+    >
+      <Canvas shadows camera={{ position: [25, 25, 50] }} {...canvasProperties}>
+        <OrbitControls makeDefault />
 
-      <Stage adjustCamera environment="city" center={{ precise: true }}>
-        {children}
+        <Stage environment="studio" adjustCamera center={{ precise: true }}>
+          {children}
 
-        {viewcube && (
-          <GizmoHelper>
-            <GizmoViewcube />
-          </GizmoHelper>
-        )}
-      </Stage>
-    </Canvas>
+          {viewcube && (
+            <GizmoHelper>
+              <GizmoViewcube />
+            </GizmoHelper>
+          )}
+        </Stage>
+      </Canvas>
+    </ErrorBoundary>
   );
 }
 
@@ -137,30 +156,17 @@ export default function Viewer<S extends ParametersInput, P extends Record<strin
     <>
       <Leva {...defaultLevaProperties} {...leva} />
 
-      <ErrorBoundary
-        fallbackRender={({ error, resetErrorBoundary }) => (
-          <div className="text-muted-foreground flex h-full w-full flex-1 flex-col items-center justify-center">
-            <p>Something went wrong while rendering the model</p>
-            <pre>{error.message}</pre>
-            <button onClick={resetErrorBoundary}>reload</button>
-          </div>
-        )}
-        onReset={() => {
-          globalThis.location.reload();
+      <ViewerCanvas
+        viewcube={viewcube}
+        style={{
+          transition: 'opacity 0.1s ease-in-out',
+          opacity: parameters === debouncedParameters ? 1 : 0.5,
         }}
       >
-        <ViewerCanvas
-          viewcube={viewcube}
-          style={{
-            transition: 'opacity 0.1s ease-in-out',
-            opacity: parameters === debouncedParameters ? 1 : 0.5,
-          }}
-        >
-          <Entities model={model} parameters={debouncedParameters} />
+        <Entities model={model} parameters={debouncedParameters} />
 
-          {children}
-        </ViewerCanvas>
-      </ErrorBoundary>
+        {children}
+      </ViewerCanvas>
     </>
   );
 }
