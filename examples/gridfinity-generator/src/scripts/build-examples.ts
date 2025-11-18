@@ -44,7 +44,9 @@ export { main }
     );
 
     // await exec(`pnpm jscad ./${filename} -o out/examples/${slug}.jscad.json`);
-    const command = exec(`pnpm tscad export ./${filename} --output out/examples/${slug}.stl`);
+    const command = exec(
+      `node --enable-source-maps ../../packages/cli/out/bin.js export ./${filename} --output out/examples/${slug}.stl`,
+    );
 
     await command;
 
