@@ -131,7 +131,7 @@ for (const { sourceFile, hasChildPage } of exportedModules) {
     process.cwd(),
     '../../apps/docs/content/docs/api/modules/',
     pathInPackagesDirectory,
-    `${moduleNameComponents.join('/')}${hasChildPage ? '/index' : ''}.mdx`,
+    `${moduleNameComponents.join('/')}${moduleNameComponents.length === 0 || hasChildPage ? '/index' : ''}.mdx`,
   );
 
   const moduleName = [manifest.name, ...moduleNameComponents].join('/');
@@ -159,7 +159,9 @@ for (const { sourceFile, hasChildPage } of exportedModules) {
           ? statement.getName()
           : `\`${statement.getKindName()}\``;
 
-      const description = Formatter.renderDocNode(parserContext.docComment.summarySection)?.trim();
+      const description =
+        Formatter.renderDocNode(parserContext.docComment.summarySection)?.trim() ||
+        manifest.description;
       const slug = parserContext.docComment.modifierTagSet.isPackageDocumentation()
         ? '@index'
         : slugGenerator.generate(title);

@@ -6,8 +6,8 @@ export default defineConfig({
   lib: [{ format: 'esm', dts: true }],
   plugins: [
     pluginRsbuildExec({
-      command: 'echo "Hello, World!"',
-      title: 'my-command',
+      command: 'pnpm build-api-docs',
+      title: 'api-docs',
     }),
   ],
 });

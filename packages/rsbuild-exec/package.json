@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/scripts": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@rsbuild/core": "^1.6.6",
     "@rslib/core": "^0.17.2",
