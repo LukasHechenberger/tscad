@@ -14,6 +14,7 @@ export const config = [
   {
     rules: {
       'object-shorthand': 'error',
+      'no-console': 'error',
       'prefer-template': 'error',
     },
   },
