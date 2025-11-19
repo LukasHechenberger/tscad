@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import path from 'node:path';
 import type { Plugin } from 'esbuild';
 import { Project } from 'ts-morph';

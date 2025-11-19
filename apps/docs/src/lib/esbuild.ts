@@ -5,8 +5,10 @@ const downloadCache = new Map<string, Promise<string>>();
 
 function cachedFetch(url: string): Promise<string> {
   if (downloadCache.has(url)) {
+    // eslint-disable-next-line no-console
     console.debug('Already downloaded', url);
   } else {
+    // eslint-disable-next-line no-console
     console.info('Downloading', url);
     downloadCache.set(
       url,
@@ -62,6 +64,7 @@ export async function bundleCode(
       errors: result.errors,
     };
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Esbuild bundling error:', error);
     return error as esbuild.BuildFailure;
   }

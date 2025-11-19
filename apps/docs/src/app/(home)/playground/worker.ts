@@ -39,10 +39,13 @@ let currentToken = 0;
 
 // eslint-disable-next-line unicorn/prefer-add-event-listener
 globalThis.onmessage = async (event: MessageEvent<PrepareMessage | RenderMessage>) => {
-  console.log('Worker received message', event);
+  // eslint-disable-next-line no-console
+  console.debug('Worker received message', event);
+
   if (event.data.type === 'render') {
     // Check token matches currentToken
     if (event.data.token !== currentToken) {
+      // eslint-disable-next-line no-console
       console.warn(
         `Received build request for token ${event.data.token}, but current token is ${currentToken}`,
       );
@@ -62,6 +65,7 @@ globalThis.onmessage = async (event: MessageEvent<PrepareMessage | RenderMessage
   }
 
   if (event.data.type !== 'prepare') {
+    // eslint-disable-next-line no-console
     console.error('Unknown message type:', event.data);
     return;
   }
@@ -73,7 +77,6 @@ globalThis.onmessage = async (event: MessageEvent<PrepareMessage | RenderMessage
     const loadModule = new Function(`${code}\n//# sourceURL=user-script.js`);
 
     const exports = loadModule();
-    console.log({ code, exports });
 
     if (!exports || (exports.main === undefined && exports.default === undefined)) {
       throw new TypeError('No main or default export found in the module');
@@ -82,7 +85,8 @@ globalThis.onmessage = async (event: MessageEvent<PrepareMessage | RenderMessage
     currentToken += 1;
     model = exports.default ?? exports.main;
 
-    console.log('Model prepared', { model, pS: model.parametersSchema });
+    // eslint-disable-next-line no-console
+    console.debug('Model prepared', { model });
 
     self.postMessage({
       type: 'prepared',
@@ -96,6 +100,7 @@ globalThis.onmessage = async (event: MessageEvent<PrepareMessage | RenderMessage
   } catch (error) {
     const error_ = error as Error;
 
+    // eslint-disable-next-line no-console
     console.error(error);
     self.postMessage({ type: 'prepared', error: { message: error_.message, stack: error_.stack } });
   }

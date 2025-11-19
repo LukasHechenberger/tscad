@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { exec as _exec } from 'node:child_process';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';

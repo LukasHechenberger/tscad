@@ -148,9 +148,9 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
       try {
         const result = await prepareModelInWorker(debouncedCode);
         if (outdated) {
-          console.info('Skipping state update, component is outdated');
+          // eslint-disable-next-line no-console
+          console.debug('Skipping state update, component is outdated');
         } else {
-          console.dir({ preparedModel: result });
           setPreparedModel(result);
         }
       } catch (error) {
@@ -178,14 +178,17 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
 
     let outdated = false;
     const buildModel = async () => {
-      console.log('Building model in worker with parameters', debouncedParameters);
+      // eslint-disable-next-line no-console
+      console.debug('Building model in worker with parameters', debouncedParameters);
+
       try {
         const result = await renderModelInWorker({
           model: preparedModel,
           parameters: debouncedParameters,
         });
         if (outdated) {
-          console.info('Skipping state update, component is outdated');
+          // eslint-disable-next-line no-console
+          console.debug('Skipping state update, component is outdated');
         } else {
           setRenderedModel(result);
           setBuilding(false);

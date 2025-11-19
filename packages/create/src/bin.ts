@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 
 import path from 'node:path';
 import { styleText } from 'node:util';
@@ -47,7 +48,7 @@ program
 
   // Add action
   .action(async (options) => {
-    console.log(`Running ${packageName}...`);
+    console.debug(`Running ${packageName}...`);
     const { default: nodePlop } = await import('node-plop');
     const plop = await nodePlop();
 
