@@ -16,6 +16,11 @@
       "require": "./out/index.cjs",
       "default": "./out/index.js"
     },
+    "./runtime": {
+      "types": "./out/runtime/index.d.ts",
+      "require": "./out/runtime/index.cjs",
+      "default": "./out/runtime/index.js"
+    },
     "./colors": {
       "types": "./out/colors/index.d.ts",
       "require": "./out/colors/index.cjs",

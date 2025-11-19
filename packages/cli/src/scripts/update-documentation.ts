@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { existsSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { styleText } from 'node:util';
@@ -104,13 +105,17 @@ ${command
     section: 'arguments',
     content: [
       "import { TypeTable } from 'fumadocs-ui/components/type-table';",
+      '## API',
+      `\`\`\`ansi title="Terminal"
+${
+  command
+    .helpInformation({ error: false })
+    .replace(/.+:/, styleText(['dim'], '$'))
+    .split('\n')[0]
+}
+\`\`\``,
       ...(command.registeredArguments.length > 0
-        ? [
-            '## API',
-            `\`${cli.name()} ${command.name()} ${command.usage()}\``,
-            `### Arguments [!toc]`,
-            getArgumentsDocumentation(command),
-          ]
+        ? [`### Arguments [!toc]`, getArgumentsDocumentation(command)]
         : ['{/* No arguments available. */}']),
     ].join('\n\n'),
     insert: 'bottom',

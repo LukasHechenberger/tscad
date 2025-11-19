@@ -47,6 +47,7 @@ export default defineConfig({
       'colors/index': './src/colors/index.ts',
       'primitives/index': './src/primitives/index.ts',
       'convert/index': './src/convert/index.ts',
+      'runtime/index': './src/runtime/index.ts',
     },
   },
   lib: [
