@@ -42,6 +42,7 @@ export const devCommand = new Command('dev')
       this.error(`Model file not found: ${model}`, { code: 'ENOENT' });
     }
 
+    // eslint-disable-next-line no-console
     console.info(
       `${styleText(['bold'], `Starting ${styleText(['magenta'], 'tscad dev')}`)} ${styleText(['dim'], `v${version}`)}\n`,
     );
@@ -63,6 +64,7 @@ export const devCommand = new Command('dev')
 
     await server.listen();
 
+    // eslint-disable-next-line no-console
     console.info(
       `  ${styleText(['bold', 'green'], '→')}  ${styleText(['bold'], 'Model')}:   ${styleText(['cyan'], relative(process.cwd(), modelPath))}`,
     );
@@ -70,6 +72,7 @@ export const devCommand = new Command('dev')
 
     // Try to open vscode preview if terminal is vscode
     if (process.env.TERM_PROGRAM === 'vscode') {
+      // eslint-disable-next-line no-console
       console.info(styleText(['dim'], `  →  opening preview in vscode...`));
       await openVscodePreview(serverOptions.port);
     }
@@ -93,5 +96,6 @@ export const devCommand = new Command('dev')
         },
       ],
     });
+    // eslint-disable-next-line no-console
     console.info('');
   });

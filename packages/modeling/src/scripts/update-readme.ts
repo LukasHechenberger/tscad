@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { MarkdownTemplate } from '@toolsync/template';
 import { markdownTable } from 'markdown-table';
 

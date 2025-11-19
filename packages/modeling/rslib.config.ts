@@ -60,8 +60,10 @@ export default defineConfig({
           name: 'api-docs',
           setup(api) {
             api.onAfterEnvironmentCompile(async () => {
+              // eslint-disable-next-line no-console
               console.time('UPDATE README');
               await updateReadme();
+              // eslint-disable-next-line no-console
               console.timeEnd('UPDATE README');
             });
           },

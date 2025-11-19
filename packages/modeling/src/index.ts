@@ -179,6 +179,7 @@ export function defineModel<
         if (throwIfInvalid) {
           throw new Error(`Invalid parameters: ${ajv.errorsText(validate.errors)}`);
         } else {
+          // eslint-disable-next-line no-console
           console.warn(`Invalid parameters: ${ajv.errorsText(validate.errors)}`);
         }
       }
