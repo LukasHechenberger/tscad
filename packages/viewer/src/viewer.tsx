@@ -86,15 +86,16 @@ export function jsonSchemaToLevaSchema(
   );
 }
 
-function parametersToLevaSchema(model: Model<ParametersInput, Record<string, unknown>>): Schema {
+function parametersToLevaSchema<P>(model: ModelRuntime<P>): Schema {
   const defaults = model.resolveParameters({}, false);
 
-  return jsonSchemaToLevaSchema(model.parametersSchema, defaults);
+  return jsonSchemaToLevaSchema(
+    model.modelDefinition.parametersInput,
+    defaults as Record<string, unknown>,
+  );
 }
 
-export const useModelControls = <P extends Record<string, unknown>>(
-  model: Model<ParametersInput, P>,
-): P => {
+export const useModelControls = <P extends Record<string, unknown>>(model: ModelRuntime<P>): P => {
   return useControls(parametersToLevaSchema(model)) as P;
 };
 
@@ -147,17 +148,18 @@ export function ViewerCanvas({
   );
 }
 
-export default function Viewer<S extends ParametersInput, P extends Record<string, unknown>>({
-  model,
+export default function Viewer<P extends Record<string, unknown>>({
+  model: modelDefinition,
   children,
   viewcube = true,
   leva = {},
 }: {
-  model: Model<S, P>;
+  model: ModelDefinition<P>;
   viewcube?: boolean;
   children?: ReactNode;
   leva?: LevaProperties;
 }) {
+  const model = useMemo(() => getRuntime(modelDefinition), [modelDefinition]);
   const parameters = useModelControls(model);
 
   // Debounce parameter changes to avoid excessive re-renders

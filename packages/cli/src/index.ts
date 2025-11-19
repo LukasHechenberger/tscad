@@ -2,8 +2,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { inspect, styleText } from 'node:util';
 import { InvalidOptionArgumentError, Option, program } from '@tscad/commander';
-import type { AnyModel } from '@tscad/modeling';
-import { ajv } from '@tscad/modeling/runtime';
+import { ajv, getRuntime } from '@tscad/modeling/runtime';
 import { kebabCase } from 'change-case';
 import { build, type BuildFailure, formatMessagesSync } from 'esbuild';
 import { devCommand as developmentCommand } from '@/commands/dev';
@@ -91,8 +90,8 @@ ${formatMessagesSync((error as BuildFailure).errors, {
         debug('Loading model');
         // eslint-disable-next-line no-console
         console.info(`🛬 Loading model from ${path.relative(process.cwd(), importPath)}...`);
-        const loadedModel = await import(importPath).then(
-          (module_) => module_.default ?? module_.main ?? module_,
+        const loadedModel = getRuntime(
+          await import(importPath).then((module_) => module_.default ?? module_.main ?? module_),
         );
 
         debug('Model loaded');
@@ -104,11 +103,11 @@ ${formatMessagesSync((error as BuildFailure).errors, {
           throw new Error(`Failed to load model from ${importPath}: It is ${inspect(loadedModel)}`);
         }
 
-        if (loadedModel.parametersSchema) {
+        if (loadedModel.modelDefinition.parametersInput) {
           actionCommand.optionsGroup('Model parameters:');
           try {
             for (const [name, schema] of Object.entries(
-              (loadedModel as AnyModel).parametersSchema,
+              loadedModel.modelDefinition.parametersInput,
             )) {
               debug('Adding parameter option:', name, schema);
               const flagName = kebabCase(name);

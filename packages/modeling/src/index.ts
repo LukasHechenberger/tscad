@@ -1,6 +1,6 @@
 import type { FromSchema, JSONSchema } from 'json-schema-to-ts';
-import { ajv } from './runtime';
-import type { Solid } from './types';
+import { getRuntime } from './runtime';
+import type { ModelDefinition, ParametersInput, Solid } from './types';
 
 /**
  * Methods to model your 3d model
@@ -92,28 +92,11 @@ import type { Solid } from './types';
  * @packageDocumentation
  */
 
-export type * from './types';
-
-export type ParametersInput = { [name: string]: Exclude<JSONSchema, boolean> };
-
 type ObjectSchema<Properties extends ParametersInput> = {
   type: 'object';
   additionalProperties: false;
   properties: Properties;
 };
-
-export type RenderedModel<Parameters> = {
-  parameters: Parameters;
-  solids: Solid[];
-};
-
-export type Model<S extends ParametersInput, Parameters> = {
-  parametersSchema: S;
-  resolveParameters(input: Partial<Parameters>, throwIfInvalid?: boolean): Parameters;
-  render(input: Partial<Parameters>): RenderedModel<Parameters>;
-};
-
-export type AnyModel = Model<ParametersInput, Record<string, unknown>>;
 
 /**
  * Defines a model, including its parameters and model function.
@@ -147,13 +130,13 @@ export type AnyModel = Model<ParametersInput, Record<string, unknown>>;
  * });
  * ```
  *
- * @param modelDefinition - The model definition
+ * @param model - The model definition
  * @see {@link https://tscad.vercel.app/docs/api/modules/modeling/#definemodel | Docs}
  */
 export function defineModel<
   S extends ParametersInput = Record<string, never>,
   P = FromSchema<ObjectSchema<S>>,
->(modelDefinition: {
+>(model: {
   /** The parameters your model supports. */
   parameters?: S;
   /**
@@ -162,37 +145,8 @@ export function defineModel<
    * @param parameters - The parameters for the model
    */
   model: (parameters: P) => Solid | Solid[];
-}): Model<S, P> {
-  const { parameters: parametersSchema = {} as S, model } = modelDefinition;
-  const schema = {
-    type: 'object',
-    additionalProperties: false,
-    properties: parametersSchema,
-  } satisfies ObjectSchema<S>;
-
-  const validate = ajv.compile(schema);
-
-  return {
-    parametersSchema,
-    resolveParameters(input: Partial<P>, throwIfInvalid = true): P {
-      if (!validate(input)) {
-        if (throwIfInvalid) {
-          throw new Error(`Invalid parameters: ${ajv.errorsText(validate.errors)}`);
-        } else {
-          // eslint-disable-next-line no-console
-          console.warn(`Invalid parameters: ${ajv.errorsText(validate.errors)}`);
-        }
-      }
-
-      return input as P;
-    },
-    render(input: Partial<P>) {
-      const parameters = this.resolveParameters(input);
-      let solids = model(parameters);
-
-      if (!Array.isArray(solids)) solids = [solids];
-
-      return { parameters, solids };
-    },
-  };
+}): ModelDefinition<P> {
+  return { parametersInput: model.parameters ?? {}, model: model.model };
 }
+
+export type * from './types';

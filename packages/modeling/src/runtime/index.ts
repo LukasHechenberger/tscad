@@ -1,8 +1,70 @@
 import Ajv from 'ajv';
+import type { ModelDefinition, ParametersInput, RenderedModel } from '@/types';
 
+/**
+ * Runtime for your models
+ *
+ * @remarks
+ *
+ * @packageDocumentation
+ */
+
+/** The ajv instance used for validation */
 export const ajv = new Ajv({
   useDefaults: true,
   strict: false,
   removeAdditional: true,
   coerceTypes: true,
 });
+
+// TODO [>=1.0.0]: Only export as type to avoid instanciating without `getRuntime`
+
+/** A runtime for a model */
+export class ModelRuntime<P> {
+  protected validateParameters;
+
+  private constructor(public readonly modelDefinition: ModelDefinition<P>) {
+    const schema = {
+      type: 'object',
+      additionalProperties: false,
+      properties: modelDefinition.parametersInput,
+    };
+
+    this.validateParameters = ajv.compile(schema);
+  }
+
+  resolveParameters(input: Partial<ParametersInput>, throwIfInvalid = true) {
+    if (!this.validateParameters(input)) {
+      if (throwIfInvalid) {
+        throw new Error(`Invalid parameters: ${ajv.errorsText(this.validateParameters.errors)}`);
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(`Invalid parameters: ${ajv.errorsText(this.validateParameters.errors)}`);
+      }
+    }
+
+    return input as P;
+  }
+
+  render(input: Partial<P>): RenderedModel<P> {
+    const parameters = this.resolveParameters(input as Partial<ParametersInput>);
+
+    let solids = this.modelDefinition.model(parameters);
+
+    if (!Array.isArray(solids)) solids = [solids];
+
+    return { parameters, solids };
+  }
+
+  static use<P>(modelDefinition: ModelDefinition<P>) {
+    return new ModelRuntime<P>(modelDefinition);
+  }
+}
+
+/**
+ * Use a model definition at runtime
+ * @param model - The model definition to use
+ */
+export function getRuntime<P>(model: ModelDefinition<P>) {
+  return ModelRuntime.use(model);
+}
