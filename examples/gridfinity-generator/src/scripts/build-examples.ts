@@ -33,18 +33,21 @@ async function buildExamples(flags = process.argv.slice(2)) {
 
     await writeFile(
       filename,
-      `import { gridfinityBaseplate } from '../index.js';
+      `import { defineModel } from '@tscad/modeling'; 
+import { gridfinityBaseplate } from '../index.js';
 
-export default function main() {
-  return gridfinityBaseplate(${inspect(example.options)})
-};
-
-export { main }
+export default defineModel({
+  model() {
+    return gridfinityBaseplate(${inspect(example.options)})
+  }
+});
 `,
     );
 
     // await exec(`pnpm jscad ./${filename} -o out/examples/${slug}.jscad.json`);
-    const command = exec(`pnpm tscad export ./${filename} --output out/examples/${slug}.stl`);
+    const command = exec(
+      `pnpm tscad export --model ./${filename} --output out/examples/${slug}.stl`,
+    );
 
     await command;
 
