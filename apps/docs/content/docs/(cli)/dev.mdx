@@ -11,14 +11,12 @@ Running `tscad dev` starts a development server that serves the model file speci
 {/* This section is generated. Do not edit manually! */}
 
 ```ansi title="Terminal"
-[1mUsage:[22m [1m[35mtscad[39m[22m [1m[35mdev[39m[22m [36m[options][39m [36m[model][39m
+[1mUsage:[22m [1m[35mtscad[39m[22m [1m[35mdev[39m[22m [36m[options][39m
 
 [2m> Start the development server[22m
 
-[1mArguments:[22m
-  [36mmodel[39m              Where to find the tscad model (default: "src/model.ts")
-
 [1mOptions:[22m
+  [36m--model [model][39m    Where to find the tscad model (default: "src/model.ts")
   [36m-p, --port <port>[39m  The port to listen at (default: 4000, env: PORT)
   [36m--open[39m             Open the browser once started (default: false, env: OPEN)
   [36m-h, --help[39m         Display help for command
@@ -41,7 +39,7 @@ $ tscad dev
 
 ```
 
-Once the server is running you can open it in a browser. If you run it in a VSCode Terminal, an inline preview should be opened automatically by [our VSCode extension](/docs/get-started/ide-integration#vscode).
+Once the server is running you can open it in a browser. If you run it in a VSCode Terminal, an inline preview should be opened automatically by [our VSCode extension](/docs/get-started/ide-integration#vscode) (if installed).
 
 {/* #region arguments */}
 {/* This section is generated. Do not edit manually! */}
@@ -50,19 +48,9 @@ import { TypeTable } from 'fumadocs-ui/components/type-table';
 
 ## API
 
-`tscad dev [options] [model]`
+`tscad dev [options]`
 
-### Arguments [!toc]
-
-{/* prettier-ignore */}
-<TypeTable type={{
-  "model": {
-    "type": "string",
-    "required": false,
-    "description": "Where to find the tscad model",
-    "default": "src/model.ts"
-  }
-}} />
+{/* No arguments available. */}
 
 {/* #endregion arguments */}
 
@@ -73,6 +61,12 @@ import { TypeTable } from 'fumadocs-ui/components/type-table';
 
 {/* prettier-ignore */}
 <TypeTable type={{
+  "--model": {
+    "type": "string",
+    "required": false,
+    "description": "Where to find the tscad model",
+    "default": "src/model.ts"
+  },
   "--port": {
     "type": "number",
     "required": true,

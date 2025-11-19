@@ -11,14 +11,12 @@ Use `tscad export` to export your tscad model to a file format suitable for 3D p
 {/* This section is generated. Do not edit manually! */}
 
 ```ansi title="Terminal"
-[1mUsage:[22m [1m[35mtscad[39m[22m [1m[35mexport[39m[22m [36m[options][39m [36m[model][39m
+[1mUsage:[22m [1m[35mtscad[39m[22m [1m[35mexport[39m[22m [36m[options][39m [36m[params...][39m
 
 [2m> Export the model to a file[22m
 
-[1mArguments:[22m
-  [36mmodel[39m                Where to find the tscad model (default: "./src/model.ts")
-
 [1mOptions:[22m
+  [36m--model [model][39m      Where to find the tscad model (default: "./src/model.ts")
   [36m--parts[39m              Export each part to a separate file (default: false)
   [36m--output <filename>[39m  The output file (default: "./out/model.stl")
   [36m--slice <slicer>[39m     Open the result in a slicer (default: false)
@@ -35,19 +33,9 @@ import { TypeTable } from 'fumadocs-ui/components/type-table';
 
 ## API
 
-`tscad export [options] [model]`
+`tscad export [options] [params...]`
 
-### Arguments [!toc]
-
-{/* prettier-ignore */}
-<TypeTable type={{
-  "model": {
-    "type": "string",
-    "required": false,
-    "description": "Where to find the tscad model",
-    "default": "./src/model.ts"
-  }
-}} />
+{/* No arguments available. */}
 
 {/* #endregion arguments */}
 
@@ -58,6 +46,12 @@ import { TypeTable } from 'fumadocs-ui/components/type-table';
 
 {/* prettier-ignore */}
 <TypeTable type={{
+  "--model": {
+    "type": "string",
+    "required": false,
+    "description": "Where to find the tscad model",
+    "default": "./src/model.ts"
+  },
   "--parts": {
     "type": "boolean",
     "required": false,

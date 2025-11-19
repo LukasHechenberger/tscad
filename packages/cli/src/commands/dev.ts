@@ -28,7 +28,7 @@ function parseIntArgument(value: string) {
 
 export const devCommand = new Command('dev')
   .description('Start the development server')
-  .argument('[model]', 'Where to find the tscad model', 'src/model.ts')
+  .option('--model [model]', 'Where to find the tscad model', 'src/model.ts')
   .addOption(
     new Option('-p, --port <port>', 'The port to listen at')
       .argParser(parseIntArgument)
@@ -36,7 +36,7 @@ export const devCommand = new Command('dev')
       .env('PORT'),
   )
   .addOption(new Option('--open', 'Open the browser once started').default(false).env('OPEN'))
-  .action(async function runDevelopmentCommand(model, { ...serverOptions }) {
+  .action(async function runDevelopmentCommand({ model, ...serverOptions }) {
     const modelPath = join(process.cwd(), model);
     if (!existsSync(modelPath)) {
       this.error(`Model file not found: ${model}`, { code: 'ENOENT' });

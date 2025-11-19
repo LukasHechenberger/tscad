@@ -1,5 +1,5 @@
-import Ajv from 'ajv';
 import type { FromSchema, JSONSchema } from 'json-schema-to-ts';
+import { ajv } from './runtime';
 import type { Solid } from './types';
 
 /**
@@ -94,8 +94,6 @@ import type { Solid } from './types';
 
 export type * from './types';
 
-const ajv = new Ajv({ useDefaults: true, strict: false, removeAdditional: true });
-
 export type ParametersInput = { [name: string]: Exclude<JSONSchema, boolean> };
 
 type ObjectSchema<Properties extends ParametersInput> = {
@@ -114,6 +112,8 @@ export type Model<S extends ParametersInput, Parameters> = {
   resolveParameters(input: Partial<Parameters>, throwIfInvalid?: boolean): Parameters;
   render(input: Partial<Parameters>): RenderedModel<Parameters>;
 };
+
+export type AnyModel = Model<ParametersInput, Record<string, unknown>>;
 
 /**
  * Defines a model, including its parameters and model function.
