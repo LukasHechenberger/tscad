@@ -1,5 +1,13 @@
 # @tscad/cli
 
+## 0.3.3
+
+### Patch Changes
+
+- 832d016: Support parametrized models in `tscad export`
+- Updated dependencies [9f15515]
+  - @tscad/viewer@0.2.0
+
 ## 0.3.2
 
 ### Patch Changes

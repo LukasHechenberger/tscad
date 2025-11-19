@@ -1,6 +1,6 @@
 {
   "name": "@tscad/cli",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A CLI tool for working with tscad models",
   "homepage": "https://tscad.vercel.app",
   "repository": {

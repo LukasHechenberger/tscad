@@ -1,5 +1,11 @@
 # @tscad/modeling
 
+## 0.4.0
+
+### Minor Changes
+
+- 9f15515: Allow defining parameters
+
 ## 0.3.0
 
 ### Minor Changes
