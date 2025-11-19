@@ -53,8 +53,9 @@ export const exportCommand = new Command('export')
     let geometry = await import(importPath).then((module_) => module_.default ?? module_.main);
 
     if (typeof geometry['render'] === 'function') {
+      debug('Rendering model');
+
       // eslint-disable-next-line unicorn/no-await-expression-member
-      debug('Executing model render function');
       geometry = (await geometry.render({})).solids;
     }
 
