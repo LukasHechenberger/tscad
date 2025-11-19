@@ -1,5 +1,16 @@
 # @tscad/cli
 
+## 0.4.0
+
+### Minor Changes
+
+- 2f30160: **Breaking:** Use `--model` option instead of argument
+- 2f30160: Support model parameters in CLI
+
+### Patch Changes
+
+- @tscad/viewer@0.2.1
+
 ## 0.3.3
 
 ### Patch Changes

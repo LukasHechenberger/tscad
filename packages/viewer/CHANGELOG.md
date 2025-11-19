@@ -1,5 +1,12 @@
 # @tscad/viewer
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [2f30160]
+  - @tscad/modeling@0.4.1
+
 ## 0.2.0
 
 ### Minor Changes
