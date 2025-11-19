@@ -1,6 +1,7 @@
-import type { Model, ParametersInput, RenderedModel } from '@tscad/modeling';
+import type { ModelDefinition, ParametersInput, RenderedModel } from '@tscad/modeling';
+import { getRuntime } from '@tscad/modeling/runtime';
 
-let model: Model<ParametersInput, Record<string, unknown>>;
+let model: ModelDefinition<unknown>;
 
 type ResponsePayload<R> = {
   result?: R;
@@ -52,8 +53,10 @@ globalThis.onmessage = async (event: MessageEvent<PrepareMessage | RenderMessage
       return;
     }
 
+    const runtimeModel = getRuntime(model);
+
     try {
-      const result = model.render(event.data.parameters as Partial<unknown>);
+      const result = runtimeModel.render(event.data.parameters as Partial<unknown>);
       self.postMessage({ type: 'rendered', result, error: undefined });
     } catch (error) {
       self.postMessage({
@@ -88,13 +91,15 @@ globalThis.onmessage = async (event: MessageEvent<PrepareMessage | RenderMessage
     // eslint-disable-next-line no-console
     console.debug('Model prepared', { model });
 
+    const runtimeModel = getRuntime(model);
+
     self.postMessage({
       type: 'prepared',
       result: {
         token: currentToken,
         // schema: model.schema,
-        parametersSchema: model.parametersSchema,
-        defaultParameters: model.resolveParameters({}, false),
+        parametersSchema: runtimeModel.modelDefinition.parametersInput,
+        defaultParameters: runtimeModel.resolveParameters({}, false),
       } as PreparedModel,
     } satisfies PreparedModelResponse);
   } catch (error) {

@@ -31,9 +31,9 @@
     "@repo/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "@vitest/coverage-v8": "3.2.4",
-    "esbuild": "^0.25.8",
+    "esbuild": "^0.25.12",
     "eslint": "catalog:",
-    "tsup": "^8.5.0",
+    "tsup": "^8.5.1",
     "typescript": "catalog:",
     "vitest": "^3.2.4"
   },
