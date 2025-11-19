@@ -207,9 +207,9 @@ for (const { sourceFile, hasChildPage } of exportedModules) {
         name: statement.getKindName(),
       };
 
-      const description =
-        Formatter.renderDocNode(parserContext.docComment.summarySection)?.trim() ||
-        '*no description*';
+      const description = Formatter.renderDocNode(parserContext.docComment.summarySection)?.trim();
+      if (!description) return [];
+
       const slug = parserContext.docComment.modifierTagSet.isPackageDocumentation()
         ? '@index'
         : slugGenerator.generate(name);
