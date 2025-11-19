@@ -23,12 +23,11 @@ export const exportCommand = new Command('export')
   .option('--parts', 'Export each part to a separate file', false)
   .option('--output <filename>', 'The output file', './out/model.stl')
   .option('--slice <slicer>', 'Open the result in a slicer', false)
-  .action(async function runExportCommand({
-    model,
-    processedModel,
-    modelProcessingError,
-    ...options
-  }) {
+  .argument('[params...]', 'Parameters to pass to the model')
+  .action(async function runExportCommand(
+    _,
+    { model, processedModel, modelProcessingError, ...options },
+  ) {
     // If there was an error processing the model, show it and exit
     if (modelProcessingError) this.error(modelProcessingError);
 

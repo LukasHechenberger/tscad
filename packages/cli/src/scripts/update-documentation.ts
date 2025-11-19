@@ -106,7 +106,14 @@ ${command
     content: [
       "import { TypeTable } from 'fumadocs-ui/components/type-table';",
       '## API',
-      `\`${cli.name()} ${command.name()} ${command.usage()}\``,
+      `\`\`\`ansi title="Terminal"
+${
+  command
+    .helpInformation({ error: false })
+    .replace(/.+:/, styleText(['dim'], '$'))
+    .split('\n')[0]
+}
+\`\`\``,
       ...(command.registeredArguments.length > 0
         ? [`### Arguments [!toc]`, getArgumentsDocumentation(command)]
         : ['{/* No arguments available. */}']),

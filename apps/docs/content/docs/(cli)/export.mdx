@@ -15,6 +15,9 @@ Use `tscad export` to export your tscad model to a file format suitable for 3D p
 
 [2m> Export the model to a file[22m
 
+[1mArguments:[22m
+  [36mparams[39m               Parameters to pass to the model
+
 [1mOptions:[22m
   [36m--model [model][39m      Where to find the tscad model (default: "./src/model.ts")
   [36m--parts[39m              Export each part to a separate file (default: false)
@@ -33,9 +36,20 @@ import { TypeTable } from 'fumadocs-ui/components/type-table';
 
 ## API
 
-`tscad export [options] [params...]`
+```ansi title="Terminal"
+[2m$[22m[22m [1m[35mtscad[39m[22m [1m[35mexport[39m[22m [36m[options][39m [36m[params...][39m
+```
 
-{/* No arguments available. */}
+### Arguments [!toc]
+
+{/* prettier-ignore */}
+<TypeTable type={{
+  "params": {
+    "type": "string",
+    "required": false,
+    "description": "Parameters to pass to the model"
+  }
+}} />
 
 {/* #endregion arguments */}
 
