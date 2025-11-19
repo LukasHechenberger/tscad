@@ -33,13 +33,14 @@ async function buildExamples(flags = process.argv.slice(2)) {
 
     await writeFile(
       filename,
-      `import { gridfinityBaseplate } from '../index.js';
+      `import { defineModel } from '@tscad/modeling'; 
+import { gridfinityBaseplate } from '../index.js';
 
-export default function main() {
-  return gridfinityBaseplate(${inspect(example.options)})
-};
-
-export { main }
+export default defineModel({
+  model() {
+    return gridfinityBaseplate(${inspect(example.options)})
+  }
+});
 `,
     );
 
