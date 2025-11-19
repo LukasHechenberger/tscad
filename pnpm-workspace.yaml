@@ -18,6 +18,7 @@ gitBranchLockfile: true
 mergeGitBranchLockfilesBranchPattern:
   - main
   - changeset-release/*
+  - gitbutler/workspace
 
 onlyBuiltDependencies:
   - '@jscad/cli'

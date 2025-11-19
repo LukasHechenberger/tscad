@@ -18,9 +18,9 @@
     "lint": "eslint --max-warnings 0 ."
   },
   "dependencies": {
-    "commander": "^14.0.0",
+    "commander": "^14.0.2",
     "execa": "^9.6.0",
-    "node-plop": "^0.32.0"
+    "node-plop": "^0.32.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

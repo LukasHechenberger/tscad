@@ -21,11 +21,11 @@
     "tscad": "node --enable-source-maps ../../packages/cli/out/bin.js"
   },
   "dependencies": {
-    "@jscad/modeling": "^2.12.5",
+    "@jscad/modeling": "^2.12.6",
     "@tscad/modeling": "workspace:*"
   },
   "devDependencies": {
-    "@jscad/cli": "^2.3.5",
+    "@jscad/cli": "^2.3.6",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@rslib/core": "^0.17.2",

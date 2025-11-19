@@ -33,7 +33,7 @@
     "publint": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "three": "^0.181.1",
+    "three": "^0.181.2",
     "typescript": "catalog:"
   },
   "peerDependencies": {
