@@ -14,7 +14,12 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   const MDXContent = page.data.body;
 
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full} tableOfContent={{ style: 'clerk' }}>
+    <DocsPage
+      toc={page.data.toc}
+      full={page.data.full}
+      breadcrumb={{ includePage: true, includeRoot: true }}
+      tableOfContent={{ style: 'clerk' }}
+    >
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
       <DocsBody>
