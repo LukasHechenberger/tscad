@@ -7,7 +7,13 @@ import { DocDeclarationReference, DocNodeKind, ExcerptKind, TSDocParser } from '
 import { DocExcerpt, DocNode } from '@microsoft/tsdoc';
 import type { TypeNode } from 'fumadocs-ui/components/type-table';
 import slugify from 'slugify';
-import { Node, Project, SyntaxKind, TypeFormatFlags } from 'ts-morph';
+import {
+  type ImplementedKindToNodeMappings,
+  Node,
+  Project,
+  SyntaxKind,
+  TypeFormatFlags,
+} from 'ts-morph';
 
 /** This is a simplistic solution until we implement proper DocNode rendering APIs. */
 class Formatter {
@@ -162,19 +168,51 @@ for (const { sourceFile, hasChildPage } of exportedModules) {
       const isPackageDocumentation =
         parserContext.docComment.modifierTagSet.isPackageDocumentation();
 
-      // Ensure the statement is exported
-      const title = statement.isKind(SyntaxKind.FunctionDeclaration)
-        ? statement.getName() || 'anonymous'
-        : statement.isKind(SyntaxKind.InterfaceDeclaration)
-          ? statement.getName()
-          : `\`${statement.getKindName()}\``;
+      // TODO [>=1.0.0]: Ensure the statement is exported
+
+      const { title, name } = (
+        {
+          [SyntaxKind.FunctionDeclaration]: (s) => ({
+            title: `function ${s.getName()}`,
+            name: s.getName(),
+          }),
+          [SyntaxKind.InterfaceDeclaration]: (s) => ({
+            title: `interface ${s.getName()}`,
+            name: s.getName(),
+          }),
+          [SyntaxKind.ClassDeclaration]: (s) => ({
+            title: `class ${s.getName()}`,
+            name: s.getName(),
+          }),
+          [SyntaxKind.VariableStatement]: (s) => ({
+            title: `const ${s.getDeclarations()[0]!.getName()}: ${s.getType().getText(undefined, TypeFormatFlags.NoTypeReduction)}`,
+            name: s.getDeclarations()[0]!.getName(),
+          }),
+          [SyntaxKind.TypeAliasDeclaration]: (s) => ({
+            title: `type ${s.getName()}`,
+            name: s.getNameNode().getText(),
+          }),
+        } as {
+          [K in SyntaxKind]?: (
+            s: K extends keyof ImplementedKindToNodeMappings
+              ? ImplementedKindToNodeMappings[K]
+              : never,
+          ) => {
+            title: string;
+            name: string;
+          };
+        }
+      )[statement.getKind()]?.(statement as never) ?? {
+        title: `unknown ${(statement as { getName?: () => string }).getName?.()}: ${statement.getKindName()}`,
+        name: statement.getKindName(),
+      };
 
       const description =
         Formatter.renderDocNode(parserContext.docComment.summarySection)?.trim() ||
         manifest.description;
       const slug = parserContext.docComment.modifierTagSet.isPackageDocumentation()
         ? '@index'
-        : slugGenerator.generate(title);
+        : slugGenerator.generate(name);
 
       console.log(`DOC      - ${title}: ${description} [${slug}]`);
 
@@ -187,6 +225,7 @@ for (const { sourceFile, hasChildPage } of exportedModules) {
           },
           kind: statement.getKindName(),
           title,
+          name,
           slug,
           description,
           text,
@@ -242,7 +281,7 @@ ${
 ${
   exportedItems.length > 0
     ? `\`\`\`ts title="Import"
-import { ${exportedItems.map((index) => index.title).join(', ')} } from '${moduleName}';
+import { ${exportedItems.map((index) => `${index.isType ? 'type ' : ''}${index.name}`).join(', ')} } from '${moduleName}';
 \`\`\``
     : ''
 }
@@ -325,7 +364,8 @@ ${example.text}
         });
       }
 
-      fullTitle = `${item.title}(${parameters.map((p) => p.title).join(', ')})`;
+      const arguments_ = parameters.map((p) => p.title).join(', ');
+      fullTitle = `${item.title}(${arguments_.length > 12 ? `...args` : arguments_})`;
 
       details.push({
         title: `Parameters`,
@@ -353,7 +393,8 @@ ${example.text}
     const relativeSourcePath = path.relative(process.cwd(), sourceFile.getFilePath());
 
     return [
-      `### ${fullTitle} [#${item.slug}]`,
+      `### \`${fullTitle}{:ts}\` [#${item.slug}]`,
+
       item.description,
 
       ...details.map(
