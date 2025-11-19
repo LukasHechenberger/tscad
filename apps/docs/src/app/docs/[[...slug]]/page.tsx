@@ -17,7 +17,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
     <DocsPage
       toc={page.data.toc}
       full={page.data.full}
-      breadcrumb={{ includePage: true, includeRoot: true }}
+      breadcrumb={{ includePage: true, includeRoot: true, includeSeparator: true }}
       tableOfContent={{ style: 'clerk' }}
     >
       <DocsTitle>{page.data.title}</DocsTitle>
