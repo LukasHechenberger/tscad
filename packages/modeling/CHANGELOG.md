@@ -1,5 +1,11 @@
 # @tscad/modeling
 
+## 0.4.1
+
+### Patch Changes
+
+- 2f30160: Support model parameters in CLI
+
 ## 0.4.0
 
 ### Minor Changes
