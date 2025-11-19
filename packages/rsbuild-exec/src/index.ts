@@ -12,7 +12,7 @@ import { execaCommand, type ExecaError, type Options } from 'execa';
 /**
  * An rsbuild plugin to execute a command after the build is finished.
  *
- * @param pluginOptions - The plugin options
+ * @param options - The plugin options
  * @returns An rsbuild plugin
  *
  *
@@ -38,14 +38,14 @@ import { execaCommand, type ExecaError, type Options } from 'execa';
  * });
  * ```
  */
-export function pluginExec(pluginOptions: {
+export function pluginExec(options: {
   /** The command to execute */
   command: string;
   /** Use a custom title for your script, defaults to the command */
   title?: string;
   options?: Options;
 }): RsbuildPlugin {
-  const { command, title = command, options } = pluginOptions;
+  const { command, title = command, options: execOptions } = options;
 
   return {
     name: 'rsbuild-exec',
@@ -56,8 +56,8 @@ export function pluginExec(pluginOptions: {
 
         try {
           await execaCommand(command, {
-            ...(options?.stdio ? {} : { stdout: 'inherit', stderr: 'inherit' }),
-            ...options,
+            ...(execOptions?.stdio ? {} : { stdout: 'inherit', stderr: 'inherit' }),
+            ...execOptions,
           });
 
           api.logger.ready(

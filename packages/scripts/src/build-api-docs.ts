@@ -364,7 +364,8 @@ ${example.text}
         });
       }
 
-      fullTitle = `${item.title}(${parameters.map((p) => p.title).join(', ')})`;
+      const arguments_ = parameters.map((p) => p.title).join(', ');
+      fullTitle = `${item.title}(${arguments_.length > 12 ? `...args` : arguments_})`;
 
       details.push({
         title: `Parameters`,
