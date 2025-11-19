@@ -209,7 +209,7 @@ for (const { sourceFile, hasChildPage } of exportedModules) {
 
       const description =
         Formatter.renderDocNode(parserContext.docComment.summarySection)?.trim() ||
-        manifest.description;
+        '*no description*';
       const slug = parserContext.docComment.modifierTagSet.isPackageDocumentation()
         ? '@index'
         : slugGenerator.generate(name);
