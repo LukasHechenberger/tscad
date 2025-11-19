@@ -252,9 +252,9 @@ export function PlaygroundPreview() {
 
   useEffect(() => settings$.set(appliedViewOptions), [appliedViewOptions]);
 
-  const parameters = useControls(
+  const [parameters, setControlParameters] = useControls(
     'Model Parameters',
-    {
+    () => ({
       ...(preparedModel
         ? jsonSchemaToLevaSchema(
             preparedModel.parametersSchema,
@@ -263,9 +263,9 @@ export function PlaygroundPreview() {
         : {}),
       // reset parameters button
       reset: button(() => {
-        setParameters(preparedModel?.defaultParameters ?? {});
+        setControlParameters(preparedModel?.defaultParameters ?? {});
       }),
-    },
+    }),
     [preparedModel],
   );
 

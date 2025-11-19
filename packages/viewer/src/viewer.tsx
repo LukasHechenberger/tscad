@@ -5,7 +5,7 @@ import type { ModelDefinition, ParametersInput, Solid, Vector2 } from '@tscad/mo
 import { solidToThree } from '@tscad/modeling/convert';
 import { getRuntime, type ModelRuntime } from '@tscad/modeling/runtime';
 import type { JSONSchema } from 'json-schema-to-ts';
-import { Leva, useControls } from 'leva';
+import { button, Leva, useControls } from 'leva';
 import type { Schema } from 'leva/dist/declarations/src/types';
 import { type ComponentProps, type ReactNode, useEffect, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -51,7 +51,7 @@ export function Entities<P>({ model, parameters }: { model: ModelRuntime<P>; par
 type LevaProperties = ComponentProps<typeof Leva>;
 
 const defaultLevaProperties: LevaProperties = {
-  titleBar: { title: 'Options' },
+  titleBar: { title: 'Parameters' },
 };
 
 export function jsonSchemaToLevaInputOptions(schema: Exclude<JSONSchema, boolean>, value: unknown) {
@@ -91,7 +91,14 @@ function parametersToLevaSchema<P>(model: ModelRuntime<P>): Schema {
 }
 
 export const useModelControls = <P extends Record<string, unknown>>(model: ModelRuntime<P>): P => {
-  return useControls(parametersToLevaSchema(model)) as P;
+  const [modelControls, setModelControls] = useControls(() => ({
+    ...parametersToLevaSchema(model),
+    reset: button(() => {
+      setModelControls(model?.resolveParameters({}, false) ?? {});
+    }),
+  }));
+
+  return modelControls as P;
 };
 
 export function ViewerProvider() {}
