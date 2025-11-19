@@ -373,6 +373,29 @@ ${d.text}`,
   })
   .join('\n\n')}
 
+${
+  moduleNameComponents.length > 0
+    ? ''
+    : `## Changelog
+${(
+  await readFile(
+    path.relative(process.cwd(), path.join('../../', pathInRepository, './CHANGELOG.md')),
+    'utf8',
+  ).catch(() => '*no changelog so far*')
+)
+  // eslint-disable-next-line unicorn/no-await-expression-member
+  .trim()
+  .split('\n')
+  .slice(1)
+  .join('\n')
+  .replaceAll(
+    /^##\s+(.+)/gm,
+    (_, p1) => `## ${p1} [#${slugGenerator.generate(`changelog ${p1.replace('.', ' ')}`)}]`,
+  )
+  .replaceAll(/^###\s+(.+)/gm, '**$1**')
+  .replaceAll(/^#/gm, '##')}`
+}
+
 `; // FIXME [>=1.0.0]: Add submodules section
 
   if (!packageDocumentation && exportedItems.length === 0) {
