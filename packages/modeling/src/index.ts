@@ -1,5 +1,4 @@
-import type { FromSchema, JSONSchema } from 'json-schema-to-ts';
-import { getRuntime } from './runtime';
+import type { FromSchema } from 'json-schema-to-ts';
 import type { ModelDefinition, ParametersInput, Solid } from './types';
 
 /**
