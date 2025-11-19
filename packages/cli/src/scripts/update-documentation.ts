@@ -61,7 +61,12 @@ process.env.NO_COLOR = '1';
 await MarkdownTemplate.update('README.md', {
   section: 'usage',
   content: `\`\`\`
-${cli.helpInformation({ error: false })}
+${cli
+  .configureOutput({
+    // We don't need line breaks here...
+    getOutHelpWidth: () => 1000,
+  })
+  .helpInformation({ error: false })}
 \`\`\``,
 });
 

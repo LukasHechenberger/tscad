@@ -1,8 +1,9 @@
 import { GizmoHelper, GizmoViewcube, Grid, OrbitControls, Stage } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { type ThreeElements } from '@react-three/fiber';
-import type { Model, ParametersInput, Solid, Vector2 } from '@tscad/modeling';
+import type { ModelDefinition, ParametersInput, Solid, Vector2 } from '@tscad/modeling';
 import { solidToThree } from '@tscad/modeling/convert';
+import { getRuntime, type ModelRuntime } from '@tscad/modeling/runtime';
 import type { JSONSchema } from 'json-schema-to-ts';
 import { Leva, useControls } from 'leva';
 import type { Schema } from 'leva/dist/declarations/src/types';
@@ -40,13 +41,7 @@ export function RenderedSolids({ solid }: { solid: Solid | Solid[] }) {
   );
 }
 
-export function Entities<P>({
-  model,
-  parameters,
-}: {
-  model: Model<ParametersInput, P>;
-  parameters: P;
-}) {
+export function Entities<P>({ model, parameters }: { model: ModelRuntime<P>; parameters: P }) {
   // FIXME [>=1.0.0]: Run in worker
   const solids = useMemo(() => model.render(parameters).solids, [model, parameters]);
 
