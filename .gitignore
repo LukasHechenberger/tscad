@@ -30,6 +30,7 @@ node_modules
 out
 .turbo
 coverage
+tsup.config.bundled.*
 .vscode/settings.json
 .vscode/extensions.json
 .prettierignore
