@@ -1,5 +1,15 @@
 # @tscad/docs
 
+## 0.1.2
+
+### Patch Changes
+
+- 6caa04b: Fix reset parameters button
+- Updated dependencies [6caa04b]
+- Updated dependencies [6caa04b]
+  - @tscad/modeling@0.5.0
+  - @tscad/viewer@0.2.2
+
 ## 0.1.1
 
 ### Patch Changes

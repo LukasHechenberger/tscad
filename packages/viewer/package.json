@@ -1,6 +1,6 @@
 {
   "name": "@tscad/viewer",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A viewer for tscad models",
   "homepage": "https://tscad.vercel.app",
   "repository": {
