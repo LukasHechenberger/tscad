@@ -1,44 +1,18 @@
 import { GizmoHelper, GizmoViewcube, Grid, OrbitControls, Stage } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
-import { type ThreeElements } from '@react-three/fiber';
-import type { Model, ParametersInput, Solid, Vector2 } from '@tscad/modeling';
-import { solidToThree } from '@tscad/modeling/convert';
+import type { Model, ParametersInput, Vector2 } from '@tscad/modeling';
 import type { JSONSchema } from 'json-schema-to-ts';
 import { Leva, useControls } from 'leva';
 import type { Schema } from 'leva/dist/declarations/src/types';
 import { type ComponentProps, type ReactNode, useEffect, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { RenderedSolids, RenderedSolidsProvider } from './components/rendered-solids';
+import {
+  useViewerSettings,
+  useViewerSettingsContext,
+  ViewerSettingsProvider,
+} from './contexts/settings';
 import { useDebouncedState } from './hooks/use-debounced';
-
-const defaultColor: string = 'orange';
-
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace React {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
-    namespace JSX {
-      // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-      interface IntrinsicElements extends ThreeElements {}
-    }
-  }
-}
-
-export function RenderedSolids({ solid }: { solid: Solid | Solid[] }) {
-  const geometries = useMemo(() => {
-    return (Array.isArray(solid) ? solid : [solid]).map((solid) => solidToThree(solid));
-  }, [solid]);
-
-  return (
-    <>
-      {geometries.map(({ geometry, material }, index) => (
-        // eslint-disable-next-line react/no-unknown-property
-        <mesh key={index} castShadow geometry={geometry}>
-          <meshStandardMaterial {...material} color={material.color ?? defaultColor} />
-        </mesh>
-      ))}
-    </>
-  );
-}
 
 export function Entities<P>({
   model,
@@ -50,7 +24,11 @@ export function Entities<P>({
   // FIXME [>=1.0.0]: Run in worker
   const solids = useMemo(() => model.render(parameters).solids, [model, parameters]);
 
-  return <RenderedSolids solid={solids} />;
+  return (
+    <RenderedSolidsProvider value={{ solids }}>
+      <RenderedSolids />
+    </RenderedSolidsProvider>
+  );
 }
 
 type LevaProperties = ComponentProps<typeof Leva>;
@@ -95,10 +73,8 @@ function parametersToLevaSchema(model: Model<ParametersInput, Record<string, unk
 export const useModelControls = <P extends Record<string, unknown>>(
   model: Model<ParametersInput, P>,
 ): P => {
-  return useControls(parametersToLevaSchema(model)) as P;
+  return useControls('Model Parameters', parametersToLevaSchema(model)) as P;
 };
-
-export function ViewerProvider() {}
 
 const gridSize = [10, 10] as Vector2; // TODO [>=1.0.0]: Make this configurable
 const gridConfig = {
@@ -112,9 +88,11 @@ const gridConfig = {
 export function ViewerCanvas({
   children,
   viewcube = true,
-  grid = false,
+
   ...canvasProperties
 }: { children: ReactNode; viewcube?: boolean; grid?: boolean } & ComponentProps<typeof Canvas>) {
+  const { gridEnabled: grid } = useViewerSettings();
+
   return (
     <ErrorBoundary
       fallbackRender={({ error, resetErrorBoundary }) => (
@@ -159,13 +137,16 @@ export default function Viewer<S extends ParametersInput, P extends Record<strin
   leva?: LevaProperties;
 }) {
   const parameters = useModelControls(model);
+  const settings = useControls('View options', useViewerSettingsContext().settings, {
+    collapsed: true,
+  });
 
   // Debounce parameter changes to avoid excessive re-renders
   const [debouncedParameters, setDebouncedParameters] = useDebouncedState(parameters, 100);
   useEffect(() => setDebouncedParameters(parameters), [parameters, setDebouncedParameters]);
 
   return (
-    <>
+    <ViewerSettingsProvider value={{ settings }}>
       <Leva {...defaultLevaProperties} {...leva} />
 
       <ViewerCanvas
@@ -179,6 +160,6 @@ export default function Viewer<S extends ParametersInput, P extends Record<strin
 
         {children}
       </ViewerCanvas>
-    </>
+    </ViewerSettingsProvider>
   );
 }

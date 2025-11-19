@@ -6,7 +6,12 @@ import { use$ } from '@legendapp/state/react';
 import { syncObservable } from '@legendapp/state/sync';
 import Editor, { type Monaco, type OnMount, useMonaco } from '@monaco-editor/react';
 import type { RenderedModel } from '@tscad/modeling';
-import { jsonSchemaToLevaSchema, RenderedSolids, ViewerCanvas } from '@tscad/viewer/src/viewer';
+import {
+  RenderedSolids,
+  RenderedSolidsProvider,
+} from '@tscad/viewer/src/components/rendered-solids';
+import { defaultViewerSettings, ViewerSettingsProvider } from '@tscad/viewer/src/contexts/settings';
+import { jsonSchemaToLevaSchema, ViewerCanvas } from '@tscad/viewer/src/viewer';
 import type * as esbuild from 'esbuild-wasm';
 import { button, Leva, useControls } from 'leva';
 import { useTheme } from 'next-themes';
@@ -225,11 +230,7 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
   );
 }
 
-const defaultSettings = {
-  gridEnabled: true,
-};
-
-const settings$ = observable(defaultSettings);
+const settings$ = observable(defaultViewerSettings);
 
 // Persist the observable to the named key of the global persist plugin
 syncObservable(settings$, {
@@ -240,17 +241,7 @@ syncObservable(settings$, {
 });
 
 export function PlaygroundPreview() {
-  const viewOptions = use$(settings$);
   const { renderedModel, preparedModel, building, setParameters } = useContext(PlaygroundContext);
-
-  const appliedViewOptions = useControls('View Options', {
-    gridEnabled: {
-      value: viewOptions.gridEnabled ?? defaultSettings.gridEnabled,
-      label: 'Show Grid',
-    },
-  }) as typeof defaultSettings;
-
-  useEffect(() => settings$.set(appliedViewOptions), [appliedViewOptions]);
 
   const parameters = useControls(
     'Model Parameters',
@@ -268,11 +259,24 @@ export function PlaygroundPreview() {
     },
     [preparedModel],
   );
-
   useEffect(() => setParameters(parameters), [parameters, setParameters]);
 
+  const settings = useControls('View options', settings$.get(), { collapsed: true });
+
+  // Sync to local storage
+  const [initialUpdate, setInitialUpdate] = useState(true);
+  useEffect(() => {
+    if (initialUpdate) {
+      setInitialUpdate(false);
+      return;
+    }
+
+    settings$.set(settings);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings]);
+
   return (
-    <>
+    <ViewerSettingsProvider value={{ settings }}>
       <div className="absolute top-4 right-4 z-1 w-[300px]">
         <Leva
           titleBar={{ title: 'Options' }}
@@ -301,11 +305,12 @@ export function PlaygroundPreview() {
           transition: 'opacity 0.1s ease-in-out',
           opacity: building ? 0.5 : 1,
         }}
-        grid={appliedViewOptions.gridEnabled}
       >
-        {renderedModel && <RenderedSolids solid={renderedModel.solids} />}
+        <RenderedSolidsProvider value={{ solids: renderedModel?.solids }}>
+          <RenderedSolids />
+        </RenderedSolidsProvider>
       </ViewerCanvas>
-    </>
+    </ViewerSettingsProvider>
   );
 }
 
