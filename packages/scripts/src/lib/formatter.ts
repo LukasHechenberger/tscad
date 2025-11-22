@@ -20,6 +20,7 @@ import {
 
 abstract class Renderer<Kinds extends string | number> {
   protected abstract handlers: Partial<{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [K in Kinds]: (node: any, contextApiItem: ApiItem) => string;
   }>;
 }
@@ -133,7 +134,7 @@ export class MarkdownRenderer extends TsdocRenderer {
       return this.render(node.getChildNodes(), contextApiItem);
     },
 
-    [DocNodeKind.BlockTag]: (node: DocBlockTag, context: ApiItem) => {
+    [DocNodeKind.BlockTag]: (node: DocBlockTag) => {
       console.warn(styleText(['yellow'], `Got a ${node.tagName} block tag`));
 
       return `**${node.tagName}**`;
