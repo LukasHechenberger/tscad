@@ -3,140 +3,119 @@
 
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { styleText } from 'node:util';
+import { Extractor, ExtractorConfig, ExtractorResult } from '@microsoft/api-extractor';
 import {
   ApiClass,
   ApiDeclaredItem,
   ApiDocumentedItem,
   ApiFunction,
+  ApiInterface,
   ApiItem,
   ApiItemKind,
   ApiMethod,
   ApiModel,
   ApiPackage,
+  ApiProperty,
   ApiTypeAlias,
+  ApiVariable,
 } from '@microsoft/api-extractor-model';
-import {
-  DocCodeSpan,
-  DocDeclarationReference,
-  DocFencedCode,
-  DocHtmlStartTag,
-  DocNodeKind,
-  DocParagraph,
-  DocPlainText,
-  ExcerptKind,
-} from '@microsoft/tsdoc';
-import { DocExcerpt, DocNode } from '@microsoft/tsdoc';
 import type { TypeNode } from 'fumadocs-ui/components/type-table';
-
-/** This is a simplistic solution until we implement proper DocNode rendering APIs. */
-class Formatter {
-  public static renderDocNode(documentNode: DocNode | undefined): string {
-    if (!documentNode) return '';
-    let result: string = '';
-
-    switch (documentNode.kind) {
-      case DocNodeKind.LinkTag: {
-        let title: string | undefined = undefined;
-        let target: string | undefined = undefined;
-
-        for (const childNode of documentNode.getChildNodes()) {
-          const text = Formatter.renderDocNode(childNode);
-
-          if (childNode instanceof DocExcerpt) {
-            if (childNode.excerptKind === ExcerptKind.LinkTag_UrlDestination) {
-              target = text;
-            } else if (childNode.excerptKind === ExcerptKind.LinkTag_LinkText) {
-              title = text;
-            } else if (text.trim().length > 0) {
-              console.warn(`Ignoring exerpt`, { kind: childNode.excerptKind, text });
-            }
-          } else if (childNode instanceof DocDeclarationReference) {
-            title = text;
-
-            if (childNode.packageName) {
-              console.warn('External package link', childNode.packageName);
-            } else {
-              target = `#${text}`;
-            }
-            // target = text;
-          } else {
-            console.warn(`Unsupported child node kind in LinkTag: ${childNode.kind}`);
-          }
-        }
-
-        if (!target) {
-          console.warn(`LinkTag is missing a target: ${title}`);
-
-          return `${title}`;
-        }
-
-        return `[${title}](${target})`;
-      }
-      case DocNodeKind.Excerpt:
-      case DocNodeKind.Section:
-      case DocNodeKind.Paragraph: {
-        // case DocNodeKind.BlockTag:
-        return Formatter.renderDocNodes((documentNode as DocParagraph).getChildNodes());
-      }
-      case DocNodeKind.BlockTag: {
-        // These are just '@remarks' etc.
-        return '';
-      }
-      case DocNodeKind.PlainText: {
-        result += (documentNode as DocPlainText).text;
-        break;
-      }
-      case DocNodeKind.CodeSpan: {
-        const codespan = documentNode as DocCodeSpan;
-        return `\`${codespan.code}\``;
-      }
-      case DocNodeKind.HtmlStartTag:
-      case DocNodeKind.HtmlEndTag: {
-        return (documentNode as DocHtmlStartTag).emitAsHtml();
-      }
-      case DocNodeKind.FencedCode: {
-        const fenced = documentNode as DocFencedCode;
-
-        return `\`\`\`${fenced.language}
-${fenced.code}
-\`\`\``;
-      }
-      case DocNodeKind.SoftBreak: {
-        result += '\n\n';
-        break;
-      }
-      default: {
-        console.log(`Unsupported DocNode kind: ${documentNode.kind}`);
-        result += `\`${documentNode.kind}\``;
-      }
-    }
-
-    // for (const childNode of documentNode.getChildNodes()) {
-    //   result += Formatter.renderDocNode(childNode);
-    // }
-
-    return result;
-  }
-
-  public static renderDocNodes(documentNodes: ReadonlyArray<DocNode>): string {
-    let result: string = '';
-    for (const documentNode of documentNodes) {
-      result += Formatter.renderDocNode(documentNode);
-    }
-
-    return result;
-  }
-}
+import { MarkdownRenderer } from './lib/formatter';
 
 // Configuration
 const anchorOffset = 24;
 
-const inputReport = './temp/modeling.api.json';
-const outputPath = '../../apps/docs/content/docs/api/modules/modeling/index.mdx';
+// Load package manifest
+const packageJson = await readFile('./package.json', 'utf8').then((data) => JSON.parse(data));
+
+const entryFiles = (Object.entries(packageJson.exports) as [string, { types: string }][]).map(
+  ([key, exp]) => {
+    const name = key.slice(2) || 'index';
+    return {
+      name,
+      actualImportName: name === 'index' ? packageJson.name : `${packageJson.name}/${name}`,
+      extractorModuleName: name === 'index' ? packageJson.name : `${packageJson.name}--${name}`,
+      dts: exp.types,
+    };
+  },
+);
 
 const apiModel: ApiModel = new ApiModel();
-const apiPackage: ApiPackage = apiModel.loadPackage(inputReport);
-const apiManifest = await readFile('./package.json', 'utf8').then((data) => JSON.parse(data));
+
+// run API Extractor for all entry files
+for (const entryFile of entryFiles) {
+  console.log(styleText(['cyan', 'bold'], `Processing entry file: ${entryFile.dts}\n`));
+  const inputReport = `etc/${entryFile.name}.api.json`;
+
+  const extractorConfig: ExtractorConfig = ExtractorConfig.prepare({
+    configObject: {
+      mainEntryPointFilePath: path.join(process.cwd(), entryFile.dts),
+      projectFolder: process.cwd(),
+
+      compiler: {
+        tsconfigFilePath: path.join(process.cwd(), 'tsconfig.json'),
+      },
+      docModel: {
+        enabled: true,
+        apiJsonFilePath: `<projectFolder>/${inputReport}`,
+      },
+      apiReport: {
+        enabled: true,
+        reportFolder: '<projectFolder>/etc/',
+        reportFileName: `${entryFile.name}.api.json`,
+        reportTempFolder: '<projectFolder>/temp/',
+      },
+    },
+
+    packageJson,
+
+    packageJsonFullPath: path.join(process.cwd(), 'package.json'),
+    configObjectFullPath: path.join(process.cwd(), 'api-extractor.json'),
+  });
+
+  // Invoke API Extractor
+  const extractorResult: ExtractorResult = Extractor.invoke(extractorConfig, {
+    // Equivalent to the "--local" command-line parameter
+    localBuild: true,
+
+    // Equivalent to the "--verbose" command-line parameter
+    showVerboseMessages: true,
+  });
+
+  if (extractorResult.succeeded) {
+    console.log(
+      styleText(
+        ['green', 'bold'],
+        `
+API Extractor completed successfully
+`,
+      ),
+    );
+
+    // NOTE: As API Extractor currently only supports a single entry point per package,
+    // we need to adjust the package name for non-index entry points
+    if (entryFile.name !== 'index') {
+      const raw = await readFile(inputReport, 'utf8');
+      const updated = raw.replaceAll(packageJson.name, `${packageJson.name}--${entryFile.name}`);
+      await writeFile(inputReport, updated, 'utf8');
+    }
+
+    apiModel.loadPackage(inputReport);
+  } else {
+    console.error(
+      `API Extractor completed with ${extractorResult.errorCount} errors` +
+        ` and ${extractorResult.warningCount} warnings`,
+    );
+    console.dir(extractorResult.compilerState, { depth: 5 });
+    process.exitCode = 1;
+  }
+}
+
+if (process.exitCode === 1) {
+  console.error(styleText(['red', 'bold'], 'API extraction failed, see errors above'));
+  process.exit(process.exitCode);
+}
 
 // TODO: Load other modules by calling
 // apiModel.addMember(...)
@@ -146,6 +125,8 @@ type FormatterHandler = (item: any) => {
   shortTitle?: string;
   body?: string[];
 };
+
+const markdownRenderer = new MarkdownRenderer(apiModel);
 
 class ApiItemFormatter {
   private handlers = {
@@ -157,7 +138,6 @@ class ApiItemFormatter {
 
           // TODO [>=1.0.0]: Probably use accordions to display member details
 
-          // Overview
           `<TypeTable type={${JSON.stringify(
             Object.fromEntries(
               item.members.map((member) => {
@@ -175,8 +155,9 @@ class ApiItemFormatter {
                     required: true,
                     typeDescription: (member as ApiMethod).excerpt.text.trim(),
                     description: (member as ApiDocumentedItem)?.tsdocComment?.summarySection
-                      ? Formatter.renderDocNode(
+                      ? markdownRenderer.render(
                           (member as ApiDocumentedItem).tsdocComment?.summarySection,
+                          member,
                         )
                       : undefined,
                   } satisfies TypeNode,
@@ -205,7 +186,7 @@ class ApiItemFormatter {
                     item.parameters.map((parameter) => {
                       const description =
                         parameter.tsdocParamBlock &&
-                        Formatter.renderDocNode(parameter.tsdocParamBlock.content).trim();
+                        markdownRenderer.render(parameter.tsdocParamBlock.content, item).trim();
 
                       return [
                         parameter.name,
@@ -243,14 +224,60 @@ type ${item.displayName}${typeParametersTitle} = ${item.typeExcerpt.text}
         ],
       };
     },
+    [ApiItemKind.Interface]: (item: ApiInterface) => {
+      return {
+        title: `\`interface ${item.displayName}{:ts}\``,
+        body: [
+          '**Members**',
+
+          `<TypeTable type={${JSON.stringify(
+            Object.fromEntries(
+              item.members.map((member) => {
+                const prefixes = [
+                  (member as ApiMethod).isProtected ? 'protected' : undefined,
+                  (member as ApiMethod).isStatic ? 'static' : undefined,
+                  (member as ApiMethod).isAbstract ? 'abstract' : undefined,
+                ].filter(Boolean);
+                const displayName = [...prefixes, member.displayName].join(' ');
+
+                return [
+                  `${displayName}`,
+                  {
+                    required: !(member as ApiMethod).isOptional,
+                    type: (member as ApiProperty).propertyTypeExcerpt?.text.trim(),
+                    description: (member as ApiDocumentedItem)?.tsdocComment?.summarySection
+                      ? markdownRenderer.render(
+                          (member as ApiDocumentedItem).tsdocComment?.summarySection,
+                          member,
+                        )
+                      : undefined,
+                  } satisfies TypeNode,
+                ];
+              }),
+            ),
+          )}} />`,
+        ],
+      };
+    },
+    [ApiItemKind.Variable]: (item: ApiVariable) => {
+      return {
+        title: `\`const ${item.displayName}: ${item.variableTypeExcerpt.text}{:ts}\``,
+        shortTitle: `\`const ${item.displayName}{:ts}\``,
+
+        body: [],
+      };
+    },
   } satisfies Partial<Record<ApiItemKind, FormatterHandler>>;
 
   renderDocItem: FormatterHandler = (item: ApiItem) => {
     const handler =
       item.kind in this.handlers &&
-      (this.handlers as Record<ApiItemKind, FormatterHandler>)[item.kind];
+      (this.handlers as Partial<Record<ApiItemKind, FormatterHandler>>)[item.kind];
 
     if (handler) return handler(item);
+
+    console.warn(styleText(['yellow', 'bold'], `⚠️  No handler for item kind: ${item.kind}`));
+    process.exitCode = 1;
 
     return {
       title: `${item.displayName}`,
@@ -265,37 +292,44 @@ type ${item.displayName}${typeParametersTitle} = ${item.typeExcerpt.text}
 
 const nodeHandler = new ApiItemFormatter();
 
-for (const entryPoint of apiPackage.entryPoints) {
-  const exportedMembers = entryPoint.members;
-  const fullImportName = path.join(apiPackage.name, entryPoint.importPath ?? '');
-  const sourceUrl = new URL(
-    path.join('blob/main', apiManifest.repository.directory),
-    `${apiManifest.repository.url.replace(/^git\+/, '').replace(/\.git$/, '')}/`,
-  );
+for (const apiPackage of apiModel.packages) {
+  const entryFile = entryFiles.find((ef) => ef.extractorModuleName === apiPackage.name);
+  if (!entryFile) throw new Error(`Could not find entry file for package ${apiPackage.name}`);
 
-  console.log(`Entry point: ${fullImportName}`);
-  console.log(`Source URL: ${sourceUrl.toString()}`);
-  const itemSourceUrl = (item: ApiDeclaredItem) =>
-    new URL(item.fileUrlPath!, `${sourceUrl}/`).toString();
+  for (const entryPoint of apiPackage.entryPoints) {
+    const outputPath = `../../apps/docs/content/docs/api/modules/modeling/${entryFile.name}.mdx`;
+    const exportedMembers = entryPoint.members;
+    const fullImportName = entryFile.actualImportName;
+    const sourceUrl = new URL(
+      path.join('blob/main', packageJson.repository.directory),
+      `${packageJson.repository.url.replace(/^git\+/, '').replace(/\.git$/, '')}/`,
+    );
 
-  const description = Formatter.renderDocNodes(
-    apiPackage.tsdocComment?.summarySection?.getChildNodes() ?? [],
-  );
+    console.log(styleText(['cyan', 'bold'], `\nDocumenting entry point: ${fullImportName}`));
 
-  await writeFile(
-    outputPath,
-    /* mdx */ `
+    const itemSourceUrl = (item: ApiDeclaredItem) =>
+      new URL(item.fileUrlPath!, `${sourceUrl}/`).toString();
+
+    const description = markdownRenderer.render(
+      apiPackage.tsdocComment?.summarySection?.getChildNodes() ?? [],
+      apiPackage,
+    );
+
+    await writeFile(
+      outputPath,
+      /* mdx */ `
 ---
-title: ${JSON.stringify(apiPackage.name)}
+title: ${JSON.stringify(entryFile.name === 'index' ? entryFile.actualImportName : entryFile.name)}
 description: ${JSON.stringify(description)}
 ---
 
 import { CodeIcon } from 'lucide-react';
 import { TypeTable } from 'fumadocs-ui/components/type-table';
+import { Anchor } from '@/components/anchor';
 
 {/* Remarks */}
 
-${Formatter.renderDocNodes(apiPackage.tsdocComment?.remarksBlock?.getChildNodes() ?? [])}
+${markdownRenderer.render(apiPackage.tsdocComment?.remarksBlock?.getChildNodes() ?? [], apiPackage)}
 
 ---
 
@@ -316,7 +350,7 @@ ${exportedMembers
 
     return [
       // Anchor
-      `<div className="pt-${anchorOffset} -mt-${anchorOffset}" id="${encodeURIComponent(member.getScopedNameWithinPackage())}" />`,
+      `<Anchor id="${encodeURIComponent(member.getScopedNameWithinPackage())}" />`,
 
       '<div className="hidden">',
       `### ${rendered.shortTitle ?? rendered.title} [#${encodeURIComponent(member.getScopedNameWithinPackage())}]`,
@@ -327,14 +361,14 @@ ${exportedMembers
 
       // Summary
       ...(declaredItem?.tsdocComment
-        ? [Formatter.renderDocNode(declaredItem.tsdocComment.summarySection).trim()]
+        ? [markdownRenderer.render(declaredItem.tsdocComment.summarySection, member).trim()]
         : []),
 
       // Remarks
       ...(declaredItem?.tsdocComment?.remarksBlock
         ? [
             '**Remarks**',
-            Formatter.renderDocNode(declaredItem.tsdocComment.remarksBlock?.content).trim(),
+            markdownRenderer.render(declaredItem.tsdocComment.remarksBlock?.content, member).trim(),
             // NOTE: Uncomment to enable blockquote style for remarks
             // .replaceAll(/^/gm, '> '),
           ]
@@ -344,7 +378,7 @@ ${exportedMembers
       declaredItem &&
         `<small>
       
-> Defined in [${path.join(apiManifest.repository.directory, declaredItem.fileUrlPath!)}](${itemSourceUrl(declaredItem)})
+> Defined in [${path.join(packageJson.repository.directory, declaredItem.fileUrlPath!)}](${itemSourceUrl(declaredItem)})
  
 </small>`,
     ];
@@ -353,5 +387,8 @@ ${exportedMembers
   .join('\n\n')}
   
 `.trim(),
-  );
+    );
+
+    console.log(styleText(['green', 'bold'], `\n👍 Wrote API docs to ${outputPath}`));
+  }
 }
