@@ -3,8 +3,13 @@
 import { styleText } from 'node:util';
 import type { ApiItem, ApiModel } from '@microsoft/api-extractor-model';
 import {
+  DocBlock,
+  DocBlockTag,
+  DocCodeSpan,
   DocDeclarationReference,
   DocExcerpt,
+  DocFencedCode,
+  DocHtmlStartTag,
   DocLinkTag,
   DocNode,
   DocNodeContainer,
@@ -61,6 +66,9 @@ export class MarkdownRenderer extends TsdocRenderer {
     [DocNodeKind.Section]: this.renderChildNodes,
     [DocNodeKind.Excerpt]: this.renderChildNodes,
     [DocNodeKind.SoftBreak]: () => '\n\n',
+    [DocNodeKind.HtmlStartTag]: (node: DocHtmlStartTag) => node.emitAsHtml(),
+    [DocNodeKind.HtmlEndTag]: (node: DocHtmlStartTag) => node.emitAsHtml(),
+    [DocNodeKind.CodeSpan]: (node: DocCodeSpan) => `\`${node.code}\``,
     [DocNodeKind.LinkTag]: (node: DocLinkTag, contextApiItem: ApiItem) => {
       let title: string | undefined;
       let target: string | undefined;
@@ -98,6 +106,7 @@ export class MarkdownRenderer extends TsdocRenderer {
           target = `#${encodeURIComponent(resolved.resolvedApiItem.getScopedNameWithinPackage())}`;
         } else {
           console.warn(`Unsupported child node kind in LinkTag: ${childNode.kind}`);
+          process.exitCode = 1;
         }
       }
 
@@ -109,35 +118,25 @@ export class MarkdownRenderer extends TsdocRenderer {
 
       return `[${title}](${target})`;
     },
-    // FIXME: Remove
-    [DocNodeKind.DeclarationReference]: (
-      node: DocDeclarationReference,
-      contextApiItem: ApiItem,
-    ) => {
-      const memberReference = node.memberReferences[0];
-      if (!memberReference || node.memberReferences.length > 1) {
-        throw new Error('Only single member references are supported');
+    [DocNodeKind.FencedCode]: (node: DocFencedCode) => {
+      return `\`\`\`${node.language}\n${node.code}\n\`\`\``;
+    },
+    [DocNodeKind.Block]: (node: DocBlock, contextApiItem: ApiItem) => {
+      const tag = node.blockTag;
+
+      if (['@remarks', '@example'].includes(node.blockTag.tagName)) {
+        return this.renderChildNodes(node.content, contextApiItem);
       }
 
-      const identifier = memberReference.memberIdentifier?.identifier;
-      if (!identifier) {
-        throw new Error('Only member references with identifiers are supported');
-      }
+      console.warn(styleText(['yellow'], `Unsupported DocBlock with tag: ${tag.tagName}`));
+      process.exitCode = 1;
+      return this.render(node.getChildNodes(), contextApiItem);
+    },
 
-      if (!contextApiItem) {
-        throw new Error('Context ApiItem is required to resolve declaration references');
-      }
+    [DocNodeKind.BlockTag]: (node: DocBlockTag, context: ApiItem) => {
+      console.warn(styleText(['yellow'], `Got a ${node.tagName} block tag`));
 
-      const resolved = this.apiModel.resolveDeclarationReference(
-        node,
-        contextApiItem.getAssociatedPackage(),
-      );
-
-      if (resolved?.errorMessage) {
-        throw new Error(`Failed to resolve declaration reference: ${resolved.errorMessage}`);
-      }
-
-      return identifier;
+      return `**${node.tagName}**`;
     },
   };
 }

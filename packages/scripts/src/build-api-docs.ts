@@ -15,11 +15,11 @@ import {
   ApiItemKind,
   ApiMethod,
   ApiModel,
-  ApiPackage,
   ApiProperty,
   ApiTypeAlias,
   ApiVariable,
 } from '@microsoft/api-extractor-model';
+import { DocNodeKind, DocParagraph } from '@microsoft/tsdoc';
 import type { TypeNode } from 'fumadocs-ui/components/type-table';
 import { MarkdownRenderer } from './lib/formatter';
 
@@ -118,9 +118,7 @@ if (process.exitCode === 1) {
   process.exit(process.exitCode);
 }
 
-// TODO: Load other modules by calling
-// apiModel.addMember(...)
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type FormatterHandler = (item: any) => {
   title: string;
   shortTitle?: string;
@@ -308,10 +306,11 @@ for (const apiPackage of apiModel.packages) {
       `${packageJson.repository.url.replace(/^git\+/, '').replace(/\.git$/, '')}/`,
     );
 
-    console.log(styleText(['cyan', 'bold'], `\nDocumenting entry point: ${fullImportName}`));
-
+    // eslint-disable-next-line unicorn/consistent-function-scoping
     const itemSourceUrl = (item: ApiDeclaredItem) =>
       new URL(item.fileUrlPath!, `${sourceUrl}/`).toString();
+
+    console.log(styleText(['cyan', 'bold'], `\nDocumenting entry point: ${fullImportName}`));
 
     const description = markdownRenderer.render(
       apiPackage.tsdocComment?.summarySection?.getChildNodes() ?? [],
@@ -332,7 +331,7 @@ import { Anchor } from '@/components/anchor';
 
 {/* Remarks */}
 
-${markdownRenderer.render(apiPackage.tsdocComment?.remarksBlock?.getChildNodes() ?? [], apiPackage)}
+${markdownRenderer.render(apiPackage.tsdocComment?.remarksBlock ?? [], apiPackage)}
 
 ---
 
@@ -348,16 +347,36 @@ ${exportedMembers
   .flatMap((member) => {
     const rendered = nodeHandler.renderDocItem(member);
     const declaredItem = 'fileUrlPath' in member ? (member as ApiDeclaredItem) : undefined;
-    const info = {};
-    member.serializeInto(info);
+
+    const examples = declaredItem?.tsdocComment?.customBlocks
+      .filter((block) => block.blockTag.tagName === '@example')
+      .map((example, index) => {
+        let title = '';
+
+        const contentChildren = example.content.getChildNodes();
+
+        // Use first paragraph as title if it exists
+        if (contentChildren[0]?.kind === DocNodeKind.Paragraph) {
+          title = markdownRenderer.render(contentChildren[0], member);
+          (contentChildren[0] as DocParagraph).clearNodes();
+        }
+
+        return {
+          title: title.trim() || `Example ${index + 1}`,
+          content: example.content,
+        };
+      });
+
+    const anchorId = encodeURIComponent(member.getScopedNameWithinPackage());
 
     return [
       // Anchor
-      `<Anchor id="${encodeURIComponent(member.getScopedNameWithinPackage())}" />`,
-
+      `<Anchor id="${anchorId}" />`,
+      // Hidden title for TOC creation
       '<div className="hidden">',
-      `### ${rendered.shortTitle ?? rendered.title} [#${encodeURIComponent(member.getScopedNameWithinPackage())}]`,
+      `### ${rendered.shortTitle ?? rendered.title} [#${anchorId}]`,
       '</div>',
+      // Visible title
       `<h3>`,
       rendered.title,
       '</h3>',
@@ -374,6 +393,20 @@ ${exportedMembers
             markdownRenderer.render(declaredItem.tsdocComment.remarksBlock?.content, member).trim(),
             // NOTE: Uncomment to enable blockquote style for remarks
             // .replaceAll(/^/gm, '> '),
+          ]
+        : []),
+
+      // Examples
+      ...(examples?.length
+        ? [
+            '**Examples**',
+            `<Tabs items={${JSON.stringify(examples.map(({ title }) => title))}}>`,
+            ...examples.map((exampleBlock) => {
+              return `<Tab value="${exampleBlock.title}" title="${exampleBlock.title}">\n${markdownRenderer
+                .render(exampleBlock.content, member)
+                .trim()}\n</Tab>`;
+            }),
+            '</Tabs>',
           ]
         : []),
 

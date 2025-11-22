@@ -1,7 +1,3 @@
-import modeling from '@jscad/modeling';
-import type { RGB, RGBA } from '@jscad/modeling/src/colors';
-import type { Geometry } from '@jscad/modeling/src/geometries/types';
-
 /**
  * Color related functions
  *
@@ -14,6 +10,10 @@ import type { Geometry } from '@jscad/modeling/src/geometries/types';
  * @packageDocumentation
  * @see {@link https://tscad.vercel.app/docs/api/modules/modeling/colors/#colorize | Docs}
  */
+
+import modeling from '@jscad/modeling';
+import type { RGB, RGBA } from '@jscad/modeling/src/colors';
+import type { Geometry } from '@jscad/modeling/src/geometries/types';
 
 /**
  * Colorize an object. The color itself is defined as an array of 3 (RGB) or 4 (RGBA) numbers

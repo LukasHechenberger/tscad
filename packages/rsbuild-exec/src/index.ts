@@ -17,8 +17,7 @@ import { execaCommand, type ExecaError, type Options } from 'execa';
  * @param options - The plugin options
  * @returns An rsbuild plugin
  *
- *
- * @example Basic Usage
+ * @example Basic usage
  *
  * ```ts
  * import { pluginRsbuildExec } from 'rsbuild-exec';
