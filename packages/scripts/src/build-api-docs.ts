@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { styleText } from 'node:util';
 import { Extractor, ExtractorConfig, ExtractorResult } from '@microsoft/api-extractor';
@@ -315,6 +315,7 @@ for (const apiPackage of apiModel.packages) {
       apiPackage,
     );
 
+    await mkdir(path.dirname(outputPath), { recursive: true });
     await writeFile(
       outputPath,
       /* mdx */ `
