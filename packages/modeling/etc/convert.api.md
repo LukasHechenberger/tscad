@@ -9,7 +9,7 @@ import type { Geom3 } from '@jscad/modeling/src/geometries/types';
 import { MeshStandardMaterialParameters } from 'three';
 import { NormalBufferAttributes } from 'three';
 
-// @public
+// @internal
 export function solidToThree(solid: Geom3): {
     geometry: Readonly<BufferGeometry<NormalBufferAttributes>>;
     material: MeshStandardMaterialParameters;

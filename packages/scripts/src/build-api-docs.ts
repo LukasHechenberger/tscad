@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { styleText } from 'node:util';
 import { Extractor, ExtractorConfig, ExtractorResult } from '@microsoft/api-extractor';
@@ -316,6 +316,18 @@ for (const apiPackage of apiModel.packages) {
     );
 
     await mkdir(path.dirname(outputPath), { recursive: true });
+
+    if (exportedMembers.length === 0) {
+      console.log(
+        styleText(
+          ['yellow', 'bold'],
+          `⚠️  No exported members found for entry point: ${fullImportName}, skipping...`,
+        ),
+      );
+      await rm(outputPath).catch(() => {});
+      continue;
+    }
+
     await writeFile(
       outputPath,
       /* mdx */ `
