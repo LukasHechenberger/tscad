@@ -51,7 +51,7 @@ export function pluginExec(options: {
   return {
     name: 'rsbuild-exec',
     setup(api) {
-      api.onAfterEnvironmentCompile(async () => {
+      api.onAfterBuild(async () => {
         const start = performance.now();
         api.logger.start(`${title} started...`);
 
