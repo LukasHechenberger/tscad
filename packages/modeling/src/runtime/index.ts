@@ -19,8 +19,16 @@ export const ajv = new Ajv({
 
 // TODO [>=1.0.0]: Only export as type to avoid instanciating without `getRuntime`
 
-/** A runtime for a model */
+/** A runtime for a model
+ *
+ * @remarks
+ *
+ * The ModelRuntime class allows you to use a model definition at runtime. It provides parameter resolution as well as methods for rendering a model.
+ */
 export class ModelRuntime<P> {
+  /**
+   * The compiled ajv validation function for the model parameters
+   */
   protected validateParameters;
 
   private constructor(public readonly modelDefinition: ModelDefinition<P>) {
@@ -30,9 +38,19 @@ export class ModelRuntime<P> {
       properties: modelDefinition.parametersInput,
     };
 
-    this.validateParameters = ajv.compile(schema);
+    this.validateParameters = ajv.compile<P>(schema);
   }
 
+  /**
+   * Resolves the given input parameters and validates them.
+   *
+   * @remarks
+   *
+   * If `throwIfInvalid` is true, an error will be thrown if the parameters are invalid.
+   * Otherwise, a warning will be logged to the console.
+   *
+   * @returns The resolved parameters
+   */
   resolveParameters(input: Partial<ParametersInput>, throwIfInvalid = true) {
     if (!this.validateParameters(input)) {
       if (throwIfInvalid) {

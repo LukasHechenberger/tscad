@@ -58,7 +58,7 @@ export default defineConfig({
       dts: true,
       plugins: [
         {
-          name: 'api-docs',
+          name: 'readme',
           setup(api) {
             api.onAfterEnvironmentCompile(async () => {
               // eslint-disable-next-line no-console

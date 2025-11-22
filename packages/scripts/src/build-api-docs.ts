@@ -3,452 +3,439 @@
 
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { DocDeclarationReference, DocNodeKind, ExcerptKind, TSDocParser } from '@microsoft/tsdoc';
-import { DocExcerpt, DocNode } from '@microsoft/tsdoc';
-import type { TypeNode } from 'fumadocs-ui/components/type-table';
-import slugify from 'slugify';
+import { styleText } from 'node:util';
+import { Extractor, ExtractorConfig, ExtractorResult } from '@microsoft/api-extractor';
 import {
-  type ImplementedKindToNodeMappings,
-  Node,
-  Project,
-  SyntaxKind,
-  TypeFormatFlags,
-} from 'ts-morph';
+  ApiClass,
+  ApiDeclaredItem,
+  ApiDocumentedItem,
+  ApiFunction,
+  ApiInterface,
+  ApiItem,
+  ApiItemKind,
+  ApiMethod,
+  ApiModel,
+  ApiProperty,
+  ApiTypeAlias,
+  ApiVariable,
+} from '@microsoft/api-extractor-model';
+import { DocNodeKind, DocParagraph } from '@microsoft/tsdoc';
+import type { TypeNode } from 'fumadocs-ui/components/type-table';
+import { MarkdownRenderer } from './lib/formatter';
 
-/** This is a simplistic solution until we implement proper DocNode rendering APIs. */
-class Formatter {
-  public static renderDocNode(documentNode: DocNode): string {
-    let result: string = '';
-    if (documentNode) {
-      if (documentNode instanceof DocExcerpt) {
-        result += documentNode.content.toString();
-      }
+// Load package manifest
+const packageJson = await readFile('./package.json', 'utf8').then((data) => JSON.parse(data));
+const unscopedPackageName = packageJson.name.replace(/^@.*\//, '');
 
-      if (documentNode.kind === DocNodeKind.LinkTag) {
-        let title: string | undefined = undefined;
-        let target: string | undefined = undefined;
+const sourceUrl = new URL(
+  path.join('blob/main', packageJson.repository.directory),
+  `${packageJson.repository.url.replace(/^git\+/, '').replace(/\.git$/, '')}/`,
+);
 
-        for (const childNode of documentNode.getChildNodes()) {
-          const text = Formatter.renderDocNode(childNode);
+const entryFiles = (Object.entries(packageJson.exports) as [string, { types: string }][]).map(
+  ([key, exp]) => {
+    const name = key.slice(2) || 'index';
+    return {
+      name,
+      actualImportName: name === 'index' ? packageJson.name : `${packageJson.name}/${name}`,
+      extractorModuleName: name === 'index' ? packageJson.name : `${packageJson.name}--${name}`,
+      dts: exp.types,
+    };
+  },
+);
 
-          if (childNode instanceof DocExcerpt) {
-            if (childNode.excerptKind === ExcerptKind.LinkTag_UrlDestination) {
-              target = text;
-            } else if (childNode.excerptKind === ExcerptKind.LinkTag_LinkText) {
-              title = text;
-            } else if (text.trim().length > 0) {
-              console.warn(`Ignoring exerpt`, { kind: childNode.excerptKind, text });
-            }
-          } else if (childNode instanceof DocDeclarationReference) {
-            title = text;
+const apiModel: ApiModel = new ApiModel();
 
-            if (childNode.packageName) {
-              console.warn('External package link', childNode.packageName);
-            } else {
-              target = `#${text}`;
-            }
-            // target = text;
-          } else {
-            console.warn(`Unsupported child node kind in LinkTag: ${childNode.kind}`);
-          }
-        }
+// run API Extractor for all entry files
+for (const entryFile of entryFiles) {
+  console.log(styleText(['cyan', 'bold'], `Processing entry file: ${entryFile.dts}\n`));
+  const inputReport = `etc/${entryFile.name}.api.json`;
 
-        if (!target) {
-          console.warn(`LinkTag is missing a target: ${title}`);
+  const extractorConfig: ExtractorConfig = ExtractorConfig.prepare({
+    configObject: {
+      mainEntryPointFilePath: path.join(process.cwd(), entryFile.dts),
+      projectFolder: process.cwd(),
 
-          return `${title}`;
-        }
+      compiler: {
+        tsconfigFilePath: path.join(process.cwd(), 'tsconfig.json'),
+      },
+      docModel: {
+        enabled: true,
+        apiJsonFilePath: `<projectFolder>/${inputReport}`,
+        projectFolderUrl: sourceUrl.toString(),
+      },
+      apiReport: {
+        enabled: true,
+        reportFolder: '<projectFolder>/etc/',
+        reportFileName: `${entryFile.name}`,
+        reportTempFolder: '<projectFolder>/temp/',
+      },
+    },
 
-        return `[${title}](${target})`;
-      }
+    packageJson,
+    packageJsonFullPath: path.join(process.cwd(), 'package.json'),
+    configObjectFullPath: path.join(process.cwd(), 'does-not-exist/api-extractor.json'),
+  });
 
-      for (const childNode of documentNode.getChildNodes()) {
-        result += Formatter.renderDocNode(childNode);
-      }
+  // Invoke API Extractor
+  const extractorResult: ExtractorResult = Extractor.invoke(extractorConfig, {
+    // Equivalent to the "--local" command-line parameter
+    localBuild: true,
+
+    // Equivalent to the "--verbose" command-line parameter
+    showVerboseMessages: true,
+  });
+
+  if (extractorResult.succeeded) {
+    console.log(
+      styleText(
+        ['green', 'bold'],
+        `
+API Extractor completed successfully
+`,
+      ),
+    );
+
+    // NOTE: As API Extractor currently only supports a single entry point per package,
+    // we need to adjust the package name for non-index entry points
+    if (entryFile.name !== 'index') {
+      const raw = await readFile(inputReport, 'utf8');
+      const updated = raw.replaceAll(packageJson.name, `${packageJson.name}--${entryFile.name}`);
+      await writeFile(inputReport, updated, 'utf8');
     }
-    return result;
-  }
 
-  public static renderDocNodes(documentNodes: ReadonlyArray<DocNode>): string {
-    let result: string = '';
-    for (const documentNode of documentNodes) {
-      result += Formatter.renderDocNode(documentNode);
-    }
-    return result;
+    apiModel.loadPackage(inputReport);
+  } else {
+    console.error(
+      `API Extractor completed with ${extractorResult.errorCount} errors` +
+        ` and ${extractorResult.warningCount} warnings`,
+    );
+    console.dir(extractorResult.compilerState, { depth: 5 });
+    process.exitCode = 1;
   }
 }
 
-const slugGenerator = {
-  usedSlugs: new Set<string>(),
-  generate(text: string): string {
-    const slug = slugify(text, { lower: true, strict: true });
+if (process.exitCode === 1) {
+  console.error(styleText(['red', 'bold'], 'API extraction failed, see errors above'));
+  process.exit(process.exitCode);
+}
 
-    let uniqueSlug = slug;
-    let counter = 1;
-
-    while (this.usedSlugs.has(uniqueSlug)) {
-      uniqueSlug = `${slug}-${counter}`;
-      counter++;
-    }
-
-    this.usedSlugs.add(uniqueSlug);
-    return uniqueSlug;
-  },
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type FormatterHandler = (item: any) => {
+  title: string;
+  shortTitle?: string;
+  body?: string[];
 };
 
-console.time('build api docs');
-const manifest = JSON.parse(await readFile('package.json', 'utf8'));
-const pathInRepository = manifest.repository.directory;
-const pathInPackagesDirectory = path.relative('packages', pathInRepository);
+const markdownRenderer = new MarkdownRenderer(apiModel);
 
-const baseSourceUrl = new URL(
-  pathInRepository,
-  'https://github.com/LukasHechenberger/tscad/tree/main/',
-).toString();
+class ApiItemFormatter {
+  private handlers = {
+    [ApiItemKind.Class]: (item: ApiClass) => {
+      return {
+        title: `\`class ${item.displayName}{:ts}\``,
+        body: [
+          `**Members**`,
 
-console.log(`Building API docs for ${manifest.name}...`);
+          // TODO [>=1.0.0]: Probably use accordions to display member details
 
-console.time('create project');
-const project = new Project({
-  tsConfigFilePath: 'tsconfig.json',
-  // skipAddingFilesFromTsConfig: true,
-  skipLoadingLibFiles: true,
-  skipFileDependencyResolution: true,
-});
-console.timeEnd('create project');
+          `<TypeTable type={${JSON.stringify(
+            Object.fromEntries(
+              item.members.map((member) => {
+                const prefixes = [
+                  (member as ApiMethod).isProtected ? 'protected' : undefined,
+                  (member as ApiMethod).isStatic ? 'static' : undefined,
+                  (member as ApiMethod).isAbstract ? 'abstract' : undefined,
+                ].filter(Boolean);
+                const displayName = [...prefixes, member.displayName].join(' ');
 
-const sourceFiles = project.getSourceFiles('src/**/*.ts');
-// TODO [>=1.0.0]: Get from manifest exports
-const exportedModules = sourceFiles
-  .filter((sourceFile) => sourceFile.getFilePath().endsWith('/index.ts'))
-  .map((sourceFile, _, all) => ({
-    sourceFile,
-    hasChildPage: all.some(
-      (f) =>
-        f !== sourceFile &&
-        f.getFilePath().includes(sourceFile.getFilePath().replace('index.ts', '')),
-    ),
-  }));
-
-for (const { sourceFile, hasChildPage } of exportedModules) {
-  const moduleNameComponents = path
-    .relative('src', path.dirname(sourceFile.getFilePath()))
-    .split('/')
-    .filter(Boolean);
-
-  const docsFilename =
-    moduleNameComponents.length === 0 && !hasChildPage
-      ? `${pathInPackagesDirectory}.mdx`
-      : path.join(
-          pathInPackagesDirectory,
-          `${moduleNameComponents.join('/')}${hasChildPage ? '/index.mdx' : '.mdx'}`,
-        );
-
-  const docsPath = path.join(
-    process.cwd(),
-    '../../apps/docs/content/docs/api/modules/',
-    docsFilename,
-  );
-
-  const moduleName = [manifest.name, ...moduleNameComponents].join('/');
-  const title = moduleNameComponents.length > 0 ? moduleNameComponents.at(-1) : moduleName;
-
-  console.log(`DOC ${title}`);
-
-  const commentedItems = sourceFile.getStatementsWithComments().flatMap((statement) => {
-    return statement.getLeadingCommentRanges().flatMap((range) => {
-      const text = range.getText();
-      const parserContext = new TSDocParser().parseString(text);
-
-      if (parserContext.log.messages.length > 0) {
-        console.warn(`DOC   - Warning: TSDoc parse issues in ${moduleName}`);
-        console.warn(parserContext.log.messages.map((message) => message.text).join('\n'));
-      }
-
-      const isPackageDocumentation =
-        parserContext.docComment.modifierTagSet.isPackageDocumentation();
-
-      // TODO [>=1.0.0]: Ensure the statement is exported
-
-      const { title, name } = (
-        {
-          [SyntaxKind.FunctionDeclaration]: (s) => ({
-            title: `function ${s.getName()}`,
-            name: s.getName(),
-          }),
-          [SyntaxKind.InterfaceDeclaration]: (s) => ({
-            title: `interface ${s.getName()}`,
-            name: s.getName(),
-          }),
-          [SyntaxKind.ClassDeclaration]: (s) => ({
-            title: `class ${s.getName()}`,
-            name: s.getName(),
-          }),
-          [SyntaxKind.VariableStatement]: (s) => ({
-            title: `const ${s.getDeclarations()[0]!.getName()}: ${s.getType().getText(undefined, TypeFormatFlags.NoTypeReduction)}`,
-            name: s.getDeclarations()[0]!.getName(),
-          }),
-          [SyntaxKind.TypeAliasDeclaration]: (s) => ({
-            title: `type ${s.getName()}`,
-            name: s.getNameNode().getText(),
-          }),
-        } as {
-          [K in SyntaxKind]?: (
-            s: K extends keyof ImplementedKindToNodeMappings
-              ? ImplementedKindToNodeMappings[K]
-              : never,
-          ) => {
-            title: string;
-            name: string;
-          };
-        }
-      )[statement.getKind()]?.(statement as never) ?? {
-        title: `unknown ${(statement as { getName?: () => string }).getName?.()}: ${statement.getKindName()}`,
-        name: statement.getKindName(),
+                return [
+                  `${displayName}`,
+                  {
+                    type: member.kind,
+                    required: true,
+                    typeDescription: (member as ApiMethod).excerpt.text.trim(),
+                    description: (member as ApiDocumentedItem)?.tsdocComment?.summarySection
+                      ? markdownRenderer.render(
+                          (member as ApiDocumentedItem).tsdocComment?.summarySection,
+                          member,
+                        )
+                      : undefined,
+                  } satisfies TypeNode,
+                ];
+              }),
+            ),
+          )}} />`,
+        ],
       };
+    },
+    [ApiItemKind.Function]: (item: ApiFunction) => {
+      const parametersTitle = item.parameters
+        .map((parameter) => `${parameter.name}${parameter.isOptional ? '?' : ''}`)
+        .join(', ');
 
-      const description = Formatter.renderDocNode(parserContext.docComment.summarySection)?.trim();
-      if (!description) return [];
+      return {
+        title: `\`function ${item.displayName}(${parametersTitle}){:ts}\``,
+        shortTitle: `\`function ${item.displayName}{:ts}\``,
 
-      const slug = parserContext.docComment.modifierTagSet.isPackageDocumentation()
-        ? '@index'
-        : slugGenerator.generate(name);
+        body: [
+          ...(item.parameters.length > 0
+            ? [
+                `**Parameters**`,
+                `<TypeTable type={${JSON.stringify(
+                  Object.fromEntries(
+                    item.parameters.map((parameter) => {
+                      const description =
+                        parameter.tsdocParamBlock &&
+                        markdownRenderer.render(parameter.tsdocParamBlock.content, item).trim();
 
-      console.log(`DOC      - ${title}: ${description} [${slug}]`);
+                      return [
+                        parameter.name,
+                        {
+                          type: parameter.parameterTypeExcerpt.text.trim(),
+                          required: !parameter.isOptional,
+                          description,
+                        } satisfies TypeNode,
+                      ];
+                    }),
+                  ),
+                  undefined,
+                  2,
+                )}} />`,
+              ]
+            : []),
+        ],
+      };
+    },
+    [ApiItemKind.TypeAlias]: (item: ApiTypeAlias) => {
+      const typeParametersTitle =
+        item.typeParameters.length > 0
+          ? `<${item.typeParameters.map((parameter) => parameter.name).join(', ')}>`
+          : '';
+      return {
+        title: `\`type ${item.displayName}{:ts}\``,
+        // title: ,
+        body: [
+          '**Definition**',
+          `\`\`\`ts
+type ${item.displayName}${typeParametersTitle} = ${item.typeExcerpt.text}
+\`\`\``,
 
-      return [
-        {
-          statement,
-          parserContext,
-          source: {
-            line: statement.getStartLineNumber(),
-          },
-          kind: statement.getKindName(),
-          title,
-          name,
-          slug,
-          description,
-          text,
-          isPackageDocumentation,
-          isType:
-            statement.isKind(SyntaxKind.InterfaceDeclaration) ||
-            statement.isKind(SyntaxKind.TypeAliasDeclaration),
-        },
-      ];
-    });
-  });
+          ...(item.members.map((member) => `- ${member.displayName}`) || []),
+        ],
+      };
+    },
+    [ApiItemKind.Interface]: (item: ApiInterface) => {
+      return {
+        title: `\`interface ${item.displayName}{:ts}\``,
+        body: [
+          '**Members**',
 
-  const packageDocumentation = commentedItems.find((item) => item.isPackageDocumentation);
-  if (!packageDocumentation)
-    console.warn(`DOC   - WARNING: No package documentation found in ${moduleName}`);
+          `<TypeTable type={${JSON.stringify(
+            Object.fromEntries(
+              item.members.map((member) => {
+                const prefixes = [
+                  (member as ApiMethod).isProtected ? 'protected' : undefined,
+                  (member as ApiMethod).isStatic ? 'static' : undefined,
+                  (member as ApiMethod).isAbstract ? 'abstract' : undefined,
+                ].filter(Boolean);
+                const displayName = [...prefixes, member.displayName].join(' ');
 
-  const description = packageDocumentation?.description.trim() ?? '';
+                return [
+                  `${displayName}`,
+                  {
+                    required: !(member as ApiMethod).isOptional,
+                    type: (member as ApiProperty).propertyTypeExcerpt?.text.trim(),
+                    description: (member as ApiDocumentedItem)?.tsdocComment?.summarySection
+                      ? markdownRenderer.render(
+                          (member as ApiDocumentedItem).tsdocComment?.summarySection,
+                          member,
+                        )
+                      : undefined,
+                  } satisfies TypeNode,
+                ];
+              }),
+            ),
+          )}} />`,
+        ],
+      };
+    },
+    [ApiItemKind.Variable]: (item: ApiVariable) => {
+      return {
+        title: `\`const ${item.displayName}: ${item.variableTypeExcerpt.text}{:ts}\``,
+        shortTitle: `\`const ${item.displayName}{:ts}\``,
 
-  // Find exported functions
-  const exportedItems = commentedItems
+        body: [],
+      };
+    },
+  } satisfies Partial<Record<ApiItemKind, FormatterHandler>>;
 
-    // Order types last
-    .sort((a, b) => {
-      if (a.isType && !b.isType) return 1;
-      if (!a.isType && b.isType) return -1;
+  renderDocItem: FormatterHandler = (item: ApiItem) => {
+    const handler =
+      item.kind in this.handlers &&
+      (this.handlers as Partial<Record<ApiItemKind, FormatterHandler>>)[item.kind];
 
-      return 0;
-    })
-    .filter((item) => item !== packageDocumentation);
+    if (handler) return handler(item);
 
-  console.log(`DOC  - Found ${exportedItems.length} exported items`);
+    console.warn(styleText(['yellow', 'bold'], `⚠️  No handler for item kind: ${item.kind}`));
+    process.exitCode = 1;
 
-  const content = `---
-title: ${JSON.stringify(title)}
+    return {
+      title: `${item.displayName}`,
+      body: [
+        `<Callout>
+  TODO: Implement rendering for \`${item.kind}\` items
+</Callout>`,
+      ],
+    };
+  };
+}
+
+const nodeHandler = new ApiItemFormatter();
+
+for (const apiPackage of apiModel.packages) {
+  const entryFile = entryFiles.find((ef) => ef.extractorModuleName === apiPackage.name);
+  if (!entryFile) throw new Error(`Could not find entry file for package ${apiPackage.name}`);
+
+  for (const entryPoint of apiPackage.entryPoints) {
+    const outputPathInModulesDirectory =
+      entryFiles.length > 1 ? `${unscopedPackageName}/${entryFile.name}` : unscopedPackageName;
+    const outputPath = `../../apps/docs/content/docs/api/modules/${outputPathInModulesDirectory}.mdx`;
+    const exportedMembers = entryPoint.members;
+    const fullImportName = entryFile.actualImportName;
+
+    // eslint-disable-next-line unicorn/consistent-function-scoping
+    const itemSourceUrl = (item: ApiDeclaredItem) =>
+      new URL(item.fileUrlPath!, `${sourceUrl}/`).toString();
+
+    console.log(styleText(['cyan', 'bold'], `\nDocumenting entry point: ${fullImportName}`));
+
+    const description = markdownRenderer.render(
+      apiPackage.tsdocComment?.summarySection?.getChildNodes() ?? [],
+      apiPackage,
+    );
+
+    await mkdir(path.dirname(outputPath), { recursive: true });
+
+    if (exportedMembers.length === 0) {
+      console.log(
+        styleText(
+          ['yellow', 'bold'],
+          `⚠️  No exported members found for entry point: ${fullImportName}, skipping...`,
+        ),
+      );
+      await rm(outputPath).catch(() => {});
+      continue;
+    }
+
+    await writeFile(
+      outputPath,
+      /* mdx */ `
+---
+title: ${JSON.stringify(entryFile.name === 'index' ? entryFile.actualImportName : entryFile.name)}
 description: ${JSON.stringify(description)}
 ---
 
+import { CodeIcon } from 'lucide-react';
 import { TypeTable } from 'fumadocs-ui/components/type-table';
-import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+import { Anchor } from '@/components/anchor';
 
-${
-  packageDocumentation && packageDocumentation.parserContext.docComment.remarksBlock
-    ? Formatter.renderDocNode(
-        packageDocumentation.parserContext.docComment.remarksBlock.content,
-      )?.trim()
-    : ''
-}
+{/* Remarks */}
+
+${markdownRenderer.render(apiPackage.tsdocComment?.remarksBlock ?? [], apiPackage)}
 
 ---
 
-## Methods and Properties [#@methods-and-props]
+\`\`\`ts title="Import"
+import { 
+  ${exportedMembers.map((m) => `${m.kind === ApiItemKind.TypeAlias ? 'type ' : ''}${m.displayName}`).join(',\n  ')}
+} from '${fullImportName}'
+\`\`\`
 
-${
-  exportedItems.length > 0
-    ? `\`\`\`ts title="Import"
-import { ${exportedItems.map((index) => `${index.isType ? 'type ' : ''}${index.name}`).join(', ')} } from '${moduleName}';
-\`\`\``
-    : ''
-}
+## Methods and properties [#@methods-and-props]
 
-${exportedItems
-  .map((item) => {
-    let fullTitle = item.title;
+${exportedMembers
+  .flatMap((member) => {
+    const rendered = nodeHandler.renderDocItem(member);
+    const declaredItem = 'fileUrlPath' in member ? (member as ApiDeclaredItem) : undefined;
 
-    const details = [] as { title: string; text: string }[];
-    if (Node.isFunctionDeclaration(item.statement)) {
-      // Collect examples
-      const exampleBlocks = item.parserContext.docComment.customBlocks.filter(
-        (block) => block.blockTag.tagName === '@example',
-      );
+    const examples = declaredItem?.tsdocComment?.customBlocks
+      .filter((block) => block.blockTag.tagName === '@example')
+      .map((example, index) => {
+        let title = '';
 
-      const examples = [] as { title: string; text: string }[];
-      for (const block of exampleBlocks) {
-        if (block.content.nodes.length === 0) continue;
+        const contentChildren = example.content.getChildNodes();
 
-        const exampleTitle =
-          Formatter.renderDocNode(block.content.nodes[0]!).trim() ||
-          `Example ${examples.length + 1}`;
-
-        examples.push({
-          title: exampleTitle,
-          text: Formatter.renderDocNodes(block.content.nodes.slice(1)).trim(),
-        });
-      }
-
-      if (examples.length > 0) {
-        details.push({
-          title: `Examples`,
-          text: `<Tabs items={${JSON.stringify(examples.map((ex) => ex.title))}}>
-${examples
-  .map(
-    (example) => `<Tab>
-
-${example.text}
-
-</Tab>`,
-  )
-  .join('\n\n')}
-</Tabs>`,
-        });
-      }
-
-      // Collect parameters
-      const parameters = [] as {
-        name: string;
-        title: string;
-        description: string;
-        type: string;
-        optional: boolean;
-      }[];
-
-      const parameterStatements = item.statement.getParameters();
-      const parameterDocs = item.parserContext.docComment.params;
-
-      for (const parameter of parameterStatements) {
-        const parameterName = parameter.getName();
-        const optional = parameter.isOptional();
-
-        const docs = parameterDocs.tryGetBlockByName(parameterName);
-
-        const description = docs?.content
-          ? Formatter.renderDocNodes(docs.content.getChildNodes())
-          : undefined;
-        if (!description) {
-          console.warn(
-            `DOC   - WARNING: No description for parameter "${parameterName}" in function "${item.title}"`,
-          );
+        // Use first paragraph as title if it exists
+        if (contentChildren[0]?.kind === DocNodeKind.Paragraph) {
+          title = markdownRenderer.render(contentChildren[0], member);
+          (contentChildren[0] as DocParagraph).clearNodes();
         }
 
-        parameters.push({
-          optional,
-          name: parameterName,
-          description: description || '*no description*',
-          title: `${parameterName}${optional ? '?' : ''}`,
-          type: `${parameter.getType().getText(undefined, TypeFormatFlags.NoTypeReduction)}`,
-        });
-      }
-
-      const arguments_ = parameters.map((p) => p.title).join(', ');
-      fullTitle = `${item.title}(${arguments_.length > 12 ? `...args` : arguments_})`;
-
-      details.push({
-        title: `Parameters`,
-        text: `<TypeTable type={${JSON.stringify(
-          {
-            ...Object.fromEntries(
-              parameters.map((p) => [
-                p.name,
-                {
-                  description: p.description,
-                  type: p.type,
-                  // typeDescription: p.typeDescription,
-                  required: !p.optional,
-                  // parameters: [{ name: 'string', description: 'asdf' }],
-                } satisfies TypeNode,
-              ]),
-            ),
-          },
-          undefined,
-          2,
-        )}} />`,
+        return {
+          title: title.trim() || `Example ${index + 1}`,
+          content: example.content,
+        };
       });
-    }
 
-    const relativeSourcePath = path.relative(process.cwd(), sourceFile.getFilePath());
+    const anchorId = encodeURIComponent(member.getScopedNameWithinPackage());
 
     return [
-      `### \`${fullTitle}{:ts}\` [#${item.slug}]`,
+      // Anchor
+      `<Anchor id="${anchorId}" />`,
+      // Hidden title for TOC creation
+      '<div className="hidden">',
+      `### ${rendered.shortTitle ?? rendered.title} [#${anchorId}]`,
+      '</div>',
+      // Visible title
+      `<h3>`,
+      rendered.title,
+      '</h3>',
 
-      item.description,
+      // Summary
+      ...(declaredItem?.tsdocComment
+        ? [markdownRenderer.render(declaredItem.tsdocComment.summarySection, member).trim()]
+        : []),
 
-      ...details.map(
-        (d) => `**${d.title.trim()}**
-        
-${d.text}`,
-      ),
+      // Remarks
+      ...(declaredItem?.tsdocComment?.remarksBlock
+        ? [
+            '**Remarks**',
+            markdownRenderer.render(declaredItem.tsdocComment.remarksBlock?.content, member).trim(),
+            // NOTE: Uncomment to enable blockquote style for remarks
+            // .replaceAll(/^/gm, '> '),
+          ]
+        : []),
 
-      `<small>
+      // Examples
+      ...(examples?.length
+        ? [
+            '**Examples**',
+            `<Tabs items={${JSON.stringify(examples.map(({ title }) => title))}}>`,
+            ...examples.map((exampleBlock) => {
+              return `<Tab value="${exampleBlock.title}" title="${exampleBlock.title}">\n${markdownRenderer
+                .render(exampleBlock.content, member)
+                .trim()}\n</Tab>`;
+            }),
+            '</Tabs>',
+          ]
+        : []),
+
+      ...(rendered.body ?? []),
+      declaredItem &&
+        `<small>
       
-> [Defined in ${relativeSourcePath}:${item.source.line}](${new URL(`${relativeSourcePath}#L${item.source.line}`, `${baseSourceUrl}/`)})
+> Defined in [${path.join(packageJson.repository.directory, declaredItem.fileUrlPath!)}](${itemSourceUrl(declaredItem)})
  
 </small>`,
-    ]
-      .filter(Boolean)
-      .join('\n\n');
+    ];
   })
+  .filter(Boolean)
   .join('\n\n')}
-
-${
-  moduleNameComponents.length > 0
-    ? ''
-    : `## Changelog
-${(
-  await readFile(
-    path.relative(process.cwd(), path.join('../../', pathInRepository, './CHANGELOG.md')),
-    'utf8',
-  ).catch(() => '*no changelog so far*')
-)
-  // eslint-disable-next-line unicorn/no-await-expression-member
-  .trim()
-  .split('\n')
-  .slice(1)
-  .join('\n')
-  .replaceAll(
-    /^##\s+(.+)/gm,
-    (_, p1) => `## ${p1} [#${slugGenerator.generate(`changelog ${p1.replace('.', ' ')}`)}]`,
-  )
-  .replaceAll(/^###\s+(.+)/gm, '**$1**')
-  .replaceAll(/^#/gm, '##')}`
-}
-
-`; // FIXME [>=1.0.0]: Add submodules section
-
-  if (!packageDocumentation && exportedItems.length === 0) {
-    console.info(
-      `Removing ${path.relative(process.cwd(), docsPath)} because there are no exported items`,
+  
+`.trim(),
     );
-    await rm(docsPath).catch(() => {});
-  } else {
-    console.info(`Writing to ${path.relative(process.cwd(), docsPath)}\n`);
-    await mkdir(path.dirname(docsPath), { recursive: true });
-    await writeFile(docsPath, content);
+
+    console.log(styleText(['green', 'bold'], `\n👍 Wrote API docs to ${outputPath}`));
   }
 }
-
-console.timeEnd('build api docs');

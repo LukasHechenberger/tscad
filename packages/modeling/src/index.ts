@@ -1,6 +1,3 @@
-import type { FromSchema } from 'json-schema-to-ts';
-import type { ModelDefinition, ParametersInput, Solid } from './types';
-
 /**
  * Methods to model your 3d model
  *
@@ -90,6 +87,9 @@ import type { ModelDefinition, ParametersInput, Solid } from './types';
  * ```
  * @packageDocumentation
  */
+
+import type { FromSchema } from 'json-schema-to-ts';
+import type { ModelDefinition, ParametersInput, Solid } from './types';
 
 type ObjectSchema<Properties extends ParametersInput> = {
   type: 'object';

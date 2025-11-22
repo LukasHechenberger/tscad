@@ -9,5 +9,6 @@ export default defineConfig({
   lib: [{ format: 'esm', syntax: 'es2022' }],
   output: {
     distPath: 'out',
+    sourceMap: true,
   },
 });

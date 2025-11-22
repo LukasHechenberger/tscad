@@ -31,6 +31,8 @@ out
 .turbo
 coverage
 tsup.config.bundled.*
+temp
+**/etc/**/*.api.json
 .vscode/settings.json
 .vscode/extensions.json
 .prettierignore
