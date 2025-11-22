@@ -23,12 +23,14 @@ import { DocNodeKind, DocParagraph } from '@microsoft/tsdoc';
 import type { TypeNode } from 'fumadocs-ui/components/type-table';
 import { MarkdownRenderer } from './lib/formatter';
 
-// Configuration
-const anchorOffset = 24;
-
 // Load package manifest
 const packageJson = await readFile('./package.json', 'utf8').then((data) => JSON.parse(data));
 const unscopedPackageName = packageJson.name.replace(/^@.*\//, '');
+
+const sourceUrl = new URL(
+  path.join('blob/main', packageJson.repository.directory),
+  `${packageJson.repository.url.replace(/^git\+/, '').replace(/\.git$/, '')}/`,
+);
 
 const entryFiles = (Object.entries(packageJson.exports) as [string, { types: string }][]).map(
   ([key, exp]) => {
@@ -60,19 +62,19 @@ for (const entryFile of entryFiles) {
       docModel: {
         enabled: true,
         apiJsonFilePath: `<projectFolder>/${inputReport}`,
+        // projectFolderUrl: sourceUrl.toString(),
       },
       apiReport: {
         enabled: true,
         reportFolder: '<projectFolder>/etc/',
-        reportFileName: `${entryFile.name}.api.json`,
+        reportFileName: `${entryFile.name}`,
         reportTempFolder: '<projectFolder>/temp/',
       },
     },
 
     packageJson,
-
     packageJsonFullPath: path.join(process.cwd(), 'package.json'),
-    configObjectFullPath: path.join(process.cwd(), 'api-extractor.json'),
+    configObjectFullPath: path.join(process.cwd(), 'does-not-exist/api-extractor.json'),
   });
 
   // Invoke API Extractor
@@ -301,10 +303,6 @@ for (const apiPackage of apiModel.packages) {
     const outputPath = `../../apps/docs/content/docs/api/modules/${outputPathInModulesDirectory}.mdx`;
     const exportedMembers = entryPoint.members;
     const fullImportName = entryFile.actualImportName;
-    const sourceUrl = new URL(
-      path.join('blob/main', packageJson.repository.directory),
-      `${packageJson.repository.url.replace(/^git\+/, '').replace(/\.git$/, '')}/`,
-    );
 
     // eslint-disable-next-line unicorn/consistent-function-scoping
     const itemSourceUrl = (item: ApiDeclaredItem) =>
