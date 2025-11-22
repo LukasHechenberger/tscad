@@ -4,10 +4,10 @@
 
 ```ts
 
-import { default as default_2 } from '@jscad/modeling';
+import { default as modeling_2 } from '@jscad/modeling';
 
 // @public
-export function cube(options: CubeOptions): default_2.geometries.geom3.Geom3;
+export function cube(options: CubeOptions): modeling_2.geometries.geom3.Geom3;
 
 // @public
 export interface CubeOptions {
@@ -16,6 +16,6 @@ export interface CubeOptions {
 }
 
 // @public
-export function sphere(options: primitives.SphereOptions): default_2.geometries.geom3.Geom3;
+export function sphere(options: primitives.SphereOptions): modeling_2.geometries.geom3.Geom3;
 
 ```

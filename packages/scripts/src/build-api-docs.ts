@@ -62,7 +62,7 @@ for (const entryFile of entryFiles) {
       docModel: {
         enabled: true,
         apiJsonFilePath: `<projectFolder>/${inputReport}`,
-        // projectFolderUrl: sourceUrl.toString(),
+        projectFolderUrl: sourceUrl.toString(),
       },
       apiReport: {
         enabled: true,

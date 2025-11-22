@@ -4,10 +4,10 @@
 
 ```ts
 
-/// <reference types="@webgpu/types" />
-/// <reference types="webxr" />
-
+import { BufferGeometry } from 'three';
 import type { Geom3 } from '@jscad/modeling/src/geometries/types';
+import { MeshStandardMaterialParameters } from 'three';
+import { NormalBufferAttributes } from 'three';
 
 // @public
 export function solidToThree(solid: Geom3): {

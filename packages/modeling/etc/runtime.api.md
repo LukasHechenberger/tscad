@@ -4,29 +4,9 @@
 
 ```ts
 
-import type { AddedFormat } from './types';
-import type { AddedKeywordDefinition } from '../types';
-import type { AddedKeywordDefinition as AddedKeywordDefinition_2 } from './types';
-import type { AnySchema } from './types';
-import type { AnySchemaObject } from './types';
-import type { AnyValidateFunction } from './types';
-import type { AsyncSchema } from './types';
-import type { AsyncValidateFunction } from './types';
-import { Code } from './compile/codegen';
-import type { ErrorObject } from './types';
-import type { ErrorObject as ErrorObject_2 } from '../types';
-import type { Format } from './types';
+import Ajv from 'ajv';
 import type { JSONSchema } from 'json-schema-to-ts';
-import type { KeywordDefinition } from './types';
-import type { RegExpEngine } from './types';
-import type { Schema } from './types';
-import { SchemaEnv } from './compile';
-import type { SchemaObject } from './types';
-import type { UriResolver } from './types';
-import type { UriResolver as UriResolver_2 } from '../types';
-import { ValidateFunction } from './types';
-import { ValueScope } from './compile/codegen';
-import type { Vocabulary } from './types';
+import { ValidateFunction } from 'ajv';
 
 // @public
 export const ajv: Ajv;
