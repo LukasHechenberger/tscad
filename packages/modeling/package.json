@@ -39,7 +39,7 @@
   },
   "scripts": {
     "build": "rslib build",
-    "build-api-docs": "node --enable-source-maps ../scripts/out/build-api-docs.js",
+    "build-api-docs": "api-extractor run --local --verbose && node --enable-source-maps ../scripts/out/build-api-docs.js",
     "check:exports": "publint",
     "check:types": "tsc --noEmit",
     "dev": "rslib dev --watch",
@@ -51,6 +51,7 @@
     "three": "^0.181.2"
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.55.0",
     "@microsoft/tsdoc": "^0.16.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/scripts": "workspace:*",

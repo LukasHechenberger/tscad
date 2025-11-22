@@ -1,30 +1,41 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { DocDeclarationReference, DocNodeKind, ExcerptKind, TSDocParser } from '@microsoft/tsdoc';
+import {
+  ApiClass,
+  ApiDeclaredItem,
+  ApiDocumentedItem,
+  ApiFunction,
+  ApiItem,
+  ApiItemKind,
+  ApiMethod,
+  ApiModel,
+  ApiPackage,
+  ApiTypeAlias,
+} from '@microsoft/api-extractor-model';
+import {
+  DocCodeSpan,
+  DocDeclarationReference,
+  DocFencedCode,
+  DocHtmlStartTag,
+  DocNodeKind,
+  DocParagraph,
+  DocPlainText,
+  ExcerptKind,
+} from '@microsoft/tsdoc';
 import { DocExcerpt, DocNode } from '@microsoft/tsdoc';
 import type { TypeNode } from 'fumadocs-ui/components/type-table';
-import slugify from 'slugify';
-import {
-  type ImplementedKindToNodeMappings,
-  Node,
-  Project,
-  SyntaxKind,
-  TypeFormatFlags,
-} from 'ts-morph';
 
 /** This is a simplistic solution until we implement proper DocNode rendering APIs. */
 class Formatter {
-  public static renderDocNode(documentNode: DocNode): string {
+  public static renderDocNode(documentNode: DocNode | undefined): string {
+    if (!documentNode) return '';
     let result: string = '';
-    if (documentNode) {
-      if (documentNode instanceof DocExcerpt) {
-        result += documentNode.content.toString();
-      }
 
-      if (documentNode.kind === DocNodeKind.LinkTag) {
+    switch (documentNode.kind) {
+      case DocNodeKind.LinkTag: {
         let title: string | undefined = undefined;
         let target: string | undefined = undefined;
 
@@ -61,11 +72,49 @@ class Formatter {
 
         return `[${title}](${target})`;
       }
+      case DocNodeKind.Excerpt:
+      case DocNodeKind.Section:
+      case DocNodeKind.Paragraph: {
+        // case DocNodeKind.BlockTag:
+        return Formatter.renderDocNodes((documentNode as DocParagraph).getChildNodes());
+      }
+      case DocNodeKind.BlockTag: {
+        // These are just '@remarks' etc.
+        return '';
+      }
+      case DocNodeKind.PlainText: {
+        result += (documentNode as DocPlainText).text;
+        break;
+      }
+      case DocNodeKind.CodeSpan: {
+        const codespan = documentNode as DocCodeSpan;
+        return `\`${codespan.code}\``;
+      }
+      case DocNodeKind.HtmlStartTag:
+      case DocNodeKind.HtmlEndTag: {
+        return (documentNode as DocHtmlStartTag).emitAsHtml();
+      }
+      case DocNodeKind.FencedCode: {
+        const fenced = documentNode as DocFencedCode;
 
-      for (const childNode of documentNode.getChildNodes()) {
-        result += Formatter.renderDocNode(childNode);
+        return `\`\`\`${fenced.language}
+${fenced.code}
+\`\`\``;
+      }
+      case DocNodeKind.SoftBreak: {
+        result += '\n\n';
+        break;
+      }
+      default: {
+        console.log(`Unsupported DocNode kind: ${documentNode.kind}`);
+        result += `\`${documentNode.kind}\``;
       }
     }
+
+    // for (const childNode of documentNode.getChildNodes()) {
+    //   result += Formatter.renderDocNode(childNode);
+    // }
+
     return result;
   }
 
@@ -74,381 +123,235 @@ class Formatter {
     for (const documentNode of documentNodes) {
       result += Formatter.renderDocNode(documentNode);
     }
+
     return result;
   }
 }
 
-const slugGenerator = {
-  usedSlugs: new Set<string>(),
-  generate(text: string): string {
-    const slug = slugify(text, { lower: true, strict: true });
+// Configuration
+const anchorOffeset = 24;
 
-    let uniqueSlug = slug;
-    let counter = 1;
+const inputReport = './temp/modeling.api.json';
+const outputPath = '../../apps/docs/content/docs/api/modules/modeling/index.mdx';
 
-    while (this.usedSlugs.has(uniqueSlug)) {
-      uniqueSlug = `${slug}-${counter}`;
-      counter++;
-    }
+const apiModel: ApiModel = new ApiModel();
+const apiPackage: ApiPackage = apiModel.loadPackage(inputReport);
+const apiManifest = await readFile('./package.json', 'utf8').then((data) => JSON.parse(data));
 
-    this.usedSlugs.add(uniqueSlug);
-    return uniqueSlug;
-  },
+// TODO: Load other modules by calling
+// apiModel.addMember(...)
+
+type FormatterHandler = (item: any) => {
+  title: string;
+  shortTitle?: string;
+  body?: string[];
 };
 
-console.time('build api docs');
-const manifest = JSON.parse(await readFile('package.json', 'utf8'));
-const pathInRepository = manifest.repository.directory;
-const pathInPackagesDirectory = path.relative('packages', pathInRepository);
+class ApiItemFormatter {
+  private handlers = {
+    [ApiItemKind.Class]: (item: ApiClass) => {
+      return {
+        title: `\`class ${item.displayName}{:ts}\``,
+        body: [
+          `**Members**`,
 
-const baseSourceUrl = new URL(
-  pathInRepository,
-  'https://github.com/LukasHechenberger/tscad/tree/main/',
-).toString();
+          // TODO [>=1.0.0]: Probably use accordions to display member details
 
-console.log(`Building API docs for ${manifest.name}...`);
+          // Overview
+          `<TypeTable type={${JSON.stringify(
+            Object.fromEntries(
+              item.members.map((member) => {
+                const prefixes = [
+                  (member as ApiMethod).isProtected ? 'protected' : undefined,
+                  (member as ApiMethod).isStatic ? 'static' : undefined,
+                  (member as ApiMethod).isAbstract ? 'abstract' : undefined,
+                ].filter(Boolean);
+                const displayName = [...prefixes, member.displayName].join(' ');
 
-console.time('create project');
-const project = new Project({
-  tsConfigFilePath: 'tsconfig.json',
-  // skipAddingFilesFromTsConfig: true,
-  skipLoadingLibFiles: true,
-  skipFileDependencyResolution: true,
-});
-console.timeEnd('create project');
+                return [
+                  `${displayName}`,
+                  {
+                    type: member.kind,
+                    required: true,
+                    typeDescription: (member as ApiMethod).excerpt.text.trim(),
+                    description: (member as ApiDocumentedItem)?.tsdocComment?.summarySection
+                      ? Formatter.renderDocNode(
+                          (member as ApiDocumentedItem).tsdocComment?.summarySection,
+                        )
+                      : undefined,
+                  } satisfies TypeNode,
+                ];
+              }),
+            ),
+          )}} />`,
+        ],
+      };
+    },
+    [ApiItemKind.Function]: (item: ApiFunction) => {
+      const parametersTitle = item.parameters
+        .map((parameter) => `${parameter.name}${parameter.isOptional ? '?' : ''}`)
+        .join(', ');
 
-const sourceFiles = project.getSourceFiles('src/**/*.ts');
-// TODO [>=1.0.0]: Get from manifest exports
-const exportedModules = sourceFiles
-  .filter((sourceFile) => sourceFile.getFilePath().endsWith('/index.ts'))
-  .map((sourceFile, _, all) => ({
-    sourceFile,
-    hasChildPage: all.some(
-      (f) =>
-        f !== sourceFile &&
-        f.getFilePath().includes(sourceFile.getFilePath().replace('index.ts', '')),
-    ),
-  }));
+      return {
+        title: `\`function ${item.displayName}(${parametersTitle}){:ts}\``,
+        shortTitle: `\`function ${item.displayName}{:ts}\``,
 
-for (const { sourceFile, hasChildPage } of exportedModules) {
-  const moduleNameComponents = path
-    .relative('src', path.dirname(sourceFile.getFilePath()))
-    .split('/')
-    .filter(Boolean);
+        body: [
+          ...(item.parameters.length > 0
+            ? [
+                `**Parameters**`,
+                `<TypeTable type={${JSON.stringify(
+                  Object.fromEntries(
+                    item.parameters.map((parameter) => {
+                      const description =
+                        parameter.tsdocParamBlock &&
+                        Formatter.renderDocNode(parameter.tsdocParamBlock.content).trim();
 
-  const docsFilename =
-    moduleNameComponents.length === 0 && !hasChildPage
-      ? `${pathInPackagesDirectory}.mdx`
-      : path.join(
-          pathInPackagesDirectory,
-          `${moduleNameComponents.join('/')}${hasChildPage ? '/index.mdx' : '.mdx'}`,
-        );
+                      return [
+                        parameter.name,
+                        {
+                          type: parameter.parameterTypeExcerpt.text.trim(),
+                          required: !parameter.isOptional,
+                          description,
+                        } satisfies TypeNode,
+                      ];
+                    }),
+                  ),
+                  undefined,
+                  2,
+                )}} />`,
+              ]
+            : []),
+        ],
+      };
+    },
+    [ApiItemKind.TypeAlias]: (item: ApiTypeAlias) => {
+      const typeParametersTitle =
+        item.typeParameters.length > 0
+          ? `<${item.typeParameters.map((parameter) => parameter.name).join(', ')}>`
+          : '';
+      return {
+        title: `\`type ${item.displayName}{:ts}\``,
+        // title: ,
+        body: [
+          '**Definition**',
+          `\`\`\`ts
+type ${item.displayName}${typeParametersTitle} = ${item.typeExcerpt.text}
+\`\`\``,
 
-  const docsPath = path.join(
-    process.cwd(),
-    '../../apps/docs/content/docs/api/modules/',
-    docsFilename,
+          ...(item.members.map((member) => `- ${member.displayName}`) || []),
+        ],
+      };
+    },
+  } satisfies Partial<Record<ApiItemKind, FormatterHandler>>;
+
+  renderDocItem: FormatterHandler = (item: ApiItem) => {
+    const handler =
+      item.kind in this.handlers &&
+      (this.handlers as Record<ApiItemKind, FormatterHandler>)[item.kind];
+
+    if (handler) return handler(item);
+
+    return {
+      title: `${item.displayName}`,
+      body: [
+        `<Callout>
+  TODO: Implement rendering for \`${item.kind}\` items
+</Callout>`,
+      ],
+    };
+  };
+}
+
+const nodeHandler = new ApiItemFormatter();
+
+for (const entryPoint of apiPackage.entryPoints) {
+  const exportedMembers = entryPoint.members;
+  const fullImportName = path.join(apiPackage.name, entryPoint.importPath ?? '');
+  const sourceUrl = new URL(
+    path.join('blob/main', apiManifest.repository.directory),
+    `${apiManifest.repository.url.replace(/^git\+/, '').replace(/\.git$/, '')}/`,
   );
 
-  const moduleName = [manifest.name, ...moduleNameComponents].join('/');
-  const title = moduleNameComponents.length > 0 ? moduleNameComponents.at(-1) : moduleName;
+  console.log(`Entry point: ${fullImportName}`);
+  console.log(`Source URL: ${sourceUrl.toString()}`);
+  const itemSourceUrl = (item: ApiDeclaredItem) =>
+    new URL(item.fileUrlPath!, `${sourceUrl}/`).toString();
 
-  console.log(`DOC ${title}`);
+  const description = Formatter.renderDocNodes(
+    apiPackage.tsdocComment?.summarySection?.getChildNodes() ?? [],
+  );
 
-  const commentedItems = sourceFile.getStatementsWithComments().flatMap((statement) => {
-    return statement.getLeadingCommentRanges().flatMap((range) => {
-      const text = range.getText();
-      const parserContext = new TSDocParser().parseString(text);
-
-      if (parserContext.log.messages.length > 0) {
-        console.warn(`DOC   - Warning: TSDoc parse issues in ${moduleName}`);
-        console.warn(parserContext.log.messages.map((message) => message.text).join('\n'));
-      }
-
-      const isPackageDocumentation =
-        parserContext.docComment.modifierTagSet.isPackageDocumentation();
-
-      // TODO [>=1.0.0]: Ensure the statement is exported
-
-      const { title, name } = (
-        {
-          [SyntaxKind.FunctionDeclaration]: (s) => ({
-            title: `function ${s.getName()}`,
-            name: s.getName(),
-          }),
-          [SyntaxKind.InterfaceDeclaration]: (s) => ({
-            title: `interface ${s.getName()}`,
-            name: s.getName(),
-          }),
-          [SyntaxKind.ClassDeclaration]: (s) => ({
-            title: `class ${s.getName()}`,
-            name: s.getName(),
-          }),
-          [SyntaxKind.VariableStatement]: (s) => ({
-            title: `const ${s.getDeclarations()[0]!.getName()}: ${s.getType().getText(undefined, TypeFormatFlags.NoTypeReduction)}`,
-            name: s.getDeclarations()[0]!.getName(),
-          }),
-          [SyntaxKind.TypeAliasDeclaration]: (s) => ({
-            title: `type ${s.getName()}`,
-            name: s.getNameNode().getText(),
-          }),
-        } as {
-          [K in SyntaxKind]?: (
-            s: K extends keyof ImplementedKindToNodeMappings
-              ? ImplementedKindToNodeMappings[K]
-              : never,
-          ) => {
-            title: string;
-            name: string;
-          };
-        }
-      )[statement.getKind()]?.(statement as never) ?? {
-        title: `unknown ${(statement as { getName?: () => string }).getName?.()}: ${statement.getKindName()}`,
-        name: statement.getKindName(),
-      };
-
-      const description = Formatter.renderDocNode(parserContext.docComment.summarySection)?.trim();
-      if (!description) return [];
-
-      const slug = parserContext.docComment.modifierTagSet.isPackageDocumentation()
-        ? '@index'
-        : slugGenerator.generate(name);
-
-      console.log(`DOC      - ${title}: ${description} [${slug}]`);
-
-      return [
-        {
-          statement,
-          parserContext,
-          source: {
-            line: statement.getStartLineNumber(),
-          },
-          kind: statement.getKindName(),
-          title,
-          name,
-          slug,
-          description,
-          text,
-          isPackageDocumentation,
-          isType:
-            statement.isKind(SyntaxKind.InterfaceDeclaration) ||
-            statement.isKind(SyntaxKind.TypeAliasDeclaration),
-        },
-      ];
-    });
-  });
-
-  const packageDocumentation = commentedItems.find((item) => item.isPackageDocumentation);
-  if (!packageDocumentation)
-    console.warn(`DOC   - WARNING: No package documentation found in ${moduleName}`);
-
-  const description = packageDocumentation?.description.trim() ?? '';
-
-  // Find exported functions
-  const exportedItems = commentedItems
-
-    // Order types last
-    .sort((a, b) => {
-      if (a.isType && !b.isType) return 1;
-      if (!a.isType && b.isType) return -1;
-
-      return 0;
-    })
-    .filter((item) => item !== packageDocumentation);
-
-  console.log(`DOC  - Found ${exportedItems.length} exported items`);
-
-  const content = `---
-title: ${JSON.stringify(title)}
+  await writeFile(
+    outputPath,
+    /* mdx */ `
+---
+title: ${JSON.stringify(apiPackage.name)}
 description: ${JSON.stringify(description)}
 ---
 
+import { CodeIcon } from 'lucide-react';
 import { TypeTable } from 'fumadocs-ui/components/type-table';
-import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 
-${
-  packageDocumentation && packageDocumentation.parserContext.docComment.remarksBlock
-    ? Formatter.renderDocNode(
-        packageDocumentation.parserContext.docComment.remarksBlock.content,
-      )?.trim()
-    : ''
-}
+{/* Remarks */}
+
+${Formatter.renderDocNodes(apiPackage.tsdocComment?.remarksBlock?.getChildNodes() ?? [])}
 
 ---
 
-## Methods and Properties [#@methods-and-props]
+\`\`\`ts title="Import"
+import { 
+  ${exportedMembers.map((m) => `${m.kind === ApiItemKind.TypeAlias ? 'type ' : ''}${m.displayName}`).join(',\n  ')}
+} from '${fullImportName}'
+\`\`\`
 
-${
-  exportedItems.length > 0
-    ? `\`\`\`ts title="Import"
-import { ${exportedItems.map((index) => `${index.isType ? 'type ' : ''}${index.name}`).join(', ')} } from '${moduleName}';
-\`\`\``
-    : ''
-}
+## Methods and properties [#@methods-and-props]
 
-${exportedItems
-  .map((item) => {
-    let fullTitle = item.title;
-
-    const details = [] as { title: string; text: string }[];
-    if (Node.isFunctionDeclaration(item.statement)) {
-      // Collect examples
-      const exampleBlocks = item.parserContext.docComment.customBlocks.filter(
-        (block) => block.blockTag.tagName === '@example',
-      );
-
-      const examples = [] as { title: string; text: string }[];
-      for (const block of exampleBlocks) {
-        if (block.content.nodes.length === 0) continue;
-
-        const exampleTitle =
-          Formatter.renderDocNode(block.content.nodes[0]!).trim() ||
-          `Example ${examples.length + 1}`;
-
-        examples.push({
-          title: exampleTitle,
-          text: Formatter.renderDocNodes(block.content.nodes.slice(1)).trim(),
-        });
-      }
-
-      if (examples.length > 0) {
-        details.push({
-          title: `Examples`,
-          text: `<Tabs items={${JSON.stringify(examples.map((ex) => ex.title))}}>
-${examples
-  .map(
-    (example) => `<Tab>
-
-${example.text}
-
-</Tab>`,
-  )
-  .join('\n\n')}
-</Tabs>`,
-        });
-      }
-
-      // Collect parameters
-      const parameters = [] as {
-        name: string;
-        title: string;
-        description: string;
-        type: string;
-        optional: boolean;
-      }[];
-
-      const parameterStatements = item.statement.getParameters();
-      const parameterDocs = item.parserContext.docComment.params;
-
-      for (const parameter of parameterStatements) {
-        const parameterName = parameter.getName();
-        const optional = parameter.isOptional();
-
-        const docs = parameterDocs.tryGetBlockByName(parameterName);
-
-        const description = docs?.content
-          ? Formatter.renderDocNodes(docs.content.getChildNodes())
-          : undefined;
-        if (!description) {
-          console.warn(
-            `DOC   - WARNING: No description for parameter "${parameterName}" in function "${item.title}"`,
-          );
-        }
-
-        parameters.push({
-          optional,
-          name: parameterName,
-          description: description || '*no description*',
-          title: `${parameterName}${optional ? '?' : ''}`,
-          type: `${parameter.getType().getText(undefined, TypeFormatFlags.NoTypeReduction)}`,
-        });
-      }
-
-      const arguments_ = parameters.map((p) => p.title).join(', ');
-      fullTitle = `${item.title}(${arguments_.length > 12 ? `...args` : arguments_})`;
-
-      details.push({
-        title: `Parameters`,
-        text: `<TypeTable type={${JSON.stringify(
-          {
-            ...Object.fromEntries(
-              parameters.map((p) => [
-                p.name,
-                {
-                  description: p.description,
-                  type: p.type,
-                  // typeDescription: p.typeDescription,
-                  required: !p.optional,
-                  // parameters: [{ name: 'string', description: 'asdf' }],
-                } satisfies TypeNode,
-              ]),
-            ),
-          },
-          undefined,
-          2,
-        )}} />`,
-      });
-    }
-
-    const relativeSourcePath = path.relative(process.cwd(), sourceFile.getFilePath());
+${exportedMembers
+  .flatMap((member) => {
+    const rendered = nodeHandler.renderDocItem(member);
+    const declaredItem = 'fileUrlPath' in member ? (member as ApiDeclaredItem) : undefined;
+    const info = {};
+    member.serializeInto(info);
 
     return [
-      `### \`${fullTitle}{:ts}\` [#${item.slug}]`,
+      // Anchor
+      `<div className="pt-${anchorOffeset} -mt-${anchorOffeset}" id="${encodeURIComponent(member.getScopedNameWithinPackage())}" />`,
 
-      item.description,
+      '<div className="hidden">',
+      `### ${rendered.shortTitle ?? rendered.title} [#${encodeURIComponent(member.getScopedNameWithinPackage())}]`,
+      '</div>',
+      `<h3>`,
+      rendered.title,
+      '</h3>',
 
-      ...details.map(
-        (d) => `**${d.title.trim()}**
-        
-${d.text}`,
-      ),
+      // Summary
+      ...(declaredItem?.tsdocComment
+        ? [Formatter.renderDocNode(declaredItem.tsdocComment.summarySection).trim()]
+        : []),
 
-      `<small>
+      // Remarks
+      ...(declaredItem?.tsdocComment?.remarksBlock
+        ? [
+            '**Remarks**',
+            Formatter.renderDocNode(declaredItem.tsdocComment.remarksBlock?.content).trim(),
+            // NOTE: Uncomment to enable blockquote style for remarks
+            // .replaceAll(/^/gm, '> '),
+          ]
+        : []),
+
+      ...(rendered.body ?? []),
+      declaredItem &&
+        `<small>
       
-> [Defined in ${relativeSourcePath}:${item.source.line}](${new URL(`${relativeSourcePath}#L${item.source.line}`, `${baseSourceUrl}/`)})
+> Defined in [${path.join(apiManifest.repository.directory, declaredItem.fileUrlPath!)}](${itemSourceUrl(declaredItem)})
  
 </small>`,
-    ]
-      .filter(Boolean)
-      .join('\n\n');
+    ];
   })
+  .filter(Boolean)
   .join('\n\n')}
-
-${
-  moduleNameComponents.length > 0
-    ? ''
-    : `## Changelog
-${(
-  await readFile(
-    path.relative(process.cwd(), path.join('../../', pathInRepository, './CHANGELOG.md')),
-    'utf8',
-  ).catch(() => '*no changelog so far*')
-)
-  // eslint-disable-next-line unicorn/no-await-expression-member
-  .trim()
-  .split('\n')
-  .slice(1)
-  .join('\n')
-  .replaceAll(
-    /^##\s+(.+)/gm,
-    (_, p1) => `## ${p1} [#${slugGenerator.generate(`changelog ${p1.replace('.', ' ')}`)}]`,
-  )
-  .replaceAll(/^###\s+(.+)/gm, '**$1**')
-  .replaceAll(/^#/gm, '##')}`
+  
+`.trim(),
+  );
 }
-
-`; // FIXME [>=1.0.0]: Add submodules section
-
-  if (!packageDocumentation && exportedItems.length === 0) {
-    console.info(
-      `Removing ${path.relative(process.cwd(), docsPath)} because there are no exported items`,
-    );
-    await rm(docsPath).catch(() => {});
-  } else {
-    console.info(`Writing to ${path.relative(process.cwd(), docsPath)}\n`);
-    await mkdir(path.dirname(docsPath), { recursive: true });
-    await writeFile(docsPath, content);
-  }
-}
-
-console.timeEnd('build api docs');
