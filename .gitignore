@@ -32,8 +32,7 @@ out
 coverage
 tsup.config.bundled.*
 temp
-packages/*/etc/**/*.api.json
-apps/*/etc/**/*.api.json
+**/etc/**/*.api.json
 .vscode/settings.json
 .vscode/extensions.json
 .prettierignore

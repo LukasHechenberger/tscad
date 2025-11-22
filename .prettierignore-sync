@@ -5,3 +5,4 @@
 pnpm-lock.*yaml
 .changeset/*.md
 /turbo.json
+**/etc/*.md
