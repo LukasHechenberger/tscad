@@ -129,7 +129,7 @@ ${fenced.code}
 }
 
 // Configuration
-const anchorOffeset = 24;
+const anchorOffset = 24;
 
 const inputReport = './temp/modeling.api.json';
 const outputPath = '../../apps/docs/content/docs/api/modules/modeling/index.mdx';
@@ -316,7 +316,7 @@ ${exportedMembers
 
     return [
       // Anchor
-      `<div className="pt-${anchorOffeset} -mt-${anchorOffeset}" id="${encodeURIComponent(member.getScopedNameWithinPackage())}" />`,
+      `<div className="pt-${anchorOffset} -mt-${anchorOffset}" id="${encodeURIComponent(member.getScopedNameWithinPackage())}" />`,
 
       '<div className="hidden">',
       `### ${rendered.shortTitle ?? rendered.title} [#${encodeURIComponent(member.getScopedNameWithinPackage())}]`,
