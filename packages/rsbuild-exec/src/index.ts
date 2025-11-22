@@ -1,13 +1,15 @@
-import type { RsbuildPlugin } from '@rsbuild/core';
-import { execaCommand, type ExecaError, type Options } from 'execa';
-
 /**
+ * Runs a command after the rsbuild build is finished.
+ *
  * @remarks
  *
  * This package is not only relevant for tscad, it can be used in every rsbuild/rslib project.
  *
  * @packageDocumentation
  */
+
+import type { RsbuildPlugin } from '@rsbuild/core';
+import { execaCommand, type ExecaError, type Options } from 'execa';
 
 /**
  * An rsbuild plugin to execute a command after the build is finished.

@@ -28,6 +28,7 @@ const anchorOffset = 24;
 
 // Load package manifest
 const packageJson = await readFile('./package.json', 'utf8').then((data) => JSON.parse(data));
+const unscopedPackageName = packageJson.name.replace(/^@.*\//, '');
 
 const entryFiles = (Object.entries(packageJson.exports) as [string, { types: string }][]).map(
   ([key, exp]) => {
@@ -297,7 +298,9 @@ for (const apiPackage of apiModel.packages) {
   if (!entryFile) throw new Error(`Could not find entry file for package ${apiPackage.name}`);
 
   for (const entryPoint of apiPackage.entryPoints) {
-    const outputPath = `../../apps/docs/content/docs/api/modules/modeling/${entryFile.name}.mdx`;
+    const outputPathInModulesDirectory =
+      entryFiles.length > 1 ? `${unscopedPackageName}/${entryFile.name}` : unscopedPackageName;
+    const outputPath = `../../apps/docs/content/docs/api/modules/${outputPathInModulesDirectory}.mdx`;
     const exportedMembers = entryPoint.members;
     const fullImportName = entryFile.actualImportName;
     const sourceUrl = new URL(

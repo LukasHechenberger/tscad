@@ -54,50 +54,13 @@ abstract class TsdocRenderer extends Renderer<DocNodeKind> {
   }
 }
 
-class PlainTextRenderer extends TsdocRenderer {
-  protected plaintextHandlers = {
+export class MarkdownRenderer extends TsdocRenderer {
+  protected handlers = {
     [DocNodeKind.PlainText]: (node: DocPlainText) => node.text,
     [DocNodeKind.Paragraph]: this.renderChildNodes,
     [DocNodeKind.Section]: this.renderChildNodes,
     [DocNodeKind.Excerpt]: this.renderChildNodes,
     [DocNodeKind.SoftBreak]: () => '\n\n',
-    [DocNodeKind.DeclarationReference]: (
-      node: DocDeclarationReference,
-      contextApiItem: ApiItem,
-    ) => {
-      const memberReference = node.memberReferences[0];
-      if (!memberReference || node.memberReferences.length > 1) {
-        throw new Error('Only single member references are supported');
-      }
-
-      const identifier = memberReference.memberIdentifier?.identifier;
-      if (!identifier) {
-        throw new Error('Only member references with identifiers are supported');
-      }
-
-      if (!contextApiItem) {
-        throw new Error('Context ApiItem is required to resolve declaration references');
-      }
-
-      const resolved = this.apiModel.resolveDeclarationReference(
-        node,
-        contextApiItem.getAssociatedPackage(),
-      );
-
-      if (resolved?.errorMessage) {
-        throw new Error(`Failed to resolve declaration reference: ${resolved.errorMessage}`);
-      }
-
-      return identifier;
-    },
-  };
-
-  protected handlers = this.plaintextHandlers;
-}
-
-export class MarkdownRenderer extends PlainTextRenderer {
-  protected handlers = {
-    ...this.plaintextHandlers,
     [DocNodeKind.LinkTag]: (node: DocLinkTag, contextApiItem: ApiItem) => {
       let title: string | undefined;
       let target: string | undefined;
@@ -145,6 +108,36 @@ export class MarkdownRenderer extends PlainTextRenderer {
       }
 
       return `[${title}](${target})`;
+    },
+    // FIXME: Remove
+    [DocNodeKind.DeclarationReference]: (
+      node: DocDeclarationReference,
+      contextApiItem: ApiItem,
+    ) => {
+      const memberReference = node.memberReferences[0];
+      if (!memberReference || node.memberReferences.length > 1) {
+        throw new Error('Only single member references are supported');
+      }
+
+      const identifier = memberReference.memberIdentifier?.identifier;
+      if (!identifier) {
+        throw new Error('Only member references with identifiers are supported');
+      }
+
+      if (!contextApiItem) {
+        throw new Error('Context ApiItem is required to resolve declaration references');
+      }
+
+      const resolved = this.apiModel.resolveDeclarationReference(
+        node,
+        contextApiItem.getAssociatedPackage(),
+      );
+
+      if (resolved?.errorMessage) {
+        throw new Error(`Failed to resolve declaration reference: ${resolved.errorMessage}`);
+      }
+
+      return identifier;
     },
   };
 }
