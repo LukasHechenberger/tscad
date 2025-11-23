@@ -1,5 +1,20 @@
 # @tscad/docs
 
+## 0.2.0
+
+### Minor Changes
+
+- a8b76ff: Use api-extractor for API reference docs
+
+### Patch Changes
+
+- 6caa04b: Fix reset parameters button
+- Updated dependencies [6caa04b]
+- Updated dependencies [4fd8c52]
+- Updated dependencies [6caa04b]
+  - @tscad/modeling@0.5.0
+  - @tscad/viewer@0.2.2
+
 ## 0.1.1
 
 ### Patch Changes

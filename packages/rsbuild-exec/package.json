@@ -1,6 +1,6 @@
 {
   "name": "rsbuild-exec",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Execute shell commands during your rsbuild",
   "homepage": "https://tscad.vercel.app",
   "repository": {

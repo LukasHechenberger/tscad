@@ -1,5 +1,11 @@
 # @tscad/modeling
 
+## 0.5.0
+
+### Minor Changes
+
+- 6caa04b: **Breaking:** Divide model definitions and runtime
+
 ## 0.4.1
 
 ### Patch Changes
