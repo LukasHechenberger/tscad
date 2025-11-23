@@ -134,7 +134,7 @@ export function ViewerCanvas({
       <Canvas shadows camera={{ position: [25, 25, 50] }} {...canvasProperties}>
         <OrbitControls makeDefault />
 
-        <Stage environment="studio" adjustCamera center={{ precise: true }}>
+        <Stage environment="apartment" adjustCamera center={{ precise: true }}>
           {children}
 
           {viewcube && (
