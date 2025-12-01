@@ -216,14 +216,17 @@ class ApiItemFormatter {
           : '';
       return {
         title: `\`type ${item.displayName}{:ts}\``,
-        // title: ,
         body: [
           `\`\`\`ts title="Type Definition" twoslash
-${this.getOtherTypeImports(item.displayName)}
-// ---cut---
+${this.getOtherTypeImports(`${item.displayName}-unknown`)}
+export {
+// ---cut-before---
 // @noErrors
-type ${item.displayName}${typeParametersTitle} = ${item.typeExcerpt.text}
-\`\`\``,
+type ${item.displayName.trim()}
+//    ^?
+// ---cut-after---
+}
+\`\`\``.replaceAll(/^\s\s/gm, ''),
 
           ...(item.members.map((member) => `- ${member.displayName}`) || []),
         ],
