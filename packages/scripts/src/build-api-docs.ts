@@ -216,11 +216,9 @@ class ApiItemFormatter {
           `\`\`\`ts title="Type Definition" twoslash
 ${this.getOtherTypeImports(item.displayName)}
 
-// ---cut-before---
+// ---cut---
 // @noErrors
 ${item.excerpt.text.trim()}
-// ---cut-after---
-}
 \`\`\``.replaceAll(/^\s\s/gm, ''),
 
           ...(item.members.map((member) => `- ${member.displayName}`) || []),
