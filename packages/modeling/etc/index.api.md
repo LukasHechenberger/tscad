@@ -30,7 +30,7 @@ export type RenderedModel<P> = {
     solids: Solid[];
 };
 
-// @public (undocumented)
+// @public
 export type Solid = any;
 
 // @public

@@ -4,6 +4,7 @@ import type { JSONSchema } from 'json-schema-to-ts';
 export type Vector2 = [number, number];
 export type Vector3 = [number, number, number];
 
+/** A solid object */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Solid = any;
 
