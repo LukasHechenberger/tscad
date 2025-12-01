@@ -15,9 +15,9 @@ export type ModelDefinition<P> = {
   model: (parameters: P) => Solid | Solid[];
 };
 
-// export type AnyModelDefinition = ModelDefinition<Record<string, unknown>>;
-
 export type RenderedModel<P> = {
+  /** The parameters (including defaults) used to render the model */
   parameters: P;
+  /** The rendered solids */
   solids: Solid[];
 };
