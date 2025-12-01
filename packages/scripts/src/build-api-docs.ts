@@ -346,13 +346,13 @@ ${markdownRenderer.render(apiPackage.tsdocComment?.remarksBlock ?? [], apiPackag
 
 ---
 
+## Methods and properties [#@methods-and-props]
+
 \`\`\`ts title="Import" twoslash
 import { 
   ${exportedMembers.map((m) => `${[ApiItemKind.TypeAlias, ApiItemKind.Interface].includes(m.kind) ? 'type ' : ''}${m.displayName}`).join(',\n  ')}
 } from '${fullImportName}'
 \`\`\`
-
-## Methods and properties [#@methods-and-props]
 
 ${exportedMembers
   .flatMap((member) => {
