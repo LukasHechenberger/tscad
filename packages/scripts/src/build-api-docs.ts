@@ -217,7 +217,7 @@ class ApiItemFormatter {
         // title: ,
         body: [
           '**Definition**',
-          `\`\`\`ts
+          `\`\`\`ts title="Type Definition"
 type ${item.displayName}${typeParametersTitle} = ${item.typeExcerpt.text}
 \`\`\``,
 
@@ -346,7 +346,7 @@ ${markdownRenderer.render(apiPackage.tsdocComment?.remarksBlock ?? [], apiPackag
 
 ---
 
-\`\`\`ts title="Import"
+\`\`\`ts title="Import" twoslash
 import { 
   ${exportedMembers.map((m) => `${m.kind === ApiItemKind.TypeAlias ? 'type ' : ''}${m.displayName}`).join(',\n  ')}
 } from '${fullImportName}'
