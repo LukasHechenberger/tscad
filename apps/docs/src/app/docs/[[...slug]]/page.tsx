@@ -12,13 +12,24 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   if (!page) notFound();
 
   const MDXContent = page.data.body;
+  const lastModified = page.data.overwriteLastModified ?? page.data.lastModified;
 
   return (
     <DocsPage
       toc={page.data.toc}
       full={page.data.full}
       breadcrumb={{ includePage: true, includeRoot: true, includeSeparator: true }}
-      tableOfContent={{ style: 'clerk' }}
+      tableOfContent={{
+        style: 'clerk',
+        footer: !Number.isNaN(lastModified) && (
+          <small className="text-muted-foreground border-t pt-2 text-xs">
+            Last updated:{' '}
+            <time dateTime={new Date(lastModified!).toISOString()}>
+              {new Date(lastModified!).toLocaleDateString('en-CH')}
+            </time>
+          </small>
+        ),
+      }}
     >
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
