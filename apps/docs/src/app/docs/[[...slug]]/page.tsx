@@ -12,7 +12,8 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   if (!page) notFound();
 
   const MDXContent = page.data.body;
-  const lastModified = page.data.overwriteLastModified ?? page.data.lastModified;
+  // NOTE: For API refs, we sould take last modified from source file
+  const lastModified = page.data.lastModified;
 
   return (
     <DocsPage
