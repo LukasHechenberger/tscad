@@ -348,7 +348,7 @@ ${markdownRenderer.render(apiPackage.tsdocComment?.remarksBlock ?? [], apiPackag
 
 \`\`\`ts title="Import" twoslash
 import { 
-  ${exportedMembers.map((m) => `${m.kind === ApiItemKind.TypeAlias ? 'type ' : ''}${m.displayName}`).join(',\n  ')}
+  ${exportedMembers.map((m) => `${[ApiItemKind.TypeAlias, ApiItemKind.Interface].includes(m.kind) ? 'type ' : ''}${m.displayName}`).join(',\n  ')}
 } from '${fullImportName}'
 \`\`\`
 
