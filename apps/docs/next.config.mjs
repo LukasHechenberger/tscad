@@ -6,6 +6,7 @@ const withMDX = createMDX();
 const config = {
   reactStrictMode: true,
   transpilePackages: ['three'],
+  serverExternalPackages: ['typescript', 'twoslash'],
 
   // We lint in the ci workflow anyway
   typescript: {
