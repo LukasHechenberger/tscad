@@ -210,20 +210,15 @@ class ApiItemFormatter {
       };
     },
     [ApiItemKind.TypeAlias]: (item: ApiTypeAlias) => {
-      const typeParametersTitle =
-        item.typeParameters.length > 0
-          ? `<${item.typeParameters.map((parameter) => parameter.name).join(', ')}>`
-          : '';
       return {
         title: `\`type ${item.displayName}{:ts}\``,
         body: [
           `\`\`\`ts title="Type Definition" twoslash
-${this.getOtherTypeImports(`${item.displayName}-unknown`)}
-export {
+${this.getOtherTypeImports(item.displayName)}
+
 // ---cut-before---
 // @noErrors
-type ${item.displayName.trim()}
-//    ^?
+${item.excerpt.text.trim()}
 // ---cut-after---
 }
 \`\`\``.replaceAll(/^\s\s/gm, ''),

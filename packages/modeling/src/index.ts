@@ -124,7 +124,7 @@ type ObjectSchema<Properties extends ParametersInput> = {
  *
  * Model with Parameters
  *
- * ```ts
+ * ```ts twoslash
  * import { defineModel } from '@tscad/modeling';
  * import { cube } from '@tscad/modeling/primitives';
  *
