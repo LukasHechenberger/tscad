@@ -1,5 +1,11 @@
 # @tscad/docs
 
+## 0.2.1
+
+### Patch Changes
+
+- c0bfb05: Use twoslash in code samples
+
 ## 0.2.0
 
 ### Minor Changes
