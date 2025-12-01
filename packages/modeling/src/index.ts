@@ -15,7 +15,7 @@
  * Usually a model is made up of a function that generates geometry (the "model function") and a set
  * of parameters that control how the model is generated.
  *
- * ```ts
+ * ```ts twoslash
  * import { defineModel } from '@tscad/modeling';
  *
  * export default defineModel({
@@ -27,7 +27,7 @@
  * A model function usually combines a few primitives from [`@tscad/modeling/primitives`](/docs/api/modules/modeling/primitives) to create a
  * model body.
  *
- * ```ts
+ * ```ts twoslash
  * import { defineModel } from '@tscad/modeling';
  * import { cube, sphere } from '@tscad/modeling/primitives'; // [!code ++]
  *
@@ -36,7 +36,7 @@
  *     // create some solids // [!code ++]
  *     const base = cube({ size: 10 }); // [!code ++]
  *     const top = sphere({ radius: 5, center: [5, 5, 10] }); // [!code ++]
- * . // [!code ++]
+ *     // [!code ++]
  *     // return the model's solids // [!code ++]
  *     return [base, top]; // [!code ++]
  *   },
@@ -46,7 +46,12 @@
  * If you want to customize how the model appears in the preview, you can colorize it using
  * [`@tscad/modeling/colors`](/docs/api/modules/modeling/colors).
  *
- * ```ts
+ * ```ts twoslash
+ * import { defineModel } from '@tscad/modeling';
+ * import { cube, sphere } from '@tscad/modeling/primitives';
+ * import { colorize } from '@tscad/modeling/colors';
+ *
+ * // ---cut---
  * export default defineModel({
  *   model: () => {
  *     const base = cube({ size: 10 });
@@ -66,10 +71,12 @@
  *
  * Additionally, models can define parameters to make them more flexible.
  *
- * ```ts
+ * ```ts twoslash
  * import { defineModel } from '@tscad/modeling';
  * import { cube, sphere } from '@tscad/modeling/primitives';
+ * import { colorize } from '@tscad/modeling/colors';
  *
+ * // ---cut---
  * export default defineModel({
  *   // [!code ++]
  *   parameters: {
@@ -104,7 +111,7 @@ type ObjectSchema<Properties extends ParametersInput> = {
  *
  * Simple Model
  *
- * ```ts
+ * ```ts twoslash
  * import { defineModel } from '@tscad/modeling';
  * import { cube } from '@tscad/modeling/primitives';
  *
@@ -117,7 +124,7 @@ type ObjectSchema<Properties extends ParametersInput> = {
  *
  * Model with Parameters
  *
- * ```ts
+ * ```ts twoslash
  * import { defineModel } from '@tscad/modeling';
  * import { cube } from '@tscad/modeling/primitives';
  *

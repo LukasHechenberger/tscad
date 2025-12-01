@@ -28,9 +28,10 @@ A model usually consists of a single TypeScript or JavaScript module, which expo
 
 {/* <div className="sticky top-16"> */}
 
-```ts title="A simple tscad model"
+```ts title="A simple tscad model" twoslash
 import { defineModel } from '@tscad/modeling';
 
+// @noErrors
 export default defineModel({
   // model definition goes here
 });
@@ -42,7 +43,7 @@ export default defineModel({
 
 Each model needs a `model` function that returns the CAD geometry. You can use the built-in primitives and operations from tscad to create your model.
 
-```ts title="A simple tscad model"
+```ts title="A simple tscad model" twoslash
 import { defineModel } from '@tscad/modeling';
 import { cube } from '@tscad/modeling/primitives';
 
@@ -66,11 +67,16 @@ The simplest way to preview your model is to use the [online playground](/playgr
 
 You can define parameters for your model using the `defineModel` function. This allows you to create parametric models that can be easily adjusted.
 
-```ts title="A parametric tscad model"
+```ts title="A parametric tscad model" twoslash
+import { defineModel } from '@tscad/modeling';
+import { cube } from '@tscad/modeling/primitives';
+
+// ---cut---
 export default defineModel({
   parameters: { // [!code highlight:3]
     width: { type: 'number', default: 10, min: 1, max: 100, step: 1 },
   },
+// @noErrors
   model: ...
 });
 ```
@@ -79,7 +85,11 @@ export default defineModel({
 
 As soon as parameters are defined, you can use them in your model function:
 
-```ts title="A parametric tscad model"
+```ts title="A parametric tscad model" twoslash
+import { defineModel } from '@tscad/modeling';
+import { cube } from '@tscad/modeling/primitives';
+
+// ---cut---
 export default defineModel({
   parameters: {
     width: { type: 'number', default: 10, min: 1, max: 100, step: 1 },

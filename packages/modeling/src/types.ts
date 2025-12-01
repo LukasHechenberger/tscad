@@ -4,6 +4,7 @@ import type { JSONSchema } from 'json-schema-to-ts';
 export type Vector2 = [number, number];
 export type Vector3 = [number, number, number];
 
+/** A solid object */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Solid = any;
 
@@ -15,9 +16,9 @@ export type ModelDefinition<P> = {
   model: (parameters: P) => Solid | Solid[];
 };
 
-// export type AnyModelDefinition = ModelDefinition<Record<string, unknown>>;
-
 export type RenderedModel<P> = {
+  /** The parameters (including defaults) used to render the model */
   parameters: P;
+  /** The rendered solids */
   solids: Solid[];
 };

@@ -30,6 +30,7 @@
     "esbuild-wasm": "^0.25.12",
     "fumadocs-core": "16.0.11",
     "fumadocs-mdx": "13.0.8",
+    "fumadocs-twoslash": "^3.1.10",
     "fumadocs-ui": "16.0.11",
     "leva": "^0.10.1",
     "lucide-react": "^0.518.0",
@@ -40,7 +41,8 @@
     "react-resizable-panels": "^3.0.6",
     "shiki": "3.15.0",
     "tailwind-merge": "^3.4.0",
-    "three": "^0.181.2"
+    "three": "^0.181.2",
+    "twoslash": "^0.3.4"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

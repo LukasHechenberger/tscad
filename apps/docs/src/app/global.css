@@ -2,6 +2,7 @@
 @import 'fumadocs-ui/css/shadcn.css';
 @import 'fumadocs-ui/css/preset.css';
 @import 'tw-animate-css';
+@import 'fumadocs-twoslash/twoslash.css';
 @source '../../content/docs/**/*.mdx';
 
 @custom-variant dark (&:is(.dark *));

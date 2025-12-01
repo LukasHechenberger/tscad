@@ -130,6 +130,8 @@ type FormatterHandler = (item: any) => {
 const markdownRenderer = new MarkdownRenderer(apiModel);
 
 class ApiItemFormatter {
+  constructor(readonly getOtherTypeImports: (ownName: string) => string) {}
+
   private handlers = {
     [ApiItemKind.Class]: (item: ApiClass) => {
       return {
@@ -208,18 +210,16 @@ class ApiItemFormatter {
       };
     },
     [ApiItemKind.TypeAlias]: (item: ApiTypeAlias) => {
-      const typeParametersTitle =
-        item.typeParameters.length > 0
-          ? `<${item.typeParameters.map((parameter) => parameter.name).join(', ')}>`
-          : '';
       return {
         title: `\`type ${item.displayName}{:ts}\``,
-        // title: ,
         body: [
-          '**Definition**',
-          `\`\`\`ts
-type ${item.displayName}${typeParametersTitle} = ${item.typeExcerpt.text}
-\`\`\``,
+          `\`\`\`ts title="Type Definition" twoslash
+${this.getOtherTypeImports(item.displayName)}
+
+// ---cut---
+// @noErrors
+${item.excerpt.text.trim()}
+\`\`\``.replaceAll(/^\s\s/gm, ''),
 
           ...(item.members.map((member) => `- ${member.displayName}`) || []),
         ],
@@ -291,8 +291,6 @@ type ${item.displayName}${typeParametersTitle} = ${item.typeExcerpt.text}
   };
 }
 
-const nodeHandler = new ApiItemFormatter();
-
 for (const apiPackage of apiModel.packages) {
   const entryFile = entryFiles.find((ef) => ef.extractorModuleName === apiPackage.name);
   if (!entryFile) throw new Error(`Could not find entry file for package ${apiPackage.name}`);
@@ -328,6 +326,14 @@ for (const apiPackage of apiModel.packages) {
       continue;
     }
 
+    const nodeHandler = new ApiItemFormatter(
+      (ownName) =>
+        `import type { ${exportedMembers
+          .filter((m) => m.displayName !== ownName)
+          .map((m) => m.displayName)
+          .join(', ')} } from '${fullImportName}'`,
+    );
+
     await writeFile(
       outputPath,
       /* mdx */ `
@@ -346,13 +352,13 @@ ${markdownRenderer.render(apiPackage.tsdocComment?.remarksBlock ?? [], apiPackag
 
 ---
 
-\`\`\`ts title="Import"
+## Methods and properties [#@methods-and-props]
+
+\`\`\`ts title="Import" twoslash
 import { 
-  ${exportedMembers.map((m) => `${m.kind === ApiItemKind.TypeAlias ? 'type ' : ''}${m.displayName}`).join(',\n  ')}
+  ${exportedMembers.map((m) => `${[ApiItemKind.TypeAlias, ApiItemKind.Interface].includes(m.kind) ? 'type ' : ''}${m.displayName}`).join(',\n  ')}
 } from '${fullImportName}'
 \`\`\`
-
-## Methods and properties [#@methods-and-props]
 
 ${exportedMembers
   .flatMap((member) => {
