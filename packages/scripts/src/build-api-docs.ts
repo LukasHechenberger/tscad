@@ -130,6 +130,8 @@ type FormatterHandler = (item: any) => {
 const markdownRenderer = new MarkdownRenderer(apiModel);
 
 class ApiItemFormatter {
+  constructor(readonly getOtherTypeImports: (ownName: string) => string) {}
+
   private handlers = {
     [ApiItemKind.Class]: (item: ApiClass) => {
       return {
@@ -216,8 +218,10 @@ class ApiItemFormatter {
         title: `\`type ${item.displayName}{:ts}\``,
         // title: ,
         body: [
-          '**Definition**',
-          `\`\`\`ts title="Type Definition"
+          `\`\`\`ts title="Type Definition" twoslash
+${this.getOtherTypeImports(item.displayName)}
+// ---cut---
+// @noErrors
 type ${item.displayName}${typeParametersTitle} = ${item.typeExcerpt.text}
 \`\`\``,
 
@@ -291,8 +295,6 @@ type ${item.displayName}${typeParametersTitle} = ${item.typeExcerpt.text}
   };
 }
 
-const nodeHandler = new ApiItemFormatter();
-
 for (const apiPackage of apiModel.packages) {
   const entryFile = entryFiles.find((ef) => ef.extractorModuleName === apiPackage.name);
   if (!entryFile) throw new Error(`Could not find entry file for package ${apiPackage.name}`);
@@ -327,6 +329,14 @@ for (const apiPackage of apiModel.packages) {
       await rm(outputPath).catch(() => {});
       continue;
     }
+
+    const nodeHandler = new ApiItemFormatter(
+      (ownName) =>
+        `import type { ${exportedMembers
+          .filter((m) => m.displayName !== ownName)
+          .map((m) => m.displayName)
+          .join(', ')} } from '${fullImportName}'`,
+    );
 
     await writeFile(
       outputPath,
