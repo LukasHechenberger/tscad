@@ -27,6 +27,9 @@ export const cli = program
     const { model } = thisCommand.opts();
     const { ...optionsSoFar } = actionCommand.opts();
 
+    // Pass the model option to the action command
+    actionCommand.setOptionValue('model', model);
+
     if (actionCommand.name() !== 'export') {
       debug('Skipping model processing for command', actionCommand.name());
       return;
