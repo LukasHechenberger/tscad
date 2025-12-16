@@ -5,14 +5,12 @@
 /.next/
 /out/
 
+# generated sources
+/src/__generated__/*
+!/src/__generated__/.gitkeep
+
 # production
 /build
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
 
 # env files 
 .env*.local

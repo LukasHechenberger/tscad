@@ -22,7 +22,7 @@ export default buildConfig({
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
-    outputFile: path.resolve(dirname, 'payload-types.ts'),
+    outputFile: path.resolve(dirname, '__generated__/payload-types.ts'),
   },
   db: vercelPostgresAdapter({
     pool: {

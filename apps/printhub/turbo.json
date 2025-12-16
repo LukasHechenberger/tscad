@@ -1,0 +1,15 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "types:next": {
+      "outputs": ["next-env.d.ts"]
+    },
+    "types:payload": {
+      "outputs": ["src/__generated__/payload-types.ts"]
+    },
+    "check:types": {
+      "dependsOn": ["^build", "types:next", "types:payload"]
+    }
+  }
+}
