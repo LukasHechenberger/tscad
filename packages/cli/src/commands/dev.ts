@@ -2,10 +2,11 @@ import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { styleText } from 'node:util';
-import { Command, InvalidArgumentError, Option } from '@tscad/commander';
+import { InvalidArgumentError, Option } from '@tscad/commander';
 import viteReact from '@vitejs/plugin-react';
 import open from 'open';
 import { createServer } from 'vite';
+import { ModelCommand } from '@/lib/commander';
 import { rootDebug } from '@/lib/log';
 import { homepage, version } from '../../package.json';
 
@@ -26,9 +27,8 @@ function parseIntArgument(value: string) {
   return parsedValue;
 }
 
-export const devCommand = new Command('dev')
+export const devCommand = new ModelCommand('dev')
   .description('Start the development server')
-  .option('--model [model]', 'Where to find the tscad model', 'src/model.ts')
   .addOption(
     new Option('-p, --port <port>', 'The port to listen at')
       .argParser(parseIntArgument)

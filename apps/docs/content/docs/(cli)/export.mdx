@@ -19,7 +19,7 @@ Use `tscad export` to export your tscad model to a file format suitable for 3D p
   [36mparams[39m               Parameters to pass to the model
 
 [1mOptions:[22m
-  [36m--model [model][39m      Where to find the tscad model (default: "./src/model.ts")
+  [36m--model [model][39m      Where to find the tscad model (default: "src/model.ts")
   [36m--parts[39m              Export each part to a separate file (default: false)
   [36m--output <filename>[39m  The output file (default: "./out/model.stl")
   [36m--slice <slicer>[39m     Open the result in a slicer (default: false)
@@ -64,7 +64,7 @@ import { TypeTable } from 'fumadocs-ui/components/type-table';
     "type": "string",
     "required": false,
     "description": "Where to find the tscad model",
-    "default": "./src/model.ts"
+    "default": "src/model.ts"
   },
   "--parts": {
     "type": "boolean",
