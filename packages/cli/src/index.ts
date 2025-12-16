@@ -1,16 +1,19 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { inspect, styleText } from 'node:util';
-import { InvalidOptionArgumentError, Option, program } from '@tscad/commander';
+import { Command, InvalidOptionArgumentError, Option } from '@tscad/commander';
 import { ajv, getRuntime } from '@tscad/modeling/runtime';
 import { kebabCase } from 'change-case';
 import { build, type BuildFailure, formatMessagesSync } from 'esbuild';
 import { devCommand as developmentCommand } from '@/commands/dev';
 import { description, version } from '../package.json';
 import { exportCommand } from './commands/export';
+import { ModelCommand } from './lib/commander';
 import { rootDebug } from './lib/log';
 
 const debug = rootDebug.extend('cli');
+
+const program = new ModelCommand();
 
 // Add general usage info
 export const cli = program
@@ -20,8 +23,6 @@ export const cli = program
 
   // NOTE: Uncomment if we have commands without model
   // .command('model', { isDefault: true })
-
-  .option('--model [model]', 'Where to find the tscad model', './src/model.ts')
 
   .hook('preSubcommand', async (thisCommand, actionCommand) => {
     const { model } = thisCommand.opts();

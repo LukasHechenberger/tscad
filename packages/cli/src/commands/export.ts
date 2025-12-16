@@ -4,8 +4,8 @@ import { styleText } from 'node:util';
 import * as threeMf from '@jscad/3mf-serializer';
 import * as obj from '@jscad/obj-serializer';
 import * as stl from '@jscad/stl-serializer';
-import { Command } from '@tscad/commander';
 import open from 'open';
+import { ModelCommand } from '@/lib/commander';
 import { rootDebug } from '@/lib/log';
 
 const debug = rootDebug.extend('export');
@@ -16,10 +16,9 @@ const coders = {
   '.obj': { ...obj, options: {} },
 };
 
-export const exportCommand = new Command('export')
+export const exportCommand = new ModelCommand('export')
   .usage('[options] [params...]')
   .description('Export the model to a file')
-  .option('--model [model]', 'Where to find the tscad model', './src/model.ts')
   .option('--parts', 'Export each part to a separate file', false)
   .option('--output <filename>', 'The output file', './out/model.stl')
   .option('--slice <slicer>', 'Open the result in a slicer', false)

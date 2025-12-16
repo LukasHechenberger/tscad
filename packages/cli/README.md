@@ -37,8 +37,8 @@ Usage: tscad [options] [command]
 > A CLI tool for working with tscad models
 
 Options:
+  --model [model]               Where to find the tscad model (default: "src/model.ts")
   -V, --version                 Output the version number
-  --model [model]               Where to find the tscad model (default: "./src/model.ts")
   -h, --help                    Display help for command
 
 Commands:
