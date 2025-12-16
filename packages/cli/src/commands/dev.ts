@@ -28,7 +28,6 @@ function parseIntArgument(value: string) {
 
 export const devCommand = new Command('dev')
   .description('Start the development server')
-  .option('--model [model]', 'Where to find the tscad model', 'src/model.ts')
   .addOption(
     new Option('-p, --port <port>', 'The port to listen at')
       .argParser(parseIntArgument)

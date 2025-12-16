@@ -23,6 +23,48 @@ apps/docs/**/.env*.local
 apps/docs/**/.vercel
 apps/docs/**/next-env.d.ts
 
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+apps/printhub/node_modules
+apps/printhub/.pnp
+apps/printhub/**/.pnp.*
+apps/printhub/.yarn/*
+!apps/printhub/.yarn/patches
+!apps/printhub/.yarn/plugins
+!apps/printhub/.yarn/releases
+!apps/printhub/.yarn/versions
+
+# testing
+apps/printhub/coverage
+
+# next.js
+apps/printhub/.next/
+apps/printhub/out/
+
+# production
+apps/printhub/build
+
+# misc
+apps/printhub/**/.DS_Store
+apps/printhub/**/*.pem
+
+# debug
+apps/printhub/**/npm-debug.log*
+apps/printhub/**/yarn-debug.log*
+apps/printhub/**/yarn-error.log*
+apps/printhub/**/.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+apps/printhub/**/.env*
+
+# vercel
+apps/printhub/**/.vercel
+
+# typescript
+apps/printhub/**/*.tsbuildinfo
+apps/printhub/**/next-env.d.ts
+
 packages/vscode-extension/*.vsix
 packages/vscode-extension/.vscode-test
 
@@ -31,6 +73,7 @@ out
 .turbo
 coverage
 tsup.config.bundled.*
+.vercel
 temp
 **/etc/**/*.api.json
 .vscode/settings.json
