@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { inspect, styleText } from 'node:util';
-import { Command, InvalidOptionArgumentError, Option } from '@tscad/commander';
+import { InvalidOptionArgumentError, Option } from '@tscad/commander';
 import { ajv, getRuntime } from '@tscad/modeling/runtime';
 import { kebabCase } from 'change-case';
 import { build, type BuildFailure, formatMessagesSync } from 'esbuild';
