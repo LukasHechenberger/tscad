@@ -1,3 +1,5 @@
-export default function Home() {
-  return <p>TODO: Page</p>;
+import { ComponentExample } from '@/components/component-example';
+
+export default function Page() {
+  return <ComponentExample />;
 }
