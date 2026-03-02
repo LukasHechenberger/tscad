@@ -1,5 +1,11 @@
 # @tscad/create
 
+## 0.0.3
+
+### Patch Changes
+
+- 1013763: Migrate to bun
+
 ## 0.0.2
 
 ### Patch Changes

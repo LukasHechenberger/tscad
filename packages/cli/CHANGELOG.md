@@ -1,5 +1,11 @@
 # @tscad/cli
 
+## 0.4.2
+
+### Patch Changes
+
+- 760c496: Fix: Correctly handle `--model` option in dev command
+
 ## 0.4.1
 
 ### Patch Changes
