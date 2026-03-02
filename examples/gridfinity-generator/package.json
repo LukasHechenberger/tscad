@@ -15,8 +15,8 @@
   "type": "commonjs",
   "main": "out/index.js",
   "scripts": {
-    "build": "rslib build",
-    "dev": "rslib dev --watch",
+    "build": "time bun ./scripts/build-examples.ts",
+    "dev": "bun --watch ./scripts/build-examples.ts",
     "lint": "eslint . --max-warnings 0",
     "tscad": "bun ../../packages/cli/out/bin.js"
   },
@@ -28,12 +28,10 @@
     "@jscad/cli": "^2.3.6",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@rslib/core": "^0.17.2",
     "@tscad/cli": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "picocolors": "^1.1.1",
-    "rsbuild-exec": "workspace:*",
     "typescript": "catalog:"
   }
 }

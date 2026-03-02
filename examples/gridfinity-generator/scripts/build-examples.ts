@@ -4,13 +4,14 @@ import { mkdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { inspect, promisify } from 'node:util';
 import { magenta } from 'picocolors';
+import { examples } from '../src/examples';
+import '../src/index'; // Just for live-reloading during development
 
 const exec = promisify(_exec);
 const prepareDirectory = (path: string) => rm(path, { recursive: true, force: true });
 
 async function buildExamples(flags = process.argv.slice(2)) {
   const mode = flags.find((flag) => !flag.startsWith('-')) ?? 'production';
-  const { examples } = await import('../examples');
 
   if (mode === 'development') {
     console.log('Development mode - limiting to first example');
@@ -35,7 +36,7 @@ async function buildExamples(flags = process.argv.slice(2)) {
     await writeFile(
       filename,
       `import { defineModel } from '@tscad/modeling'; 
-import { gridfinityBaseplate } from '../index.js';
+import { gridfinityBaseplate } from '../../src/index.ts';
 
 export default defineModel({
   model() {
@@ -46,7 +47,7 @@ export default defineModel({
     );
 
     const command = exec(
-      `bun tscad export --model ./${filename} --output out/examples/${slug}.stl`,
+      `bun --bun tscad export --model ./${filename} --output out/examples/${slug}.stl`,
     );
 
     await command;
