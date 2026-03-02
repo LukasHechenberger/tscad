@@ -25,31 +25,12 @@ const CoreBooleanNode = z.discriminatedUnion('type', [
   }),
 ]);
 
-const AnyCoreNode = z.discriminatedUnion('type', [CoreSolidNode, CoreBooleanNode]);
-
-console.log({
-  cube: AnyCoreNode.parse({
-    type: 'union',
-    target: {
-      type: 'cuboid',
-      size: {
-        x: 10,
-        y: 10,
-        z: 10,
-      },
-    },
-    tools: [
-      {
-        type: 'cuboid',
-        size: {
-          x: 10,
-          y: 10,
-          z: 10,
-        },
-      },
-    ],
+const AnyCoreNode = z.union([
+  z.discriminatedUnion('type', [CoreSolidNode, CoreBooleanNode]),
+  z.object({
+    stack: z.optional(z.string()).meta({ description: 'Used to improve error reporting' }),
   }),
-});
+]);
 
 const CoreModelNode = z.object({
   type: z.literal('@tscad/core/model'),
@@ -59,28 +40,38 @@ const CoreModelNode = z.object({
 
 // MARK: Modeling Helpers
 
-const union = (options: Omit<z.infer<typeof CoreBooleanNode>, 'type'>) => ({
-  type: 'union' as const,
-  ...options,
-});
+const union = (options: Omit<z.infer<typeof CoreBooleanNode>, 'type'>) => {
+  const stack = new Error().stack?.split('\n').slice(0).join('\n'); // Not correct...
 
-const cuboid = (options: Omit<z.infer<typeof CoreCuboidNode>, 'type'>) => ({
-  type: 'cuboid' as const,
-  ...options,
-});
+  return {
+    type: 'union' as const,
+    stack,
+    ...options,
+  };
+};
+
+const cuboid = (options: Omit<z.infer<typeof CoreCuboidNode>, 'type'>) => {
+  const stack = new Error().stack?.split('\n').slice(2).join('\n');
+
+  return {
+    type: 'cuboid' as const,
+    stack: stack,
+    ...options,
+  };
+};
 
 const cube = ({
   size,
   ...options
-}: Omit<z.infer<typeof CoreCuboidNode>, 'type' | 'size'> & { size: number }) => ({
-  type: 'cuboid' as const,
-  size: {
-    x: size,
-    y: size,
-    z: size,
-  },
-  ...options,
-});
+}: Omit<z.infer<typeof CoreCuboidNode>, 'type' | 'size'> & { size: number }) =>
+  cuboid({
+    size: {
+      x: size,
+      y: size,
+      z: size,
+    },
+    ...options,
+  });
 
 // MARK: Model Definition and Rendering
 
@@ -112,8 +103,6 @@ const myModel = defineModel({
   },
 });
 
-const myRegistry = z.registry<{ description: string }>();
-
 const RenderedModelNode = CoreModelNode.extend({
   parameters: z.optional(
     z.object({
@@ -128,7 +117,14 @@ function renderModel<P extends z.ZodObject<any>>(
   parameters: z.input<P>,
 ): z.infer<typeof RenderedModelNode> {
   const parsedParameters = model.parametersZodSchema.parse(parameters);
-  const body = model.body(parsedParameters);
+
+  let body: ReturnType<ParametricModel<P>['body']>;
+  try {
+    body = model.body(parsedParameters);
+  } catch (error) {
+    console.log('Got a stack?', model);
+    throw error;
+  }
 
   return {
     type: '@tscad/core/model' as const,
