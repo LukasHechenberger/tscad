@@ -15,6 +15,8 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "brepjs": "^9.0.0",
+    "brepjs-opencascade": "^0.8.2",
     "zod": "^4.3.6"
   }
 }
