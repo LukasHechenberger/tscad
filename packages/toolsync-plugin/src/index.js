@@ -20,7 +20,17 @@ const repoPlugin = definePlugin({
                       '@update': {
                         id: 'checks',
                         data: {
-                          run: 'bun --bun turbo check lint test build --continue',
+                          run: 'bun --bun turbo check lint test build --continue --summarize',
+                        },
+                      },
+                    },
+                    {
+                      '@insert': {
+                        after: 'checks',
+                        data: {
+                          name: 'Report Turbo Summary',
+                          if: 'always()',
+                          uses: 'charpeni/turborepo-summary-action@v1',
                         },
                       },
                     },
