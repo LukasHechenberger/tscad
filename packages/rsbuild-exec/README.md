@@ -9,6 +9,8 @@ Execute shell commands during your rsbuild
 
 <!-- #endregion header -->
 
+> **Available for adoption**: We're currently migrating to bun build tools and won't spend much time on maintaining this package. [Get in touch on GitHub](https://github.com/LukasHechenberger/tscad/issues/new) if you're interested.
+
 ## Usage
 
 ```ts
