@@ -18,7 +18,7 @@
     "build": "rslib build",
     "dev": "rslib dev --watch",
     "lint": "eslint . --max-warnings 0",
-    "tscad": "node --enable-source-maps ../../packages/cli/out/bin.js"
+    "tscad": "bun ../../packages/cli/out/bin.js"
   },
   "dependencies": {
     "@jscad/modeling": "^2.12.6",
