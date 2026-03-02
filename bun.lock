@@ -79,6 +79,13 @@
         "typescript": "catalog:",
       },
     },
+    "packages/ast": {
+      "name": "@tscad/ast",
+      "devDependencies": {
+        "@types/bun": "latest",
+        "typescript": "catalog:",
+      },
+    },
     "packages/cli": {
       "name": "@tscad/cli",
       "version": "0.4.2",
@@ -1038,6 +1045,8 @@
     "@toolsync/template": ["@toolsync/template@0.1.1", "", { "dependencies": { "commander": "14.0.2" }, "bin": { "update-section": "out/bin.js" } }, "sha512-3D5bzBMWu+SzmauEvsK39qWOmr5y+y7K3RLnPm5n1avN3SMFGaJ3ZCGj5peCc7hZ7j9KcsA22vwtYS3E12GvsA=="],
 
     "@ts-morph/common": ["@ts-morph/common@0.27.0", "", { "dependencies": { "fast-glob": "3.3.3", "minimatch": "10.0.3", "path-browserify": "1.0.1" } }, "sha512-Wf29UqxWDpc+i61k3oIOzcUfQt79PIT9y/MWfAGlrkjg6lBC1hwDECLXPVJAhWjiGbfBCxZd65F/LIZF3+jeJQ=="],
+
+    "@tscad/ast": ["@tscad/ast@workspace:packages/ast"],
 
     "@tscad/cli": ["@tscad/cli@workspace:packages/cli"],
 

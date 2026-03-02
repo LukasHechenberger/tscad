@@ -20,3 +20,6 @@ temp
 .prettierignore
 .prettierrc.json
 .changeset/README.md
+
+# bun init
+/*/**/.cursor

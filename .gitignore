@@ -39,3 +39,4 @@ temp
 .prettierignore
 .prettierrc.json
 .changeset/README.md
+/*/**/.cursor
