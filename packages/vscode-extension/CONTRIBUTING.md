@@ -2,4 +2,4 @@
 
 **Essential commands**
 
-- `pnpm vsce login tscad` (Log in with Azure DevOps personal access token)
+- `bun vsce login tscad` (Log in with Azure DevOps personal access token)

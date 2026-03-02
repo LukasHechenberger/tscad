@@ -20,7 +20,7 @@ const repoPlugin = definePlugin({
                       '@update': {
                         id: 'checks',
                         data: {
-                          run: 'pnpm turbo check lint test build --continue',
+                          run: 'bun --bun turbo check lint test build --continue',
                         },
                       },
                     },
@@ -30,7 +30,7 @@ const repoPlugin = definePlugin({
                         data: {
                           name: 'Publish to VSCode Marketplace',
                           run: `if git tag --points-at HEAD | grep tscad-vscode; then
-  pnpm --prefix=packages/vscode-extension vscode:publish
+  bun --cwd=packages/vscode-extension vscode:publish
 else
   echo "No new tscad-vscode release found (tags: '$(git tag --points-at HEAD)')"
 fi

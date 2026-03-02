@@ -45,9 +45,8 @@ export default defineModel({
 `,
     );
 
-    // await exec(`pnpm jscad ./${filename} -o out/examples/${slug}.jscad.json`);
     const command = exec(
-      `pnpm tscad export --model ./${filename} --output out/examples/${slug}.stl`,
+      `bun tscad export --model ./${filename} --output out/examples/${slug}.stl`,
     );
 
     await command;

@@ -6,7 +6,7 @@ export default defineConfig({
   lib: [{ format: 'esm', dts: true }],
   plugins: [
     pluginRsbuildExec({
-      command: 'pnpm build-api-docs',
+      command: 'bun build-api-docs',
       title: 'api-docs',
     }),
   ],

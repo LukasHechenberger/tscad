@@ -12,7 +12,10 @@ Initializes new tscad projects
 ## Usage
 
 ```shell
-# Using pnpm (recommended)
+# Using bun (recommended)
+bun create @tscad
+
+# Using pnpm (recommended if not using bun)
 pnpm create @tscad
 
 # Using npm
@@ -23,7 +26,7 @@ npm init @tscad
 <!-- This section is generated. Do not edit manually! -->
 
 ```
-Usage: pnpm create @tscad [options]
+Usage: bun create @tscad [options]
 
 > Initializes new tscad projects
 

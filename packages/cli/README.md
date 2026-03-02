@@ -11,10 +11,11 @@ A CLI tool for working with tscad models
 
 ## Installation
 
-**In a node.js project**
+**In your project**
 
 ```shell
 # Choose one:
+bun add -D @tscad/cli
 pnpm add -D @tscad/cli
 npm install --save-dev @tscad/cli
 yarn add @tscad/cli

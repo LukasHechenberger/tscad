@@ -12,6 +12,11 @@ import { description, name as packageName, version } from '../package.json';
 const pm = whichPmRuns();
 
 const pmCommands = {
+  bun: {
+    create: `bun create @tscad`,
+    install: 'bun add -D @tscad/cli@latest @tscad/modeling@latest',
+    runDev: 'bun dev',
+  },
   pnpm: {
     create: `pnpm create @tscad`,
     install: 'pnpm add -D @tscad/cli@latest @tscad/modeling@latest',
