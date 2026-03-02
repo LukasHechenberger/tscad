@@ -14,7 +14,7 @@ Gridfinity generator example
 Run development server:
 
 ```shell
-pnpm dev
+bun dev
 ```
 
 Open an example (on Mac)
