@@ -71,7 +71,7 @@ export default defineConfig({
         } satisfies RsbuildPlugin,
         pluginRsbuildExec({
           title: 'api-docs',
-          command: 'pnpm build-api-docs',
+          command: 'bun build-api-docs',
         }),
       ],
     },

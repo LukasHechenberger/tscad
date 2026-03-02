@@ -24,10 +24,10 @@
     "dev": "rslib dev --watch",
     "lint": "eslint . --max-warnings 0",
     "test:integration": "vscode-test",
-    "vscode:package": "pnpm vscode:rebuild && vsce package --skip-license",
-    "vscode:publish": "vsce publish --skip-license --baseContentUrl \"https://github.com/LukasHechenberger/tscad/raw/$(git branch --show-current)/packages/vscode-extension\"",
-    "vscode:publish-prerelease": "pnpm vscode:rebuild && pnpm vscode:publish --pre-release",
-    "vscode:rebuild": "pnpm run check:types && pnpm run lint && pnpm build"
+    "vscode:package": "bun vscode:rebuild && vsce package --skip-license",
+    "vscode:publish": "bun vscode:rebuild && vsce publish --skip-license --baseContentUrl \"https://github.com/LukasHechenberger/tscad/raw/$(git branch --show-current)/packages/vscode-extension\"",
+    "vscode:publish-prerelease": "bun vscode:rebuild && bun vscode:publish --pre-release",
+    "vscode:rebuild": "bun run check:types && bun run lint && bun run build"
   },
   "contributes": {
     "commands": [

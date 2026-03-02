@@ -14,7 +14,7 @@ export default defineConfig({
     pluginRsbuildExec({
       title: 'readme',
       command:
-        'pnpm update-section README.md usage "\\`\\`\\`\n$(node out/bin.js --help)\n\\`\\`\\`"',
+        'bun update-section README.md usage "\\`\\`\\`\n$(bun out/bin.js --help)\n\\`\\`\\`"',
       options: { shell: true },
     }),
   ],
