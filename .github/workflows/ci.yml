@@ -35,7 +35,10 @@ jobs:
         run: bun install
       - id: checks
         name: Code Quality Checks
-        run: bun --bun turbo check lint test build --continue
+        run: bun --bun turbo check lint test build --continue --summarize
+      - name: Report Turbo Summary
+        if: always()
+        uses: charpeni/turborepo-summary-action@v1
       - id: ensure-clean
         name: Ensure there are no uncommitted changes
         run: git diff --exit-code || (echo "There are uncommitted changes!" && exit 1)

@@ -5,7 +5,6 @@ export default defineConfig({
   source: {
     entry: {
       bin: './src/bin.ts',
-      'scripts/update-documentation': './src/scripts/update-documentation.ts',
     },
   },
   output: {
@@ -17,7 +16,7 @@ export default defineConfig({
   plugins: [
     pluginExec({
       title: 'api-docs',
-      command: 'node --enable-source-maps ./out/scripts/update-documentation.js',
+      command: 'bun ./scripts/update-documentation.ts',
     }),
   ],
 });

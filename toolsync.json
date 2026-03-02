@@ -28,6 +28,9 @@
       "eslint.workingDirectories": ["examples/*", "apps/*", "packages/*"],
       "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "explicit"
+      },
+      "json.schemaDownload.trustedDomains": {
+        "https://openapi.vercel.sh": true
       }
     }
   },
