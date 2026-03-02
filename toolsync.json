@@ -1,5 +1,6 @@
 {
   "@toolsync/builtin/github-actions": {},
+  "@toolsync/builtin/bun": {},
   "@toolsync/builtin/ignore-sync": {},
   "@toolsync/builtin/package-meta": {
     "publishConfig": {
@@ -15,7 +16,6 @@
       }
     }
   },
-  "@toolsync/builtin/bun": {},
   "@toolsync/builtin/prettier": {
     "settings": {
       "printWidth": 100,
