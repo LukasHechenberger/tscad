@@ -1,29 +1,6 @@
+# NOTE: This file is only here because @manypkg packages do not yet support "workspace.packages" in package.json
+
 packages:
   - examples/*
   - packages/*
   - apps/*
-
-catalog:
-  react: ^19.2.0
-  react-dom: ^19.2.0
-  '@types/react': ^19.2.6
-  '@types/react-dom': ^19.2.3
-  eslint: 9.39.1
-  publint: 0.3.15
-  typescript: 5.9.3
-  '@types/node': 22.19.1
-
-gitBranchLockfile: true
-
-mergeGitBranchLockfilesBranchPattern:
-  - main
-  - changeset-release/*
-  - gitbutler/workspace
-
-onlyBuiltDependencies:
-  - '@jscad/cli'
-  - '@tailwindcss/oxide'
-  - '@vscode/vsce-sign'
-  - esbuild
-  - keytar
-  - sharp
