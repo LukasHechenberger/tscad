@@ -250,7 +250,7 @@
       "name": "@repo/scripts",
       "version": "0.0.0",
       "bin": {
-        "build-api-docs": "./out/build-api-docs.js",
+        "build-api-docs": "./src/build-api-docs.ts",
       },
       "dependencies": {
         "@microsoft/api-documenter": "^7.28.0",
@@ -264,7 +264,6 @@
       "devDependencies": {
         "@repo/eslint-config": "workspace:*",
         "@repo/typescript-config": "workspace:*",
-        "@rslib/core": "^0.17.2",
         "@types/node": "catalog:",
         "eslint": "catalog:",
         "fumadocs-ui": "16.0.11",

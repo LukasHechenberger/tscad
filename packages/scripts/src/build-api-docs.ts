@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 /* eslint-disable no-console */
 
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';

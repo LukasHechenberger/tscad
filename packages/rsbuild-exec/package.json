@@ -19,7 +19,6 @@
   },
   "scripts": {
     "build": "rslib build",
-    "build-api-docs": "bun ../scripts/out/build-api-docs.js",
     "check:exports": "publint",
     "check:types": "tsc --noEmit",
     "dev": "rslib dev --watch",

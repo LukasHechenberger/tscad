@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises';
 import { styleText } from 'node:util';
 import { MarkdownTemplate, Template } from '@toolsync/template';
 import type { Command } from '@tscad/commander';
-import { cli } from '../index';
+import { cli } from '../src/index';
 
 // NOTE: This script does not handle subcommands of subcommands
 
