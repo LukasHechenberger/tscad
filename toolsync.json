@@ -15,7 +15,7 @@
       }
     }
   },
-  "@toolsync/builtin/pnpm": {},
+  "@toolsync/builtin/bun": {},
   "@toolsync/builtin/prettier": {
     "settings": {
       "printWidth": 100,
