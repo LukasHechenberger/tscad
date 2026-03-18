@@ -1,25 +1,18 @@
-import type z from 'zod';
-import type { AnyCoreNode, CoreSolidNode } from '..';
-import { fuse, box, sphere, unwrap, fuseAll, shape, unwrapErr, isShape3D } from 'brepjs/quick';
+import type { Result, Shape3D } from 'brepjs';
+import type { AnyCoreNode } from '..';
+import { ok, unwrap, box, sphere, fuseAll } from 'brepjs/quick';
 
-export function renderWithBrepjs(node: z.infer<typeof AnyCoreNode>) {
+export function renderWithBrepjs(node: AnyCoreNode): Result<Shape3D> {
   switch (node.type) {
     case 'union': {
-      const target = renderWithBrepjs(node.target);
-
-      console.dir({ isShape3D: isShape3D(target) }, { depth: null });
-
-      const tools = node.tools.map((tool) => renderWithBrepjs(tool));
-
-      return fuseAll([target, ...tools]);
+      const shapes = [node.target, ...node.tools].map((n) => unwrap(renderWithBrepjs(n)));
+      return fuseAll(shapes);
     }
     case 'cuboid': {
-      const someBox = box(node.size.x, node.size.y, node.size.z);
-      return someBox;
+      return ok(box(node.size.x, node.size.y, node.size.z));
     }
     case 'sphere': {
-      const someSphere = sphere(node.radius);
-      return someSphere;
+      return ok(sphere(node.radius));
     }
     default: {
       throw new Error(`Unsupported node type: ${(node as any).type}`);
