@@ -1,0 +1,22 @@
+{
+  "name": "@tscad/ast",
+  "private": true,
+  "homepage": "https://tscad.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasHechenberger/tscad.git",
+    "directory": "packages/ast"
+  },
+  "license": "MIT",
+  "type": "module",
+  "module": "index.ts",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "brepjs": "^9.0.0",
+    "brepjs-opencascade": "^0.8.2",
+    "zod": "^4.3.6"
+  }
+}
