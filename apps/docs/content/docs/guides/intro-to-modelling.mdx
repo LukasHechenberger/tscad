@@ -1,0 +1,152 @@
+---
+title: Intro to modelling
+description: 'Your first part, step by step: shapes, placing them, combining them, and 2D sketches.'
+---
+
+This guide builds a small part, a mounting plate with rounded corners and four screw holes, and
+introduces one idea per step. Paste any step into the [playground](/playground) to see it.
+
+## A model is a module
+
+A model is a TypeScript module whose default export is a shape. Shapes come from
+`@tscad/modeling`; sizes are in millimeters.
+
+```ts twoslash
+import { cube } from '@tscad/modeling';
+
+export default cube(10);
+```
+
+Calling a function doesn't compute any geometry yet. It describes the shape, and the kernel builds
+the exact solid when you preview or export the model.
+
+## Basic shapes
+
+Solids start from three primitives. Options are objects, so every number says what it is:
+
+```ts twoslash
+import { cube, cylinder, sphere } from '@tscad/modeling';
+
+cube({ x: 40, y: 30, z: 4 }); // a box from the origin along +X, +Y and +Z
+sphere({ r: 5 }); // around the origin
+cylinder({ h: 10, r: 2 }); // standing on the origin, along +Z
+cylinder({ h: 10, r1: 4, r2: 2 }); // a cone, narrower at the top
+```
+
+A box starts at the origin by default. Pass `{ center: true }` to center it on the origin instead,
+which is often easier to reason about:
+
+```ts twoslash
+import { cube } from '@tscad/modeling';
+
+export default cube({ x: 60, y: 40, z: 4 }, { center: true });
+```
+
+## Placing shapes
+
+`translate` moves shapes and `rotate` turns them, in degrees about X, then Y, then Z. Omitted
+components are 0. Every transform is also a method, which reads well for a single shape:
+
+```ts twoslash
+import { cylinder, rotate, translate } from '@tscad/modeling';
+
+translate({ x: 20, z: 5 }, cylinder({ h: 10, r: 2 }));
+rotate({ x: 90 }, cylinder({ h: 10, r: 2 })); // lying along -Y
+
+// The same, chained:
+cylinder({ h: 10, r: 2 }).rotate({ x: 90 }).translate({ x: 20 });
+```
+
+## Combining shapes
+
+Three booleans combine solids: `union` merges them, `difference` cuts every later shape out of the
+first, and `intersection` keeps what they share. A hole is a cylinder cut out of the plate. Make
+it a little longer than the plate is thick, so it cuts cleanly through both faces:
+
+```ts twoslash
+import { cube, cylinder, difference } from '@tscad/modeling';
+
+export default difference(
+  cube({ x: 60, y: 40, z: 4 }, { center: true }),
+  cylinder({ h: 6, r: 1.6, center: true }),
+);
+```
+
+## Code is your toolbox
+
+There are no special language features for repetition or reuse: use TypeScript. A function makes
+a reusable part, and an array places it four times. Spread the holes into `difference`:
+
+```ts twoslash
+import { cube, cylinder, difference } from '@tscad/modeling';
+
+const hole = (x: number, y: number) => cylinder({ h: 6, r: 1.6, center: true }).translate({ x, y });
+
+const corners = [
+  [-24, -14],
+  [24, -14],
+  [-24, 14],
+  [24, 14],
+] as const;
+
+export default difference(
+  cube({ x: 60, y: 40, z: 4 }, { center: true }),
+  ...corners.map(([x, y]) => hole(x, y)),
+);
+```
+
+## From 2D sketches to solids
+
+Rounded corners are easiest in 2D. Sketch the outline with `square`, `circle` or `polygon`, grow
+it with rounded corners using `offset`, and turn it into a solid with `linear_extrude`. A 54 × 34
+rectangle grown by 3 mm is a 60 × 40 outline with 3 mm corner radii:
+
+```ts twoslash
+import { linear_extrude, offset, square } from '@tscad/modeling';
+
+const outline = offset({ r: 3 }, square({ x: 54, y: 34 }, { center: true }));
+
+export default linear_extrude({ height: 4, center: true }, outline);
+```
+
+2D shapes are a separate type: TypeScript won't let you pass one where a solid is expected, so
+extrude it first. `rotate_extrude` is the other way to make a solid from a sketch: it spins it
+around the Z axis, for round parts like knobs and rings.
+
+## The finished part
+
+Put together, with a color for the preview:
+
+```ts twoslash title="plate.ts"
+import { cylinder, difference, linear_extrude, offset, square } from '@tscad/modeling';
+
+const outline = offset({ r: 3 }, square({ x: 54, y: 34 }, { center: true }));
+const plate = linear_extrude({ height: 4, center: true }, outline);
+
+const hole = (x: number, y: number) => cylinder({ h: 6, r: 1.6, center: true }).translate({ x, y });
+
+const corners = [
+  [-24, -14],
+  [24, -14],
+  [-24, 14],
+  [24, 14],
+] as const;
+
+export default difference(plate, ...corners.map(([x, y]) => hole(x, y))).color('skyblue');
+```
+
+Export it with `tscad export --output plate.stl`, or as STEP, GLB or 3MF.
+
+## Next steps
+
+<Cards>
+  <Card title="Parameters" href="/docs/guides/parameters">
+    Make the plate's size and hole spacing adjustable, with a form in the preview.
+  </Card>
+  <Card title="Coming from OpenSCAD" href="/docs/guides/coming-from-openscad">
+    How OpenSCAD's modules and language map to tscad.
+  </Card>
+  <Card title="Reference" href="/docs/api/modules/modeling">
+    Every shape and operation, with a picture for each example.
+  </Card>
+</Cards>
