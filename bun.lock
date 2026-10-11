@@ -24,6 +24,7 @@
       "dependencies": {
         "@legendapp/state": "3.0.0-beta.31",
         "@monaco-editor/react": "^4.7.0",
+        "@shikijs/monaco": "3.15.0",
         "@tscad/kernel": "workspace:*",
         "@tscad/modeling": "workspace:*",
         "@tscad/viewer": "workspace:*",
@@ -1017,6 +1018,8 @@
     "@shikijs/engine-oniguruma": ["@shikijs/engine-oniguruma@3.15.0", "", { "dependencies": { "@shikijs/types": "3.15.0", "@shikijs/vscode-textmate": "10.0.2" } }, "sha512-HnqFsV11skAHvOArMZdLBZZApRSYS4LSztk2K3016Y9VCyZISnlYUYsL2hzlS7tPqKHvNqmI5JSUJZprXloMvA=="],
 
     "@shikijs/langs": ["@shikijs/langs@3.15.0", "", { "dependencies": { "@shikijs/types": "3.15.0" } }, "sha512-WpRvEFvkVvO65uKYW4Rzxs+IG0gToyM8SARQMtGGsH4GDMNZrr60qdggXrFOsdfOVssG/QQGEl3FnJ3EZ+8w8A=="],
+
+    "@shikijs/monaco": ["@shikijs/monaco@3.15.0", "", { "dependencies": { "@shikijs/core": "3.15.0", "@shikijs/types": "3.15.0", "@shikijs/vscode-textmate": "^10.0.2" } }, "sha512-MKURaG5ehas44DBOfw0szEp89fA3WTERl7B6MjWcRQMIvHd++OQmPLyk1wcWbqZ3Jcvj0QBCJw+5tR/IBW016g=="],
 
     "@shikijs/rehype": ["@shikijs/rehype@3.15.0", "", { "dependencies": { "@shikijs/types": "3.15.0", "@types/hast": "3.0.4", "hast-util-to-string": "3.0.1", "shiki": "3.15.0", "unified": "11.0.5", "unist-util-visit": "5.0.0" } }, "sha512-U+tqD1oxL+85N8FaW5XYIlMZ8KAa2g9IdplEZxPWflGRJf2gQRiBMMrpdG1USz3PN350YnMUHWcz9Twt3wJjXQ=="],
 

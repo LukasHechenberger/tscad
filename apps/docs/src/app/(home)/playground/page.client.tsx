@@ -5,17 +5,45 @@ import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/
 import { use$ } from '@legendapp/state/react';
 import { syncObservable } from '@legendapp/state/sync';
 import Editor, { type Monaco, type OnMount, useMonaco } from '@monaco-editor/react';
+import { shikiToMonaco, textmateThemeToMonacoTheme } from '@shikijs/monaco';
 import { createViewer, type Viewer } from '@tscad/viewer';
 import '@tscad/viewer/style.css';
 import type * as esbuild from 'esbuild-wasm';
 import { useTheme } from 'next-themes';
 import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import { createHighlighterCore, type HighlighterCore } from 'shiki/core';
+import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 import { bundleCode } from '@/lib/esbuild';
 import { defaultCode } from '@/lib/playground';
 import { homepage } from '../../../../package.json';
 import type { PreparedModel, RenderedModel, WorkerResponse } from './worker';
 
 const documentationOrigin = new URL(homepage).host;
+
+/** The themes of the docs' code blocks (source.config.ts), so the editor colors code the same way. */
+const editorThemes = { light: 'github-light', dark: 'github-dark' } as const;
+
+let highlighter: Promise<HighlighterCore> | undefined;
+
+/** A CSS color as `#rrggbb`, as Monaco themes need it (computed styles may be `oklch(…)` and the like). */
+function hexColor(css: string): string | undefined {
+  const context = document.createElement('canvas').getContext('2d');
+  if (!context) return undefined;
+  context.fillStyle = css;
+  context.fillRect(0, 0, 1, 1);
+  const [red = 0, green = 0, blue = 0] = context.getImageData(0, 0, 1, 1).data;
+  return `#${[red, green, blue].map((value) => value.toString(16).padStart(2, '0')).join('')}`;
+}
+
+/** Shiki with just what the editor needs; the JavaScript regex engine avoids loading Oniguruma's wasm. */
+function loadHighlighter() {
+  highlighter ??= createHighlighterCore({
+    themes: [import('shiki/themes/github-light.mjs'), import('shiki/themes/github-dark.mjs')],
+    langs: [import('shiki/langs/typescript.mjs')],
+    engine: createJavaScriptRegexEngine(),
+  });
+  return highlighter;
+}
 
 let worker: Worker;
 
@@ -278,10 +306,20 @@ export function PlaygroundEditor({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, unicorn/no-useless-undefined -- useRef needs an argument
   const modelReference = useRef<any | undefined>(undefined);
   const monaco = useMonaco();
+  // The editor's container, whose `bg-fd-card` the editor takes as its background.
+  const containerReference = useRef<HTMLElement | null>(null);
+  // The editor mounts once Shiki is loaded, so it never shows Monaco's own colors first.
+  const [shiki, setShiki] = useState<HighlighterCore | undefined>();
+  useEffect(() => {
+    void loadHighlighter().then(setShiki);
+  }, []);
 
   // Setup monaco
 
   function beforeMount(monaco: Monaco) {
+    // Shiki's TextMate grammar and themes instead of Monaco's tokenizer and built-in themes.
+    if (shiki) shikiToMonaco(shiki, monaco);
+
     // validation settings
     monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
       // noSemanticValidation: true,
@@ -346,16 +384,47 @@ export function PlaygroundEditor({
     ]);
   }, [error, monaco, modelReference]);
 
-  const onMount: OnMount = (editor) => {
+  /**
+   * The current theme, with the editor background set to its container's `bg-fd-card`, like the
+   * docs' code blocks. An opaque color, not a transparent one: the minimap's canvas would draw that black.
+   */
+  function applyTheme(monaco: Monaco) {
+    const name = resolvedTheme === 'dark' ? editorThemes.dark : editorThemes.light;
+    const container = containerReference.current;
+    const background = container && hexColor(getComputedStyle(container).backgroundColor);
+    if (!shiki || !background) return;
+    // Typed as Monaco's own theme data: MonacoTheme refers to monaco-editor-core, which isn't installed.
+    const theme = textmateThemeToMonacoTheme(shiki.getTheme(name)) as Parameters<
+      Monaco['editor']['defineTheme']
+    >[1];
+    monaco.editor.defineTheme(name, {
+      ...theme,
+      colors: { ...theme.colors, 'editor.background': background },
+    });
+    monaco.editor.setTheme(name);
+  }
+
+  // Again when the site's theme changes, which changes `bg-fd-card` too.
+  useEffect(() => {
+    if (monaco) applyTheme(monaco);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- applyTheme reads the latest theme itself
+  }, [resolvedTheme, monaco]);
+
+  const onMount: OnMount = (editor, monaco) => {
     const model = editor.getModel();
 
     modelReference.current = model;
+    containerReference.current = editor.getContainerDomNode();
+    applyTheme(monaco);
   };
+
+  if (!shiki) return;
 
   return (
     <Editor
       height="100%"
-      theme={resolvedTheme ? (resolvedTheme === 'dark' ? 'vs-dark' : 'light') : undefined}
+      className="bg-fd-card"
+      theme={resolvedTheme === 'dark' ? editorThemes.dark : editorThemes.light}
       defaultLanguage="typescript"
       // A file path, so imports resolve against the declarations in file:///node_modules
       path="file:///model.ts"
