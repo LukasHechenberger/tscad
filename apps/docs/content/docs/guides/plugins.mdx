@@ -7,34 +7,227 @@ Plugins are WebAssembly components (built from Rust here) that implement one of 
 in `wit/tscad-plugin.wit`. They run sandboxed: they can call the kernel's shape API, but have no
 file or network access. The same plugin runs in the CLI, the preview and the browser.
 
-| Kind      | What it does                                                       | Example                                     |
-| --------- | ------------------------------------------------------------------ | ------------------------------------------- |
-| Operation | A new modeling function, used with `plugin(name, args, …children)` | `grid`: repeats its children on a grid      |
-| Exporter  | A new output format, chosen by file extension                      | `export-3mf`: 3MF with colors               |
-| Analysis  | A report shown in the preview's sidebar and by `tscad analyze`     | `printability`: overhangs, bed contact, fit |
+| Kind      | What it does                                                   | Example                                     |
+| --------- | -------------------------------------------------------------- | ------------------------------------------- |
+| Operation | A new modeling function, imported from the plugin's package    | `grid`: repeats its children on a grid      |
+| Exporter  | A new output format, chosen by file extension                  | `export-3mf`: 3MF with colors               |
+| Analysis  | A report shown in the preview's sidebar and by `tscad analyze` | `printability`: overhangs, bed contact, fit |
 
 ## Using plugins
 
-List them in a `tscad.json` next to your models (or in a parent folder):
+Add the plugin's package to your model's dependencies. tscad finds plugin packages among the
+dependencies of the package.json nearest to the model, so there is nothing else to configure:
 
-```json title="tscad.json"
-{ "plugins": ["plugins/grid", "plugins/export-3mf", "plugins/printability"] }
+```json title="package.json"
+{
+  "dependencies": {
+    "@tscad/modeling": "workspace:*",
+    "@tscad/plugin-grid": "workspace:*"
+  }
+}
 ```
+
+An operation plugin's package exports it as a typed function, documented in the
+[API reference](/docs/api/modules/modeling/plugins#grid):
+
+```ts
+import { cylinder } from '@tscad/modeling';
+import { grid } from '@tscad/plugin-grid';
+
+export default grid({ nx: 3, ny: 2, dx: 10, dy: 10 }, cylinder({ h: 4, r: 3 }));
+```
+
+<Callout>
+  The plugin packages are not published yet: depend on them from inside the tscad workspace, as
+  `workspace:*`.
+</Callout>
+
+Exporters and analyses need no import: once loaded, they are available to the CLI and the preview.
 
 ```sh
 bun run build --filter=@tscad/plugins       # build the plugins in this repo
-tscad plugins                               # what tscad.json loads
+tscad plugins                               # the plugins your models get
 tscad export --output model.3mf             # an exporter plugin's format
 tscad analyze                               # run the analysis plugins
 ```
 
-In a model, an operation plugin is a node like any other:
+### Local plugins
+
+A plugin that is a folder rather than a package can be listed in a `tscad.json` next to your
+models (or in a parent folder), relative to it:
+
+```json title="tscad.json"
+{ "plugins": ["plugins/grid"] }
+```
+
+Models then use it by name, with `plugin` from `@tscad/modeling`:
 
 ```ts
 import { cylinder, plugin } from '@tscad/modeling';
 
 export default plugin('grid', { nx: 3, ny: 2, dx: 10, dy: 10 }, cylinder({ h: 4, r: 3 }));
 ```
+
+A plugin that is both a dependency and listed in `tscad.json` is loaded once.
+
+## Writing a plugin
+
+Plugins live in the `plugins/` folder of the tscad repository. Its build, the private
+`@tscad/plugins` package, compiles every crate in that folder.
+
+<Callout>
+  `@tscad/plugins` is not published yet, and its build only finds the plugins in its own folder.
+  Until that changes, write your plugin inside a clone of the repository.
+</Callout>
+
+### 1. Create the crate
+
+Make a folder `plugins/<name>` with a library crate called `tscad-plugin-<name>`, and add the
+folder to `members` in the root `Cargo.toml`:
+
+```toml title="plugins/stack/Cargo.toml"
+[package]
+name = "tscad-plugin-stack"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wit-bindgen = "0.62"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+schemars = "1"
+```
+
+### 2. Implement a world
+
+Pick the world for your kind of plugin from `wit/tscad-plugin.wit`: `operation`, `exporter` or
+`analysis`. Then implement its exports. A plugin works with geometry only through the `kernel`
+interface: it can compose shapes and query them (`volume`, `bounds`, `mesh`, …).
+
+Declare the options as a Rust struct. It is the single source for the options: serde parses
+them, and schemars derives the JSON Schema that `info()` reports.
+
+```rust title="plugins/stack/src/lib.rs"
+use schemars::JsonSchema;
+use serde::Deserialize;
+
+wit_bindgen::generate!({ world: "operation", path: "../../wit" });
+
+use tscad::plugin::kernel::union;
+use tscad::plugin::types::Vec3;
+
+/// Stacks copies of its children on top of each other.
+#[derive(Deserialize, JsonSchema)]
+#[serde(default, deny_unknown_fields, rename_all = "camelCase")]
+struct Options {
+	/// Number of copies.
+	#[schemars(range(min = 1))]
+	count: u32,
+	/// Height of one copy, in millimeters.
+	layer_height: f64,
+}
+
+impl Default for Options {
+	fn default() -> Self {
+		Options { count: 2, layer_height: 10.0 }
+	}
+}
+
+struct Stack;
+
+impl Guest for Stack {
+	fn info() -> PluginInfo {
+		PluginInfo {
+			name: "stack".into(), // must match the folder name
+			version: env!("CARGO_PKG_VERSION").into(),
+			description: "Stacks copies of its children.".into(),
+			options_schema: schemars::schema_for!(Options).to_value().to_string(),
+		}
+	}
+
+	fn evaluate(args: String, children: Vec<Shape>) -> Result<Shape, String> {
+		let options: Options = serde_json::from_str(&args).map_err(|e| format!("invalid options: {e}"))?;
+		let child = union(&children.iter().collect::<Vec<_>>());
+		let copies: Vec<Shape> = (0..options.count)
+			.map(|i| child.translate(Vec3 { x: 0.0, y: 0.0, z: f64::from(i) * options.layer_height }))
+			.collect();
+		Ok(union(&copies.iter().collect::<Vec<_>>()))
+	}
+}
+
+export!(Stack);
+```
+
+Return errors as `Err(message)`. The host adds the plugin's name to the message.
+
+### 3. Build it
+
+```sh
+bun run build --filter=@tscad/plugins
+```
+
+This writes `plugins/<name>/dist/`:
+
+| File                             | What it is                                                                     |
+| -------------------------------- | ------------------------------------------------------------------------------ |
+| `plugin.js`, `plugin.core*.wasm` | The component, transpiled by jco. This is what tscad loads.                    |
+| `plugin.component.wasm`          | The component itself                                                           |
+| `<name>.wit`                     | Your options as a WIT record, generated from the options schema                |
+| `index.ts`                       | Your options as a TypeScript interface; for an operation, a typed function too |
+
+For `stack`, `index.ts` exports a `StackOptions` interface and
+`stack(options, ...children)`. Your doc comments become TSDoc, and so do ranges (`At least 1.`)
+and defaults (`@defaultValue 2`).
+
+### 4. Make it a package
+
+Give the folder a `package.json`. The `tscad.plugin` field is what makes tscad load it, and
+`exports` points at the typed functions the build generated:
+
+```json title="plugins/stack/package.json"
+{
+  "name": "@tscad/plugin-stack",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./dist/index.ts" },
+  "files": ["dist"],
+  "tscad": { "plugin": "./dist" },
+  "peerDependencies": { "@tscad/modeling": "workspace:*" },
+  "devDependencies": { "@tscad/plugins": "workspace:*" }
+}
+```
+
+The dev dependency on `@tscad/plugins` makes turbo build the plugins before anything that depends
+on yours. An exporter or analysis has no `exports` unless it has options, and needs no
+`peerDependencies`.
+
+Then add `@tscad/plugin-stack` to a model's dependencies, check that it loads with
+`tscad plugins`, and use it: `stack({ count: 3 }, cube(5))`. If you skip the package, list the folder in
+`tscad.json` instead and use `plugin('stack', { count: 3 }, cube(5))`.
+
+### What options can use
+
+The build turns the options schema into WIT, so options are limited to what WIT can express:
+
+| Rust                                   | WIT                        | TypeScript               |
+| -------------------------------------- | -------------------------- | ------------------------ |
+| `bool`, `String`                       | `bool`, `string`           | `boolean`, `string`      |
+| `u8` … `u32`, `i8` … `i32`             | `u8` … `u32`, `s8` … `s32` | `number`                 |
+| `f32`, `f64`                           | `f32`, `f64`               | `number`                 |
+| `[T; N]`, `(A, B)`                     | `tuple<…>`                 | `[A, B]`                 |
+| `Vec<T>`                               | `list<T>`                  | `Array<T>`               |
+| `Option<T>`, or a field with a default | `option<T>`                | optional property        |
+| a struct                               | `record`                   | `interface`              |
+| a unit-only enum                       | `enum`                     | union of string literals |
+
+Other shapes fail the build, such as enums with data or untagged unions. So do 64-bit integers:
+options travel as JSON, which cannot hold them exactly. Each word of a field or
+plugin name must start with a letter: `export-3mf` works as a plugin name, but it cannot have
+options.
 
 ## Kernel extensions
 

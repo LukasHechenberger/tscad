@@ -562,8 +562,10 @@ export function color(c: string, ...children: Shape[]): Shape {
 // ==================== plugins ====================
 
 /**
- * An operation implemented by a plugin (a WebAssembly component, see wit/tscad-plugin.wit). The
- * plugin must be listed in the project's tscad.json; `options` are the plugin's own options.
+ * An operation implemented by a plugin (a WebAssembly component, see wit/tscad-plugin.wit), by
+ * name. The plugin must be a dependency of the model's package or listed in a tscad.json; `options`
+ * are the plugin's own options. Plugin packages also export a typed function, like `grid` from
+ * `@tscad/plugin-grid`.
  *
  * @example
  * ```ts
