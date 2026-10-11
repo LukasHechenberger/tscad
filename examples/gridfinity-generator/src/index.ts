@@ -1,81 +1,46 @@
-import { booleans, extrusions, primitives, transforms } from '@jscad/modeling';
-import { type Vector2, type Vector3 } from '@tscad/modeling';
-import { colorize } from '@tscad/modeling/colors';
-import { pattern } from './lib/modeling';
+import { color, difference, type Size3, translate, union, type Vec2 } from '@tscad/modeling';
+import { pattern, roundedBox } from './lib/modeling';
 import { slopedCuboid } from './lib/sloped-cuboid';
-import { mapVector } from './lib/vectors';
 
 // Specs: https://gridfinity.xyz/specification/
 
-const { roundedRectangle } = primitives;
-const { translateZ } = transforms;
-const { subtract, union } = booleans;
-const { extrudeLinear } = extrusions;
-
 const gridfinity = {
-  baseplateDimensions: [42, 42] as Vector2,
+  baseplateDimensions: { x: 42, y: 42 } satisfies Vec2,
   baseplateHeight: 5,
   baseplatePadding: 2.15,
   baseplateRadius: 4,
 };
 
-const baseplateCutout = () =>
-  union(
+/** The pocket a bin's foot sits in: three stacked levels, 4.65 high, bottom at z = 0. */
+const baseplateCutout = () => {
+  const { baseplateDimensions } = gridfinity;
+  const inset = { x: baseplateDimensions.x - 2.15 * 2, y: baseplateDimensions.y - 2.15 * 2 };
+
+  return union(
     // Lowest level
-    translateZ(
-      0 + 0.35, // height so far + half height
-      slopedCuboid({
-        size: [...mapVector(gridfinity.baseplateDimensions, (d) => d - 2.15 * 2), 0.7],
-        radius: 1.85,
-      }),
+    translate(
+      { z: 0 + 0.35 }, // height so far + half height
+      slopedCuboid({ size: { ...inset, z: 0.7 }, radius: 1.85 }),
     ),
 
     // Middle
-    translateZ(
-      0.7,
-      extrudeLinear(
-        { height: 1.8 },
-        roundedRectangle({
-          size: mapVector(gridfinity.baseplateDimensions, (d) => d - 2.15 * 2),
-          roundRadius: 1.85,
-        }),
-      ),
-    ),
+    translate({ z: 0.7 }, roundedBox({ size: inset, height: 1.8, radius: 1.85 })),
 
     // Top level
-    translateZ(
-      2.5 + 2.15 / 2,
-      slopedCuboid({
-        size: [...gridfinity.baseplateDimensions, 2.15],
-        radius: 4,
-      }),
+    translate(
+      { z: 2.5 + 2.15 / 2 },
+      slopedCuboid({ size: { ...baseplateDimensions, z: 2.15 }, radius: 4 }),
     ),
   );
+};
 
 export type GridfinityBaseplateOptions = {
-  grid: Vector2;
+  grid: Vec2;
   /** Override the allover size */
-  size?: Vector2 | Vector3;
+  size?: Vec2 | Size3;
   /** Add a padding around the gridfinity cutouts. Ignored if `size` is set */
   outerPadding?: boolean;
 };
-
-// Tree:
-//
-// colorize
-//   subtract
-//     extrudeLinear
-//       roundedRectangle
-//     pattern
-//       cutout (Component/Option ?)
-//         union
-//           translateZ
-//             slopedCuboid
-//           translateZ
-//             extrudeLinear
-//               roundedRectangle
-//           translateZ
-//             slopedCuboid
 
 export function gridfinityBaseplate({
   grid,
@@ -84,40 +49,34 @@ export function gridfinityBaseplate({
 }: GridfinityBaseplateOptions) {
   const padding = outerPadding ? gridfinity.baseplatePadding : 0;
 
-  const size: Vector3 = _size
-    ? [_size[0], _size[1], _size[2] ?? gridfinity.baseplateHeight]
-    : [
-        ...mapVector(gridfinity.baseplateDimensions, (dim, index) => dim * grid[index] + padding),
-        gridfinity.baseplateHeight,
-      ];
-  const [width, depth, height] = size;
-  const cutout = baseplateCutout();
+  const size: Size3 = _size
+    ? { z: gridfinity.baseplateHeight, ..._size }
+    : {
+        x: gridfinity.baseplateDimensions.x * grid.x + padding,
+        y: gridfinity.baseplateDimensions.y * grid.y + padding,
+        z: gridfinity.baseplateHeight,
+      };
 
-  return colorize(
-    [1, 0, 0], // Red
-
-    subtract(
+  return color(
+    'red',
+    difference(
       // Baseplate itself
-      extrudeLinear(
-        { height },
-        roundedRectangle({
-          size: [width, depth],
-          center: [0, 0],
-          roundRadius: gridfinity.baseplateRadius + padding / 2,
-        }),
-      ),
+      roundedBox({
+        size,
+        height: size.z,
+        radius: gridfinity.baseplateRadius + padding / 2,
+      }),
 
       // Cutout for the baseplate
-      pattern(
+      ...pattern(
         {
           cells: grid,
           cellSize: gridfinity.baseplateDimensions,
 
           // 4.65 = Cutout height -> align with the top of the baseplate
-          // NOTE: We could use the first two elements to move the cutouts on the plate
-          center: [0, 0, height - 4.65],
+          center: { z: size.z - 4.65 },
         },
-        cutout,
+        baseplateCutout(),
       ),
     ),
   );

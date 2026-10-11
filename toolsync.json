@@ -13,6 +13,9 @@
     "tasks": {
       "test:integration": {
         "dependsOn": ["build"]
+      },
+      "test": {
+        "dependsOn": ["^build"]
       }
     }
   },

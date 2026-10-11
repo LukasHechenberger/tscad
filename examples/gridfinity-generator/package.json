@@ -21,11 +21,10 @@
     "tscad": "bun ../../packages/cli/out/bin.js"
   },
   "dependencies": {
-    "@jscad/modeling": "^2.12.6",
-    "@tscad/modeling": "workspace:*"
+    "@tscad/modeling": "workspace:*",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@jscad/cli": "^2.3.6",
     "@repo/typescript-config": "workspace:*",
     "@tscad/cli": "workspace:*",
     "@types/node": "catalog:",

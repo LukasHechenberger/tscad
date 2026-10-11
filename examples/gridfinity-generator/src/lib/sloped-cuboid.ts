@@ -1,83 +1,73 @@
-import { booleans, extrusions, primitives, transforms } from '@jscad/modeling';
-import type { Vector2 } from './vectors';
+import {
+  cube,
+  cylinder,
+  linear_extrude,
+  polygon,
+  type Shape,
+  type Size3,
+  translate,
+  union,
+  type Vec2,
+  type Vec3,
+} from '@tscad/modeling';
 
 // Specs: https://gridfinity.xyz/specification/
 
-const { cuboid, polygon, cylinderElliptic } = primitives;
-const { rotateZ, rotateX, translate } = transforms;
-const { union } = booleans;
-const { extrudeLinear } = extrusions;
-
-/** A rounded Cuboid, that has a sloped */
+/**
+ * A cuboid centered on the origin whose rounded vertical edges slope inwards towards the
+ * bottom: `radius` at the top, shrinking by `size.z` (45°) unless `bottomRadius` is given.
+ */
 export function slopedCuboid({
   size,
   radius: topRadius,
-  bottomSize: _bottomSize,
   bottomRadius: _bottomRadius,
 }: {
-  size: [number, number, number];
+  size: Size3;
   radius: number;
-  bottomSize?: [number, number];
   bottomRadius?: number;
-}) {
-  const height = size[2];
+}): Shape {
+  const height = size.z;
   const bottomRadius = _bottomRadius ?? topRadius - height;
-  const topSize: Vector2 = [size[0], size[1]];
-  const innerSize: Vector2 = [
-    (_bottomSize?.[0] ?? topSize[0]) - topRadius * 2,
-    (_bottomSize?.[1] ?? topSize[1]) - topRadius * 2,
-  ];
+  const inner = { x: size.x - topRadius * 2, y: size.y - topRadius * 2 };
 
-  return [
-    union(
-      // Center plate
-      cuboid({ size: [innerSize[0], innerSize[1], height] }),
+  return union(
+    // Center plate
+    cube({ x: inner.x, y: inner.y, z: height }, { center: true }),
 
-      // Corners
-      ...[
-        [1, 1],
-        [-1, 1],
-        [-1, -1],
-        [1, -1],
-      ].map((offset) =>
-        translate(
-          (offset as Vector2).map((o, index) => (o * innerSize[index]!) / 2) as Vector2,
-          cylinderElliptic({
-            height,
-            startRadius: [bottomRadius, bottomRadius],
-            endRadius: [topRadius, topRadius],
-          }),
-        ),
-      ),
-
-      // Connections between edges
-      ...[
-        { length: innerSize[1], offset: innerSize[0] },
-        { length: innerSize[0], offset: innerSize[1] },
-        { length: innerSize[1], offset: innerSize[0] },
-        { length: innerSize[0], offset: innerSize[1] },
-      ].map(({ length, offset }, index) =>
-        rotateZ(
-          (Math.PI / 2) * index, // Rotate to align with the X-axis
-          translate(
-            [offset / 2, length / 2, -height / 2],
-            rotateX(
-              Math.PI / 2,
-              extrudeLinear(
-                { height: length },
-                polygon({
-                  points: [
-                    [0, 0],
-                    [bottomRadius, 0],
-                    [topRadius, height],
-                    [0, height],
-                  ],
-                }),
-              ),
-            ),
-          ),
-        ),
-      ),
+    // Corners
+    ...corners(inner).map((corner) =>
+      translate(corner, cylinder({ h: height, r1: bottomRadius, r2: topRadius, center: true })),
     ),
-  ];
+
+    // Sloped sides between the corners
+    ...[
+      { length: inner.y, distance: inner.x },
+      { length: inner.x, distance: inner.y },
+      { length: inner.y, distance: inner.x },
+      { length: inner.x, distance: inner.y },
+    ].map(({ length, distance }, index) =>
+      linear_extrude(
+        { height: length },
+        polygon({
+          points: [
+            { x: 0, y: 0 },
+            { x: bottomRadius, y: 0 },
+            { x: topRadius, y: height },
+            { x: 0, y: height },
+          ],
+        }),
+      )
+        .rotate({ x: 90 })
+        .translate({ x: distance / 2, y: length / 2, z: -height / 2 })
+        .rotate({ z: 90 * index }),
+    ),
+  );
 }
+
+const corners = (inner: Vec2): Vec3[] =>
+  [
+    { x: 1, y: 1 },
+    { x: -1, y: 1 },
+    { x: -1, y: -1 },
+    { x: 1, y: -1 },
+  ].map(({ x, y }) => ({ x: (x * inner.x) / 2, y: (y * inner.y) / 2 }));
