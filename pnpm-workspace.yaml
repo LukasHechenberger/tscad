@@ -1,7 +1,0 @@
-# NOTE: This file is only here because @manypkg packages do not yet support "workspace.packages" in package.json
-
-packages:
-  - examples/*
-  - packages/*
-  - apps/*
-  - plugins/*
