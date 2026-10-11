@@ -8,6 +8,8 @@ import {
   linear_extrude,
   mirror,
   offset,
+  plugin,
+  pluginOperation,
   polygon,
   rotate,
   rotate_extrude,
@@ -184,4 +186,13 @@ test('offset takes r (round) or delta (sharp) and stays 2D', () => {
   expect(() => offset({ r: Number.NaN }, square(1))).toThrow('offset: r must be a number');
   // @ts-expect-error offset results are 2D: extrude them first
   union(offset({ r: 1 }, square(1)));
+});
+
+test('pluginOperation builds the same node as plugin', () => {
+  const grid = pluginOperation<{ nx: number; dx: number }>('grid');
+  expect(grid({ nx: 3, dx: 10 }, cube(1)).node).toEqual(
+    plugin('grid', { nx: 3, dx: 10 }, cube(1)).node,
+  );
+  // @ts-expect-error options are typed
+  grid({ nx: '3', dx: 10 });
 });

@@ -579,6 +579,23 @@ export function plugin(
   return new Shape({ type: 'plugin', plugin: name, args: options, children: nodes(children) });
 }
 
+/**
+ * A plugin operation as a typed function, for plugin packages to export (their generated
+ * `index.ts` does this). Calls build the same node as `plugin`.
+ *
+ * @example
+ * ```ts
+ * const tiles = pluginOperation<{ nx: number; ny: number; dx: number; dy: number }>("grid");
+ * tiles({ nx: 3, ny: 2, dx: 10, dy: 10 }, cylinder({ h: 4, r: 3 }))
+ * ```
+ * @category Plugins
+ */
+export function pluginOperation<Options extends object>(
+  name: string,
+): (options: Options, ...children: Shape[]) => Shape {
+  return (options, ...children) => plugin(name, options as Record<string, unknown>, ...children);
+}
+
 // ==================== booleans ====================
 
 /**
