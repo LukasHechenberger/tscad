@@ -73,6 +73,13 @@ export async function bundleCode(
 const resolveImports: esbuild.Plugin = {
   name: 'resolve-imports',
   setup(build) {
+    // Modules the playground worker provides itself (see `__tscadPlaygroundModules` there).
+    build.onResolve({ filter: /^zod$/ }, ({ path }) => ({ path, namespace: 'provided' }));
+    build.onLoad({ filter: /.*/, namespace: 'provided' }, ({ path }) => ({
+      contents: `module.exports = globalThis.__tscadPlaygroundModules[${JSON.stringify(path)}];`,
+      loader: 'js',
+    }));
+
     build.onResolve({ filter: /^@tscad\/.*$/ }, ({ path }) => {
       // console.log('resolving:', path);
 
@@ -101,7 +108,7 @@ const resolveImports: esbuild.Plugin = {
       }
 
       throw new Error(
-        `Cannot import ${path} in the playground. Only @tscad modules are supported.`,
+        `Cannot import ${path} in the playground. Only @tscad modules and zod are supported.`,
       );
     });
 

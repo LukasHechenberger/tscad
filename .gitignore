@@ -10,6 +10,9 @@ apps/docs/**/.source
 apps/docs/content/docs/api/modules/*
 !apps/docs/content/docs/api/modules/meta.json
 !apps/docs/content/docs/api/modules/index.mdx
+# rendered by build-api-docs and scripts/render-sample.ts
+apps/docs/public/reference/
+apps/docs/public/sample.glb
 
 # test & build
 apps/docs/coverage

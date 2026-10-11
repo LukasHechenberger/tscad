@@ -1,0 +1,42 @@
+---
+title: Plugins
+description: New operations, export formats and analyses, as sandboxed WebAssembly components.
+---
+
+Plugins are WebAssembly components (built from Rust here) that implement one of the interfaces
+in `wit/tscad-plugin.wit`. They run sandboxed: they can call the kernel's shape API, but have no
+file or network access. The same plugin runs in the CLI, the preview and the browser.
+
+| Kind      | What it does                                                       | Example                                     |
+| --------- | ------------------------------------------------------------------ | ------------------------------------------- |
+| Operation | A new modeling function, used with `plugin(name, args, …children)` | `grid`: repeats its children on a grid      |
+| Exporter  | A new output format, chosen by file extension                      | `export-3mf`: 3MF with colors               |
+| Analysis  | A report shown in the preview's sidebar and by `tscad analyze`     | `printability`: overhangs, bed contact, fit |
+
+## Using plugins
+
+List them in a `tscad.json` next to your models (or in a parent folder):
+
+```json title="tscad.json"
+{ "plugins": ["plugins/grid", "plugins/export-3mf", "plugins/printability"] }
+```
+
+```sh
+bun run build --filter=@tscad/plugins       # build the plugins in this repo
+tscad plugins                               # what tscad.json loads
+tscad export --output model.3mf             # an exporter plugin's format
+tscad analyze                               # run the analysis plugins
+```
+
+In a model, an operation plugin is a node like any other:
+
+```ts
+import { cylinder, plugin } from '@tscad/modeling';
+
+export default plugin('grid', { nx: 3, ny: 2, dx: 10, dy: 10 }, cylinder({ h: 4, r: 3 }));
+```
+
+## Kernel extensions
+
+Operations that need OpenCASCADE directly are compiled into the kernel instead, behind a Cargo
+feature. `offset` is the first one (`crates/ext-offset`, C++ on OCCT's offset algorithm).

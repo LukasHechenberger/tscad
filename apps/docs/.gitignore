@@ -5,6 +5,9 @@
 /content/docs/api/modules/*
 !/content/docs/api/modules/meta.json
 !/content/docs/api/modules/index.mdx
+# rendered by build-api-docs and scripts/render-sample.ts
+/public/reference/
+/public/sample.glb
 
 # test & build
 /coverage

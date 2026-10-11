@@ -1,0 +1,37 @@
+---
+title: Coming from OpenSCAD
+description: The same building blocks, written as TypeScript.
+---
+
+The modules you know are functions with the same names. Children come last, as extra arguments,
+and options are objects.
+
+| OpenSCAD                                            | tscad                                                        |
+| --------------------------------------------------- | ------------------------------------------------------------ |
+| `cube([10, 20, 5], center = true);`                 | `cube({ x: 10, y: 20, z: 5 }, { center: true })`             |
+| `translate([5, 0, 2]) sphere(r = 3);`               | `translate({ x: 5, z: 2 }, sphere({ r: 3 }))`                |
+| `rotate([90, 0, 0]) cylinder(h = 10, d = 4);`       | `rotate({ x: 90 }, cylinder({ h: 10, d: 4 }))`               |
+| `difference() { cube(10); sphere(6); }`             | `difference(cube(10), sphere({ r: 6 }))`                     |
+| `linear_extrude(height = 5, twist = 90) square(4);` | `linear_extrude({ height: 5, twist: 90 }, square(4))`        |
+| `rotate_extrude() translate([10, 0]) circle(2);`    | `rotate_extrude({}, translate({ x: 10 }, circle({ r: 2 })))` |
+| `circle(r = 5, $fn = 6);`                           | `circle({ r: 5, segments: 6 })`                              |
+| `color("red") cube(1);`                             | `color("red", cube(1))` or `cube(1).color("red")`            |
+
+## Language features are TypeScript
+
+| OpenSCAD                                            | tscad                                                                 |
+| --------------------------------------------------- | --------------------------------------------------------------------- |
+| `module peg(h) { cylinder(h = h, r = 2); }`         | `const peg = (h: number) => cylinder({ h, r: 2 })`                    |
+| `for (i = [0:3]) translate([i * 10, 0, 0]) peg(5);` | `union(...[0, 1, 2, 3].map((i) => translate({ x: i * 10 }, peg(5))))` |
+| `include <lib.scad>` / `use <lib.scad>`             | `import { peg } from "./lib.ts"`                                      |
+| `echo(x);`                                          | `console.log(x)`                                                      |
+| `size = 10; // [1:50]` (Customizer)                 | [`defineModel`](/docs/guides/parameters) with a schema                |
+
+## What's different
+
+- **Exact geometry.** Spheres and cylinders are true surfaces, not polygons, so `$fn`, `$fa` and
+  `$fs` aren't needed. Use `segments` only when you want a polygon, such as a hexagonal nut trap.
+- **2D and 3D are different types.** A `Shape2D` must go through `linear_extrude` or
+  `rotate_extrude` before it can be combined with solids; TypeScript reports the mistake.
+- **Not there yet:** `hull`, `minkowski`, `text`, `import`, `projection`, `surface`,
+  `multmatrix`, per-axis `scale`, and 2D booleans.

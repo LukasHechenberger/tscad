@@ -1,0 +1,10 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    // The doc tests render every API example with the native kernel.
+    "test": {
+      "dependsOn": ["@tscad/kernel#build", "test:transit"]
+    }
+  }
+}

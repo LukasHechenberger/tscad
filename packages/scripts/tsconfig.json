@@ -1,9 +1,8 @@
 {
   "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "types": ["bun"],
+    "customConditions": ["bun"]
   },
-  "include": ["src"]
+  "include": ["src", "../kernel/src/assets.d.ts"]
 }
