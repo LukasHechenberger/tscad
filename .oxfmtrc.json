@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "singleQuote": true,
+  "sortImports": {
+    "groups": ["builtin", "external", "internal", ["parent", "sibling", "index"], "unknown"],
+    "newlinesBetween": false
+  },
+  "sortPackageJson": false,
+  "sortTailwindcss": true
+}

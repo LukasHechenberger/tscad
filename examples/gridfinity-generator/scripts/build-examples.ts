@@ -56,9 +56,8 @@ export default defineModel({
   }
 }
 
-buildExamples()
-  // eslint-disable-next-line unicorn/prefer-top-level-await -- because we build cjs as well
-  .catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
-  });
+// eslint-disable-next-line unicorn/prefer-top-level-await -- because we build cjs as well
+buildExamples().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

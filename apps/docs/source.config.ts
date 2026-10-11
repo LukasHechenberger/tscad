@@ -26,7 +26,12 @@ export default defineConfig({
       transformers: [
         // default transformers
         ...(rehypeCodeDefaultOptions.transformers ?? []),
-        transformerTwoslash(),
+        transformerTwoslash({
+          twoslashOptions: {
+            // TypeScript 6: twoslash sets the deprecated `baseUrl` and no module resolution.
+            compilerOptions: { ignoreDeprecations: '6.0', moduleResolution: 100 /* Bundler */ },
+          },
+        }),
       ],
     },
   },
