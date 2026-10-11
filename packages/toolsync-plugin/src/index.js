@@ -30,7 +30,18 @@ const repoPlugin = definePlugin({
             ci: {
               jobs: {
                 build: {
+                  // The kernel's release build (Rust + OCCT) takes a few minutes.
+                  'timeout-minutes': 30,
                   steps: [
+                    {
+                      '@insert': {
+                        after: 'install',
+                        data: {
+                          name: 'Cache Rust builds',
+                          uses: 'Swatinem/rust-cache@v2',
+                        },
+                      },
+                    },
                     {
                       '@update': {
                         id: 'checks',

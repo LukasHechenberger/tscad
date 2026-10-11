@@ -1,0 +1,19 @@
+[package]
+name = "tscad-kernel"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+cadrum = { version = "0.9.0", default-features = false, features = ["png"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# Kernel extensions (see crates/ext-offset): one Cargo feature each, so custom kernels can pick.
+tscad-ext-offset = { path = "../ext-offset", optional = true }
+
+[features]
+default = ["offset"]
+offset = ["dep:tscad-ext-offset"]
+

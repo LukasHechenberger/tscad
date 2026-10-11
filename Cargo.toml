@@ -1,0 +1,17 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+# Size-oriented release profile for kernel.wasm (OCCT archives are prebuilt and unaffected).
+# Never strip: any stripping (even cargo's default "debuginfo") breaks the native dylib on
+# macOS ("mis-aligned LINKEDIT string pool"); packages/kernel/scripts/build.ts strips the wasm only.
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = false
+
+# cadrum with hooks for kernel extensions (OCCT include path, public ffi, Edge::as_occt):
+# https://github.com/LukasHechenberger/cadrum/tree/extension-hooks, until they land upstream.
+[patch.crates-io]
+cadrum = { git = "https://github.com/LukasHechenberger/cadrum", rev = "a87ea49e1e562176fc2ecf39f847399c3830aab2" }

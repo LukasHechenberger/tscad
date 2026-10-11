@@ -23,10 +23,15 @@ apps/docs/**/.env*.local
 apps/docs/**/.vercel
 apps/docs/**/next-env.d.ts
 
+# Built by scripts/build.ts
+packages/kernel/**/native/
+packages/kernel/**/kernel.wasm
+
 packages/vscode-extension/*.vsix
 packages/vscode-extension/.vscode-test
 
 node_modules
+target
 out
 .turbo
 coverage
