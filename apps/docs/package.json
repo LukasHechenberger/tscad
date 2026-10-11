@@ -12,7 +12,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "bun scripts/render-sample.ts && build-api-docs && fumadocs-mdx && next build",
+    "build": "bun scripts/build.ts",
+    "build:site": "bun scripts/render-sample.ts && build-api-docs && fumadocs-mdx && next build",
     "check:types": "tsc --noEmit",
     "dev": "bun scripts/render-sample.ts && build-api-docs && next dev --turbo",
     "lint": "oxlint --deny-warnings",

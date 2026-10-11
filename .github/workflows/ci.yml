@@ -41,12 +41,51 @@ jobs:
       - id: checks
         name: Code Quality Checks
         run: bun --bun turbo check lint test build --continue --summarize
+        env:
+          VERCEL_ENVIRONMENT: ${{ secrets.VERCEL_TOKEN && (github.event_name == 'push' &&
+            'production' || 'preview') || '' }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: team_CUsc4inFdPEFgUVOoE2fJVlY
+          VERCEL_PROJECT_ID: prj_vdXfXOVwGfgYZpfR7kpcbnMay6oA
       - name: Report Turbo Summary
         if: always()
         uses: charpeni/turborepo-summary-action@v1
       - id: ensure-clean
         name: Ensure there are no uncommitted changes
         run: git diff --exit-code || (echo "There are uncommitted changes!" && exit 1)
+      - id: deploy-docs
+        name: Deploy the docs to Vercel
+        run: |
+          if [ -z "$VERCEL_ENVIRONMENT" ]; then
+            echo "No VERCEL_TOKEN secret, skipping the docs deployment"
+            exit 0
+          fi
+          if [ "$VERCEL_ENVIRONMENT" = production ]; then
+            prod=--prod; name=Production; production=true
+          else
+            prod=; name=Preview; production=false
+          fi
+          repo=repos/$GITHUB_REPOSITORY
+          run_url=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+          # Previews of other branches stay active; a production deployment replaces the previous one.
+          deployment=$(printf '{"ref":"%s","environment":"%s","production_environment":%s,"auto_merge":false,"required_contexts":[]}' "$SHA" "$name" "$production" | gh api $repo/deployments --input - --jq .id)
+          report() { # commit state, description, URL, deployment state
+            gh api $repo/statuses/$SHA -f state=$1 -f context="Vercel – tscad" -f description="$2" -f target_url="${3:-$run_url}" > /dev/null
+            gh api $repo/deployments/$deployment/statuses -f state=$4 -f log_url=$run_url ${3:+-f environment_url=$3} -F auto_inactive=$production > /dev/null
+          }
+          report pending "Deploying the docs" "" in_progress
+          trap '[ -n "$url" ] || report failure "The deployment failed" "" failure' EXIT
+          url=$(bunx vercel@62.1.0 deploy --prebuilt $prod --token=$VERCEL_TOKEN)
+          report success "Deployed the docs" "$url" success
+          echo "Docs deployed to $url" >> "$GITHUB_STEP_SUMMARY"
+        env:
+          VERCEL_ENVIRONMENT: ${{ secrets.VERCEL_TOKEN && (github.event_name == 'push' &&
+            'production' || 'preview') || '' }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: team_CUsc4inFdPEFgUVOoE2fJVlY
+          VERCEL_PROJECT_ID: prj_vdXfXOVwGfgYZpfR7kpcbnMay6oA
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       - id: changesets
         if: ${{ github.event_name == 'push' }}
         name: Changesets
@@ -70,3 +109,7 @@ jobs:
           fi
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
+    permissions:
+      contents: read
+      deployments: write
+      statuses: write
