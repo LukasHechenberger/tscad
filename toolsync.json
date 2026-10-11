@@ -16,18 +16,13 @@
       }
     }
   },
-  "@toolsync/builtin/prettier": {
-    "settings": {
-      "printWidth": 100,
-      "singleQuote": true,
-      "plugins": ["prettier-plugin-packagejson", "prettier-plugin-tailwindcss"]
-    }
-  },
   "@toolsync/builtin/vscode": {
     "settings": {
-      "eslint.workingDirectories": ["examples/*", "apps/*", "packages/*"],
+      "oxc.enable": true,
+      "editor.defaultFormatter": "oxc.oxc-vscode",
+      "editor.formatOnSave": true,
       "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": "explicit"
+        "source.fixAll.oxc": "explicit"
       },
       "json.schemaDownload.trustedDomains": {
         "https://openapi.vercel.sh": true

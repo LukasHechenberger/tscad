@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file=$(jq -r '.tool_input.file_path'); bunx oxlint --fix --no-error-on-unmatched-pattern \"$file\"; bunx oxfmt --no-error-on-unmatched-pattern \"$file\""
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,8 +1,8 @@
 {
   "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "target": "ESNext",
+    "noUncheckedSideEffectImports": false,
     "paths": {
       "@/.source": ["./.source/index.ts"],
       "@/*": ["./src/*"]

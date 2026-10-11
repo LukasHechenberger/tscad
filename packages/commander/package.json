@@ -19,14 +19,12 @@
   },
   "scripts": {
     "check:types": "tsc --noEmit",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "oxlint --deny-warnings"
   },
   "devDependencies": {
     "@commander-js/extra-typings": "^14.0.0",
-    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "catalog:",
-    "eslint": "catalog:",
     "typescript": "catalog:"
   },
   "peerDependencies": {
