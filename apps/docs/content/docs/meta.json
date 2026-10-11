@@ -3,11 +3,11 @@
     "---Introduction---",
     "index",
     "what-is-tscad",
-    "---Usage---",
-    "...api",
     "---Guides---",
+    "api/index",
     "...guides",
-    "---Commands---",
-    "...(cli)"
+    "---API---",
+    "api/cli",
+    "...api/modules"
   ]
 }
