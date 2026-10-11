@@ -10,6 +10,9 @@ apps/docs/**/.source
 apps/docs/content/docs/api/modules/*
 !apps/docs/content/docs/api/modules/meta.json
 !apps/docs/content/docs/api/modules/index.mdx
+# rendered by build-api-docs and scripts/render-sample.ts
+apps/docs/public/reference/
+apps/docs/public/sample.glb
 
 # test & build
 apps/docs/coverage
@@ -23,10 +26,15 @@ apps/docs/**/.env*.local
 apps/docs/**/.vercel
 apps/docs/**/next-env.d.ts
 
+# Built by scripts/build.ts
+packages/kernel/**/native/
+packages/kernel/**/kernel.wasm
+
 packages/vscode-extension/*.vsix
 packages/vscode-extension/.vscode-test
 
 node_modules
+target
 out
 .turbo
 coverage

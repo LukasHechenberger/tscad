@@ -38,14 +38,16 @@ Usage: tscad [options] [command]
 > A CLI tool for working with tscad models
 
 Options:
-  --model [model]               Where to find the tscad model (default: "src/model.ts")
-  -V, --version                 Output the version number
-  -h, --help                    Display help for command
+  --model [model]      Where to find the tscad model (default: "src/model.ts")
+  -V, --version        Output the version number
+  -h, --help           Display help for command
 
 Commands:
-  dev [options]                 Start the development server
-  export [options] [params...]  Export the model to a file
-  help [command]                Display help for command
+  dev [options]        Start the development server, a live 3D preview with a parameter form that re-renders on save
+  export [options]     Export the model to a file (.stl, .step, .glb, .png, .svg, or a format an exporter plugin adds, e.g. .3mf)
+  analyze [options]    Run the analysis plugins listed in tscad.json on the model
+  plugins [directory]  List the plugins the nearest tscad.json loads
+  help [command]       Display help for command
 
 ```
 

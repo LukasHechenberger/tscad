@@ -1,4 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "bunVersion": "1.x"
+  "bunVersion": "1.x",
+  "git": {
+    "deploymentEnabled": false
+  },
+  "installCommand": "echo Installed by CI",
+  "buildCommand": "bun run build:site"
 }

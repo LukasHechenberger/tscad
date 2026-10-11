@@ -1,5 +1,5 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 import { cli } from '.';
 
-cli.parse();
+await cli.parseAsync();

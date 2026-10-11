@@ -12,17 +12,17 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "fumadocs-mdx && next build",
+    "build": "bun scripts/build.ts",
+    "build:site": "bun scripts/render-sample.ts && build-api-docs && fumadocs-mdx && next build",
     "check:types": "tsc --noEmit",
-    "dev": "next dev --turbo",
+    "dev": "bun scripts/render-sample.ts && build-api-docs && next dev --turbo",
     "lint": "oxlint --deny-warnings",
     "start": "next start"
   },
   "dependencies": {
     "@legendapp/state": "3.0.0-beta.31",
     "@monaco-editor/react": "^4.7.0",
-    "@react-three/drei": "^10.7.7",
-    "@react-three/fiber": "^9.4.0",
+    "@tscad/kernel": "workspace:*",
     "@tscad/modeling": "workspace:*",
     "@tscad/viewer": "workspace:*",
     "class-variance-authority": "^0.7.1",
@@ -32,7 +32,6 @@
     "fumadocs-mdx": "13.0.8",
     "fumadocs-twoslash": "^3.1.10",
     "fumadocs-ui": "16.0.11",
-    "leva": "^0.10.1",
     "lucide-react": "^0.518.0",
     "next": "16.0.10",
     "next-themes": "^0.4.6",
@@ -41,10 +40,11 @@
     "react-resizable-panels": "^3.0.6",
     "shiki": "3.15.0",
     "tailwind-merge": "^3.4.0",
-    "three": "^0.181.2",
-    "twoslash": "^0.3.4"
+    "twoslash": "^0.3.4",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@repo/scripts": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.17",
     "@types/mdx": "^2.0.13",

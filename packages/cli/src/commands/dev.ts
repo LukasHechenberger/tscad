@@ -1,23 +1,18 @@
 import { existsSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import path from 'node:path';
 import { styleText } from 'node:util';
 import { InvalidArgumentError, Option } from '@tscad/commander';
-import viteReact from '@vitejs/plugin-react';
 import open from 'open';
-import { createServer } from 'vite';
 import { ModelCommand } from '@/lib/commander';
-import { rootDebug } from '@/lib/log';
-import { homepage, version } from '../../package.json';
-
-const { dirname, join, relative } = path;
-const { resolve } = createRequire(import.meta.url);
-
-const debug = rootDebug.extend('dev');
+import { startPreview } from '@/lib/preview';
+import { version } from '../../package.json';
 
 async function openVscodePreview(port?: number) {
   await open(`vscode://tscad.tscad-vscode${port ? `?port=${port}` : ''}`, { wait: false });
 }
+
+// eslint-disable-next-line no-console
+const log = (message: string) => console.info(styleText(['dim'], `  ${message}`));
 
 function parseIntArgument(value: string) {
   const parsedValue = Number.parseInt(value, 10);
@@ -28,7 +23,9 @@ function parseIntArgument(value: string) {
 }
 
 export const devCommand = new ModelCommand('dev')
-  .description('Start the development server')
+  .description(
+    'Start the development server, a live 3D preview with a parameter form that re-renders on save',
+  )
   .addOption(
     new Option('-p, --port <port>', 'The port to listen at')
       .argParser(parseIntArgument)
@@ -36,8 +33,8 @@ export const devCommand = new ModelCommand('dev')
       .env('PORT'),
   )
   .addOption(new Option('--open', 'Open the browser once started').default(false).env('OPEN'))
-  .action(async function runDevelopmentCommand({ model, ...serverOptions }) {
-    const modelPath = join(process.cwd(), model);
+  .action(async function runDevelopmentCommand({ model, port, open: openBrowser }) {
+    const modelPath = path.join(process.cwd(), model);
     if (!existsSync(modelPath)) {
       this.error(`Model file not found: ${model}`, { code: 'ENOENT' });
     }
@@ -47,55 +44,23 @@ export const devCommand = new ModelCommand('dev')
       `${styleText(['bold'], `Starting ${styleText(['magenta'], 'tscad dev')}`)} ${styleText(['dim'], `v${version}`)}\n`,
     );
 
-    const root = join(dirname(resolve('@tscad/viewer/package.json')), 'src/vite-template');
-    debug('Using root', relative(process.cwd(), root));
-
-    const server = await createServer({
-      configFile: false,
-      plugins: [viteReact()],
-      resolve: {
-        alias: {
-          '@tscad-viewer/model': modelPath,
-        },
-      },
-      root,
-      server: { ...serverOptions, host: false }, // NOTE: We could also add a --host option
-    });
-
-    await server.listen();
+    const { server, editor } = await startPreview(modelPath, { port, log });
 
     // eslint-disable-next-line no-console
     console.info(
-      `  ${styleText(['bold', 'green'], '→')}  ${styleText(['bold'], 'Model')}:   ${styleText(['cyan'], relative(process.cwd(), modelPath))}`,
+      `  ${styleText(['bold', 'green'], '→')}  ${styleText(['bold'], 'Model')}:   ${styleText(['cyan'], path.relative(process.cwd(), modelPath))}`,
     );
-    server.printUrls();
+    // eslint-disable-next-line no-console
+    console.info(
+      `  ${styleText(['bold', 'green'], '→')}  ${styleText(['bold'], 'Preview')}: ${styleText(['cyan'], server.url.href)}${editor ? styleText(['dim'], ` (files open in ${editor.name})`) : ''}\n`,
+    );
+
+    if (openBrowser) await open(server.url.href);
 
     // Try to open vscode preview if terminal is vscode
     if (process.env.TERM_PROGRAM === 'vscode') {
       // eslint-disable-next-line no-console
       console.info(styleText(['dim'], `  →  opening preview in vscode...`));
-      await openVscodePreview(serverOptions.port);
+      await openVscodePreview(server.port);
     }
-
-    server.bindCLIShortcuts({
-      print: true,
-      customShortcuts: [
-        {
-          key: 'v',
-          description: 'open vscode preview',
-          async action() {
-            await openVscodePreview(serverOptions.port);
-          },
-        },
-        {
-          key: 'd',
-          description: 'open documentation',
-          async action() {
-            await open(homepage);
-          },
-        },
-      ],
-    });
-    // eslint-disable-next-line no-console
-    console.info('');
   });

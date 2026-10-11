@@ -1,0 +1,94 @@
+/// Plugins for tscad, as WebAssembly components. One plugin implements one world:
+///
+/// - `operation`: a new node type in models (`plugin("name", args, ...children)`)
+/// - `exporter`: a new output format
+/// - `analysis`: a report about a model (printability, mass properties, ...)
+///
+/// Plugins see geometry only through the host's `kernel` interface and plain data (meshes), so
+/// they run sandboxed and identically in the CLI (native or wasm kernel) and in browsers.
+package tscad:plugin@0.1.0;
+
+interface types {
+  record vec3 { x: f64, y: f64, z: f64 }
+
+  record bounds { min: vec3, max: vec3 }
+
+  /// A triangle mesh as flat arrays.
+  record mesh {
+    /// xyz per vertex
+    positions: list<f32>,
+    /// unit normal per vertex, from the exact surface (vertices are not shared between faces)
+    normals: list<f32>,
+    /// three vertex indices per triangle
+    indices: list<u32>,
+    /// B-rep face (0-based) per triangle
+    triangle-faces: list<u32>,
+    /// RGB (0..1) per face, NaN where a face has no color
+    face-colors: list<f32>,
+  }
+
+  /// What every plugin says about itself.
+  record plugin-info {
+    /// Unique name; operation plugins are used as `plugin("<name>", ...)`.
+    name: string,
+    version: string,
+    description: string,
+    /// JSON Schema of the plugin's arguments/options (an object schema), or "" for none.
+    options-schema: string,
+  }
+}
+
+/// Provided by the host: shapes in its CAD kernel.
+interface kernel {
+  use types.{vec3, bounds, mesh};
+
+  /// A shape in the host kernel: a CSG tree, evaluated (with the host's subtree cache) only when
+  /// a query needs geometry. Composing shapes is cheap; queries are exact.
+  resource shape {
+    translate: func(offset: vec3) -> shape;
+    /// Degrees about X, then Y, then Z.
+    rotate: func(degrees: vec3) -> shape;
+    /// A CSS color name or hex string (`"red"`, `"#ff8800"`).
+    color: func(color: string) -> shape;
+
+    volume: func() -> result<f64, string>;
+    area: func() -> result<f64, string>;
+    bounds: func() -> result<bounds, string>;
+    mesh: func() -> result<mesh, string>;
+  }
+
+  /// Any node of the CSG tree as JSON, e.g. a built-in primitive: `{"type":"sphere","r":5}`.
+  node: func(json: string) -> result<shape, string>;
+  union: func(shapes: list<borrow<shape>>) -> shape;
+  difference: func(base: borrow<shape>, cut: list<borrow<shape>>) -> shape;
+  intersection: func(shapes: list<borrow<shape>>) -> shape;
+}
+
+world operation {
+  import kernel;
+  use types.{plugin-info};
+  use kernel.{shape};
+
+  export info: func() -> plugin-info;
+  /// `args` is the node's arguments as JSON; `children` are its children.
+  export evaluate: func(args: string, children: list<shape>) -> result<shape, string>;
+}
+
+world exporter {
+  use types.{mesh, plugin-info};
+
+  export info: func() -> plugin-info;
+  /// File extension without the dot, e.g. "3mf"; `tscad render -o model.<ext>` picks the plugin.
+  export file-extension: func() -> string;
+  export write: func(mesh: mesh, options: string) -> result<list<u8>, string>;
+}
+
+world analysis {
+  import kernel;
+  use types.{plugin-info};
+  use kernel.{shape};
+
+  export info: func() -> plugin-info;
+  /// A report as a JSON object.
+  export analyze: func(model: borrow<shape>, options: string) -> result<string, string>;
+}

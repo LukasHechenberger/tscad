@@ -1,0 +1,50 @@
+---
+title: Parameters
+description: Models with a form in the preview and options on the command line.
+---
+
+Export a model built with `defineModel` to give it parameters. Declare them with any schema
+library implementing [Standard Schema](https://standardschema.dev), such as zod 4:
+
+```ts title="box.ts"
+import { cube, defineModel, difference, translate } from '@tscad/modeling';
+import { z } from 'zod';
+
+export default defineModel({
+  parameters: z.object({
+    width: z.number().min(10).max(100).default(40).describe('Outer width (mm)'),
+    depth: z.number().min(10).max(100).default(30),
+    wall: z.number().min(0.8).max(5).default(2),
+    lid: z.boolean().default(false),
+  }),
+  body: ({ width, depth, wall, lid }) =>
+    difference(
+      cube({ x: width, y: depth, z: 20 }),
+      translate(
+        { x: wall, y: wall, z: lid ? -1 : wall },
+        cube({ x: width - 2 * wall, y: depth - 2 * wall, z: 20 }),
+      ),
+    ),
+});
+```
+
+Defaults make the model render as is; the body receives validated values with defaults applied,
+fully typed.
+
+## In the preview
+
+`tscad dev --model box.ts` shows a form next to the model: sliders for bounded numbers, checkboxes
+for booleans, selects for enums. `.describe()` text becomes the field's tooltip. Values are kept
+in the URL, so a link reproduces the exact variant.
+
+## On the command line
+
+Every parameter becomes an option of the model's commands, in kebab-case:
+
+```sh
+tscad export --model box.ts --help              # lists the parameters, with defaults
+tscad export --model box.ts --width 60 --lid    # set values
+tscad export --model box.ts --no-lid            # booleans can be turned off, too
+```
+
+Invalid values are rejected with the schema's message.

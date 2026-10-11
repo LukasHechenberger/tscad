@@ -5,16 +5,15 @@ import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/
 import { use$ } from '@legendapp/state/react';
 import { syncObservable } from '@legendapp/state/sync';
 import Editor, { type Monaco, type OnMount, useMonaco } from '@monaco-editor/react';
-import type { RenderedModel } from '@tscad/modeling';
-import { jsonSchemaToLevaSchema, RenderedSolids, ViewerCanvas } from '@tscad/viewer/src/viewer';
+import { createViewer, type Viewer } from '@tscad/viewer';
+import '@tscad/viewer/style.css';
 import type * as esbuild from 'esbuild-wasm';
-import { button, Leva, useControls } from 'leva';
 import { useTheme } from 'next-themes';
 import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import { bundleCode } from '@/lib/esbuild';
 import { defaultCode } from '@/lib/playground';
 import { homepage } from '../../../../package.json';
-import type { PreparedModel, WorkerResponse } from './worker';
+import type { PreparedModel, RenderedModel, WorkerResponse } from './worker';
 
 const documentationOrigin = new URL(homepage).host;
 
@@ -71,14 +70,14 @@ async function renderModelInWorker({
 }) {
   worker ??= new Worker(new URL('worker.ts', import.meta.url), { type: 'module' });
 
-  return new Promise<RenderedModel<unknown>>((resolve, reject) => {
+  return new Promise<RenderedModel>((resolve, reject) => {
     // eslint-disable-next-line unicorn/prefer-add-event-listener
     worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => {
       if (data.type !== 'rendered') {
         reject(new Error(`Unexpected response type: ${data.type}`));
         return;
       }
-      const { result, error } = data as { error?: Error; result?: RenderedModel<unknown> };
+      const { result, error } = data as { error?: Error; result?: RenderedModel };
 
       if (result) resolve(result);
       else if (error) {
@@ -97,7 +96,7 @@ type PlaygroundContextType = {
   code: string;
   setCode: (code: string) => void;
   preparedModel?: PreparedModel;
-  renderedModel?: RenderedModel<unknown>;
+  renderedModel?: RenderedModel;
   setParameters: (parameters: unknown) => void;
   building: boolean;
   error?: Error;
@@ -126,7 +125,7 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
 
   const [inputParameters, setInputParameters] = useState<unknown>({});
   const [debouncedParameters, setDebouncedParameters] = useState<unknown>({});
-  const [renderedModel, setRenderedModel] = useState<RenderedModel<unknown> | undefined>();
+  const [renderedModel, setRenderedModel] = useState<RenderedModel | undefined>();
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedCode(code), 50);
@@ -225,94 +224,54 @@ export function PlaygroundProvider({ children }: { children: ReactNode }) {
   );
 }
 
-const defaultSettings = {
-  gridEnabled: true,
-};
-
-const settings$ = observable(defaultSettings);
-
-// Persist the observable to the named key of the global persist plugin
-syncObservable(settings$, {
-  persist: {
-    name: 'playground.settings',
-    plugin: ObservablePersistLocalStorage,
-  },
-});
-
+/** The kernel's output in the embeddable viewer, which also shows the parameter form. */
 export function PlaygroundPreview() {
-  const viewOptions = use$(settings$);
   const { renderedModel, preparedModel, building, setParameters } = useContext(PlaygroundContext);
+  const { resolvedTheme } = useTheme();
+  const container = useRef<HTMLDivElement>(null);
+  const viewer = useRef<Viewer | undefined>(undefined); // eslint-disable-line unicorn/no-useless-undefined -- useRef needs an argument
 
-  const appliedViewOptions = useControls('View Options', {
-    gridEnabled: {
-      value: viewOptions.gridEnabled ?? defaultSettings.gridEnabled,
-      label: 'Show Grid',
-    },
-  }) as typeof defaultSettings;
+  useEffect(() => {
+    const created = createViewer(container.current!, { onParams: setParameters, urlSync: false });
+    viewer.current = created;
+    return () => created.dispose();
+  }, [setParameters]);
 
-  useEffect(() => settings$.set(appliedViewOptions), [appliedViewOptions]);
+  useEffect(() => {
+    viewer.current?.setTheme(resolvedTheme === 'dark' ? 'dark' : 'light');
+  }, [resolvedTheme]);
 
-  const [parameters, setControlParameters] = useControls(
-    'Model Parameters',
-    () => ({
-      ...(preparedModel
-        ? jsonSchemaToLevaSchema(
-            preparedModel.parametersSchema,
-            (preparedModel?.defaultParameters ?? {}) as Record<string, unknown>,
-          )
-        : {}),
-      // reset parameters button
-      reset: button(() => {
-        setControlParameters(preparedModel?.defaultParameters ?? {});
-      }),
-    }),
-    [preparedModel],
-  );
+  useEffect(() => {
+    if (preparedModel) {
+      viewer.current?.showParameters(
+        preparedModel.parametersSchema,
+        preparedModel.defaultParameters ?? {},
+      );
+    }
+  }, [preparedModel]);
 
-  useEffect(() => setParameters(parameters), [parameters, setParameters]);
+  useEffect(() => {
+    if (!renderedModel) return;
+    void viewer.current?.showModel(renderedModel.glb);
+    viewer.current?.setStatus(
+      `wasm kernel in your browser · rendered in ${renderedModel.renderMs} ms`,
+    );
+  }, [renderedModel]);
 
   return (
-    <>
-      <div className="absolute top-4 right-4 z-1 w-[300px]">
-        <Leva
-          titleBar={{ title: 'Options' }}
-          fill
-          hideCopyButton
-          theme={{
-            colors: {
-              elevation1: 'var(--card)',
-              elevation2: 'var(--muted)',
-              folderTextColor: 'var(--card-foreground)',
-              highlight1: 'var(--card-foreground)',
-              highlight2: 'var(--muted-foreground)',
-              highlight3: 'var(--foreground)',
-            },
-            radii: {
-              xs: 'var(--radius-sm)',
-              sm: 'var(--radius-sm)',
-              lg: 'var(--radius-md)',
-            },
-          }}
-        />
-      </div>
-
-      <ViewerCanvas
-        style={{
-          transition: 'opacity 0.1s ease-in-out',
-          opacity: building ? 0.5 : 1,
-        }}
-        grid={appliedViewOptions.gridEnabled}
-      >
-        {renderedModel && <RenderedSolids solid={renderedModel.solids} />}
-      </ViewerCanvas>
-    </>
+    <div
+      ref={container}
+      className="absolute inset-0"
+      style={{ transition: 'opacity 0.1s ease-in-out', opacity: building ? 0.5 : 1 }}
+    />
   );
 }
 
 export function PlaygroundEditor({
-  moduleTypes,
+  typeFiles,
 }: {
-  moduleTypes: { moduleName: string; source: string }[];
+  /** Declaration files of the modules user code may import, by their node_modules path. */
+  typeFiles: { path: string; source: string }[];
 }) {
   const { resolvedTheme } = useTheme();
   const { code, setCode, error } = useContext(PlaygroundContext);
@@ -339,29 +298,26 @@ export function PlaygroundEditor({
     });
 
     // compiler options
-    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-      target: monaco.languages.typescript.ScriptTarget.ES2015,
+    const { typescript } = monaco.languages;
+    typescript.typescriptDefaults.setCompilerOptions({
+      target: typescript.ScriptTarget.ES2020,
+      module: typescript.ModuleKind.ESNext,
+      moduleResolution: typescript.ModuleResolutionKind.NodeJs,
       allowNonTsExtensions: true,
+      strict: true,
     });
 
-    // extra libraries
-    for (const { moduleName, source } of moduleTypes) {
-      const librarySource = `declare module '${moduleName}' {
-${source}
-  }`;
-      const libraryUri = monaco.Uri.file(`/node_modules/${moduleName}/index.d.ts`);
-
-      monaco.languages.typescript.javascriptDefaults.addExtraLib(
-        librarySource,
-        libraryUri.toString(),
-      );
+    // extra libraries: declaration files at their node_modules paths, so imports resolve
+    for (const { path, source } of typeFiles) {
+      const libraryUri = monaco.Uri.file(`/node_modules/${path}`);
+      typescript.typescriptDefaults.addExtraLib(source, libraryUri.toString());
 
       // When resolving definitions and references, the editor will try to use created models.
       // Creating a model for the library allows "peek definition/references" commands to work with the library.
 
       // Dispose of the old model if it exists to support live updates
       monaco.editor.getModel(libraryUri)?.dispose();
-      monaco.editor.createModel(librarySource, 'typescript', libraryUri);
+      monaco.editor.createModel(source, 'typescript', libraryUri);
     }
   }
 
@@ -401,6 +357,8 @@ ${source}
       height="100%"
       theme={resolvedTheme ? (resolvedTheme === 'dark' ? 'vs-dark' : 'light') : undefined}
       defaultLanguage="typescript"
+      // A file path, so imports resolve against the declarations in file:///node_modules
+      path="file:///model.ts"
       defaultValue={code}
       onChange={(code) => setCode(code ?? '')}
       beforeMount={beforeMount}

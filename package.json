@@ -16,7 +16,8 @@
     "packages": [
       "apps/*",
       "examples/*",
-      "packages/*"
+      "packages/*",
+      "plugins"
     ],
     "catalog": {
       "@types/node": "22.19.1",
@@ -33,9 +34,9 @@
     "changesets:publish": "for dir in packages/*; do (cd \"$dir\" && bun publish || exit 0); done && changeset tag",
     "changesets:version": "changeset version && bun install",
     "check": "turbo run check",
-    "check:format": "oxfmt --check",
+    "check:format": "oxfmt --check && cargo fmt --check",
     "dev": "turbo run dev",
-    "format": "oxfmt",
+    "format": "oxfmt && cargo fmt",
     "ignore-sync": "ignore-sync .",
     "lint": "turbo run lint",
     "prepare": "bun --bun toolsync prepare --config toolsync.json && ignore-sync .",

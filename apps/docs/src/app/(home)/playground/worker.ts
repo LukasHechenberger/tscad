@@ -1,7 +1,20 @@
-import type { ModelDefinition, ParametersInput, RenderedModel } from '@tscad/modeling';
-import { getRuntime } from '@tscad/modeling/runtime';
+import { type Kernel, loadKernel } from '@tscad/kernel';
+import { evaluateModel, Model, type ModelExport, type ParametersJsonSchema } from '@tscad/modeling';
+import * as zod from 'zod';
 
-let model: ModelDefinition<unknown>;
+/** Modules the playground provides to user code without bundling them (see `bundleCode`). */
+(globalThis as { __tscadPlaygroundModules?: Record<string, unknown> }).__tscadPlaygroundModules = {
+  zod,
+};
+
+let model: ModelExport;
+let kernel: Promise<Kernel> | undefined;
+
+/** The wasm kernel (OpenCASCADE, ~20 MB), loaded once on first use from `@tscad/kernel`'s kernel.wasm. */
+function getKernel() {
+  kernel ??= loadKernel();
+  return kernel;
+}
 
 type ResponsePayload<R> = {
   result?: R;
@@ -10,10 +23,12 @@ type ResponsePayload<R> = {
 
 export type PreparedModel = {
   token: number;
-  // schema: unknown;
-  parametersSchema: ParametersInput;
-  defaultParameters?: unknown;
+  parametersSchema: ParametersJsonSchema;
+  defaultParameters?: Record<string, unknown>;
 };
+
+/** A model as the kernel rendered it: GLB for the viewer. */
+export type RenderedModel = { glb: ArrayBuffer; renderMs: number };
 
 export type PreparedModelResponse = {
   type: 'prepared';
@@ -21,7 +36,7 @@ export type PreparedModelResponse = {
 
 export type RenderedModelResponse = {
   type: 'rendered';
-} & ResponsePayload<{ model: RenderedModel<unknown> }>;
+} & ResponsePayload<RenderedModel>;
 
 export type WorkerResponse = PreparedModelResponse | RenderedModelResponse;
 
@@ -38,78 +53,83 @@ type RenderMessage = {
 
 let currentToken = 0;
 
-// eslint-disable-next-line unicorn/prefer-add-event-listener
-globalThis.onmessage = async (event: MessageEvent<PrepareMessage | RenderMessage>) => {
-  // eslint-disable-next-line no-console
-  console.debug('Worker received message', event);
+const errorPayload = (error: unknown) => ({
+  message: (error as Error).message,
+  stack: (error as Error).stack,
+});
 
-  if (event.data.type === 'render') {
-    // Check token matches currentToken
-    if (event.data.token !== currentToken) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `Received build request for token ${event.data.token}, but current token is ${currentToken}`,
-      );
+globalThis.addEventListener(
+  'message',
+  async (event: MessageEvent<PrepareMessage | RenderMessage>) => {
+    if (event.data.type === 'render') {
+      // Check token matches currentToken
+      if (event.data.token !== currentToken) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Received build request for token ${event.data.token}, but current token is ${currentToken}`,
+        );
+        return;
+      }
+
+      try {
+        const result = await evaluateModel(
+          model,
+          (event.data.parameters ?? {}) as Record<string, unknown>,
+        );
+        if (result.error !== undefined) throw new Error(result.error);
+        const started = performance.now();
+        const engine = await getKernel();
+        // A copy owning its buffer, transferred to the page.
+        const glb = new Uint8Array(engine.render(result.tree, 'glb')).buffer;
+        const renderMs = Math.round(performance.now() - started);
+        self.postMessage(
+          { type: 'rendered', result: { glb, renderMs } } satisfies RenderedModelResponse,
+          {
+            transfer: [glb],
+          },
+        );
+      } catch (error) {
+        self.postMessage({ type: 'rendered', error: errorPayload(error) });
+      }
       return;
     }
 
-    const runtimeModel = getRuntime(model);
+    if (event.data.type !== 'prepare') {
+      // eslint-disable-next-line no-console
+      console.error('Unknown message type:', event.data);
+      return;
+    }
+
+    const { code } = event.data;
 
     try {
-      const result = runtimeModel.render(event.data.parameters as Partial<unknown>);
-      self.postMessage({ type: 'rendered', result, error: undefined });
-    } catch (error) {
+      // Build the function with injected API
+      const loadModule = new Function(`${code}\n//# sourceURL=user-script.js`);
+
+      const exports = loadModule();
+
+      if (!exports || (exports.main === undefined && exports.default === undefined)) {
+        throw new TypeError('No main or default export found in the module');
+      }
+
+      currentToken += 1;
+      model = exports.default ?? exports.main;
+
       self.postMessage({
-        type: 'rendered',
-        error: { message: (error as Error).message, stack: (error as Error).stack },
-      });
+        type: 'prepared',
+        result: {
+          token: currentToken,
+          parametersSchema: model instanceof Model ? model.parametersJsonSchema() : {},
+          defaultParameters:
+            model instanceof Model
+              ? ((await model.resolveParameters({})) as Record<string, unknown>)
+              : {},
+        },
+      } satisfies PreparedModelResponse);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+      self.postMessage({ type: 'prepared', error: errorPayload(error) });
     }
-    return;
-  }
-
-  if (event.data.type !== 'prepare') {
-    // eslint-disable-next-line no-console
-    console.error('Unknown message type:', event.data);
-    return;
-  }
-
-  const { code } = event.data;
-
-  try {
-    // Build the function with injected API
-    const loadModule = new Function(`${code}\n//# sourceURL=user-script.js`);
-
-    const exports = loadModule();
-
-    if (!exports || (exports.main === undefined && exports.default === undefined)) {
-      throw new TypeError('No main or default export found in the module');
-    }
-
-    currentToken += 1;
-    model = exports.default ?? exports.main;
-
-    // eslint-disable-next-line no-console
-    console.debug('Model prepared', { model });
-
-    const runtimeModel = getRuntime(model);
-
-    self.postMessage({
-      type: 'prepared',
-      result: {
-        token: currentToken,
-        // schema: model.schema,
-        parametersSchema: runtimeModel.modelDefinition.parametersInput,
-        defaultParameters: runtimeModel.resolveParameters({}, false),
-      } as PreparedModel,
-    } satisfies PreparedModelResponse);
-  } catch (error) {
-    const error_ = error as Error;
-
-    // eslint-disable-next-line no-console
-    console.error(error);
-    self.postMessage({ type: 'prepared', error: { message: error_.message, stack: error_.stack } });
-  }
-};
-
-// Stop nextjs from nagging about CommonJS syntax...
-export {};
+  },
+);

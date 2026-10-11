@@ -1,0 +1,32 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "inputs": [
+        "scripts/build.ts",
+        "src/**",
+        "tsconfig*.json",
+        "$TURBO_ROOT$/crates/**",
+        "$TURBO_ROOT$/Cargo.toml",
+        "$TURBO_ROOT$/Cargo.lock"
+      ],
+      "outputs": ["native/**", "out/**"]
+    },
+    // Runs cargo in cadrum's cross-compile image, so it needs Docker.
+    "build:wasm": {
+      "inputs": [
+        "scripts/build.ts",
+        "$TURBO_ROOT$/crates/**",
+        "$TURBO_ROOT$/Cargo.toml",
+        "$TURBO_ROOT$/Cargo.lock"
+      ],
+      "outputs": ["kernel.wasm"]
+    },
+    "test": {
+      "dependsOn": ["build", "test:transit"],
+      // Picks the backend under test: native (if built) or wasm.
+      "env": ["TSCAD_KERNEL"]
+    }
+  }
+}

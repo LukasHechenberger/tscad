@@ -16,21 +16,18 @@
   },
   "scripts": {
     "check:types": "tsc --noEmit",
-    "lint": "oxlint --deny-warnings"
+    "lint": "oxlint --deny-warnings",
+    "test": "bun test"
   },
   "dependencies": {
-    "@microsoft/api-documenter": "^7.28.0",
-    "@microsoft/api-extractor": "^7.55.0",
-    "@microsoft/api-extractor-model": "^7.32.0",
-    "@microsoft/tsdoc": "^0.16.0",
-    "@microsoft/tsdoc-config": "^0.18.0",
-    "slugify": "^1.6.6",
-    "ts-morph": "^26.0.0"
+    "@tscad/kernel": "workspace:*",
+    "@tscad/modeling": "workspace:*",
+    "@tscad/plugin-host": "workspace:*",
+    "typescript": "^6.0.3",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "catalog:",
-    "fumadocs-ui": "16.0.11",
-    "typescript": "catalog:"
+    "@types/bun": "^1.3.9"
   }
 }

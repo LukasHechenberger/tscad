@@ -4,6 +4,21 @@
   "tasks": {
     "check:types": {
       "dependsOn": ["^build", "build"]
+    },
+    // Renders the API examples and the home page sample with the native kernel, and serves the
+    // wasm kernel to the playground. In CI, through `vercel build` (scripts/build.ts).
+    "build": {
+      "dependsOn": ["^build", "@tscad/kernel#build", "@tscad/kernel#build:wasm"],
+      "env": ["VERCEL_ENVIRONMENT"],
+      "passThroughEnv": ["VERCEL_TOKEN", "VERCEL_ORG_ID", "VERCEL_PROJECT_ID"],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "content/docs/api/modules/modeling/**",
+        "public/reference/**",
+        "public/sample.glb",
+        "$TURBO_ROOT$/.vercel/output/**"
+      ]
     }
   }
 }

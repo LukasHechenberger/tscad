@@ -24,33 +24,30 @@ tscad is a CAD modeller for programmers. It is designed to provide a modern deve
 
 ## tscad models
 
-A model usually consists of a single TypeScript or JavaScript module, which exports a model:
+A model usually consists of a single TypeScript or JavaScript module, whose default export is the model:
 
 {/* <div className="sticky top-16"> */}
 
 ```ts title="A simple tscad model" twoslash
-import { defineModel } from '@tscad/modeling';
+import { cube } from '@tscad/modeling';
 
-// @noErrors
-export default defineModel({
-  // model definition goes here
-});
+export default cube(10);
 ```
 
 {/* </div> */}
 
-### The model function
+### Building the geometry
 
-Each model needs a `model` function that returns the CAD geometry. You can use the built-in primitives and operations from tscad to create your model.
+Models are built from the primitives and operations in `@tscad/modeling`. Their names follow OpenSCAD, but vectors and options are objects, so every number says what it is.
 
 ```ts title="A simple tscad model" twoslash
-import { defineModel } from '@tscad/modeling';
-import { cube } from '@tscad/modeling/primitives';
+import { cube, cylinder, difference } from '@tscad/modeling';
 
-/** A simple model that renders as a cube */
-export default defineModel({
-  model: () => cube({ size: 10 }), // [!code highlight]
-});
+/** A cube with a hole through it */
+export default difference(
+  cube(10, { center: true }),
+  cylinder({ h: 12, r: 3, center: true }), // [!code highlight]
+);
 ```
 
 ### Previewing models
@@ -65,36 +62,36 @@ The simplest way to preview your model is to use the [online playground](/playgr
 
 ### Define model parameters
 
-You can define parameters for your model using the `defineModel` function. This allows you to create parametric models that can be easily adjusted.
+You can define parameters for your model using the `defineModel` function, with a schema library such as zod. This allows you to create parametric models that can be easily adjusted: the preview shows a form for them, and the CLI takes them as options.
 
 ```ts title="A parametric tscad model" twoslash
-import { defineModel } from '@tscad/modeling';
-import { cube } from '@tscad/modeling/primitives';
+import { cube, defineModel } from '@tscad/modeling';
+import { z } from 'zod';
 
 // ---cut---
 export default defineModel({
-  parameters: { // [!code highlight:3]
-    width: { type: 'number', default: 10, min: 1, max: 100, step: 1 },
-  },
+  parameters: z.object({ // [!code highlight:3]
+    width: z.number().min(1).max(100).default(10),
+  }),
 // @noErrors
-  model: ...
+  body: ...
 });
 ```
 
 ### Use model parameters
 
-As soon as parameters are defined, you can use them in your model function:
+As soon as parameters are defined, the model's `body` receives their values, validated and typed:
 
 ```ts title="A parametric tscad model" twoslash
-import { defineModel } from '@tscad/modeling';
-import { cube } from '@tscad/modeling/primitives';
+import { cube, defineModel } from '@tscad/modeling';
+import { z } from 'zod';
 
 // ---cut---
 export default defineModel({
-  parameters: {
-    width: { type: 'number', default: 10, min: 1, max: 100, step: 1 },
-  },
-  model: ({ width }) => cube({ size: width }), // [!code highlight]
+  parameters: z.object({
+    width: z.number().min(1).max(100).default(10),
+  }),
+  body: ({ width }) => cube(width), // [!code highlight]
 });
 ```
 

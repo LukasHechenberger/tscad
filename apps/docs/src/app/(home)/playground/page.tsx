@@ -1,4 +1,5 @@
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
+import path from 'node:path';
 import type { Metadata } from 'next';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { PlaygroundEditor, PlaygroundPreview, PlaygroundProvider, State } from './page.client';
@@ -7,29 +8,32 @@ export function generateMetadata() {
   return { title: 'Playground' } satisfies Metadata;
 }
 
+/** Declaration files under `directory` (recursively), keyed by their path below node_modules. */
+async function declarations(moduleName: string, directory = '') {
+  const root = path.join('./node_modules', moduleName);
+  const files = await readdir(path.join(root, directory), { recursive: true });
+  return Promise.all(
+    files
+      .filter((file) => file.endsWith('.d.ts'))
+      .map(async (file) => ({
+        path: path.posix.join(moduleName, directory, file),
+        source: await readFile(path.join(root, directory, file), 'utf8'),
+      })),
+  );
+}
+
 export default async function PlaygroundPage() {
-  const moduleTypes = [
-    {
-      moduleName: '@tscad/modeling',
-      source: await readFile('./node_modules/@tscad/modeling/out/index.d.ts', 'utf8'),
-    },
-    {
-      moduleName: '@tscad/modeling/primitives',
-      source: await readFile('./node_modules/@tscad/modeling/out/primitives/index.d.ts', 'utf8'),
-    },
-    {
-      moduleName: '@tscad/modeling/colors',
-      source: await readFile('./node_modules/@tscad/modeling/out/colors/index.d.ts', 'utf8'),
-    },
-    // Dependencies
-    // {
-    //   moduleName: 'json-schema-to-ts',
-    //   source: await readFile(
-    //     '../../node_modules/.pnpm/json-schema-to-ts@3.1.1/node_modules/json-schema-to-ts/lib/types/index.d.ts',
-    //     'utf8',
-    //   ),
-    // },
-  ];
+  const modeling = await declarations('@tscad/modeling', 'out');
+  const typeFiles = [
+    // @tscad/modeling, as built (index.d.ts and the modules it re-exports)
+    ...modeling.map((file) => ({
+      ...file,
+      path: file.path.replace('/out/', '/'),
+    })),
+    // zod, which the playground provides for model parameters
+    ...(await declarations('zod', 'v4')),
+    { path: 'zod/index.d.ts', source: await readFile('./node_modules/zod/index.d.ts', 'utf8') },
+  ].filter((file) => !file.path.includes('/standalone/'));
 
   return (
     <PlaygroundProvider>
@@ -37,7 +41,7 @@ export default async function PlaygroundPage() {
 
       <ResizablePanelGroup direction="horizontal" className="flex h-full flex-1">
         <ResizablePanel defaultSize={50} className="flex-1">
-          <PlaygroundEditor moduleTypes={moduleTypes} />
+          <PlaygroundEditor typeFiles={typeFiles} />
         </ResizablePanel>
 
         <ResizableHandle />

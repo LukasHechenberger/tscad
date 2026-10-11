@@ -1,0 +1,65 @@
+---
+title: tscad analyze
+description: Run the analysis plugins listed in tscad.json on the model
+---
+
+{/* #region usage */}
+{/* This section is generated. Do not edit manually! */}
+
+```ansi title="Terminal"
+[1mUsage:[22m [1m[35mtscad[39m[22m [1m[35manalyze[39m[22m [36m[options][39m
+
+[2m> Run the analysis plugins listed in tscad.json on the model[22m
+
+[1mOptions:[22m
+  [36m--model [model][39m   Where to find the tscad model (default: "src/model.ts")
+  [36m--plugin <name>[39m   Only run this analysis plugin
+  [36m--options <json>[39m  Options for the plugin, as JSON (see the plugin's schema) (default: "{}")
+  [36m-h, --help[39m        Display help for command
+
+```
+
+{/* #endregion usage */}
+
+{/* #region arguments */}
+{/* This section is generated. Do not edit manually! */}
+
+import { TypeTable } from 'fumadocs-ui/components/type-table';
+
+## API
+
+```ansi title="Terminal"
+[2m$[22m[22m [1m[35mtscad[39m[22m [1m[35manalyze[39m[22m [36m[options][39m
+```
+
+{/* No arguments available. */}
+
+{/* #endregion arguments */}
+
+{/* #region options */}
+{/* This section is generated. Do not edit manually! */}
+
+### Options [!toc]
+
+{/* prettier-ignore */}
+<TypeTable type={{
+  "--model": {
+    "type": "string",
+    "required": false,
+    "description": "Where to find the tscad model",
+    "default": "src/model.ts"
+  },
+  "--plugin": {
+    "type": "undefined",
+    "required": true,
+    "description": "Only run this analysis plugin"
+  },
+  "--options": {
+    "type": "string",
+    "required": true,
+    "description": "Options for the plugin, as JSON (see the plugin's schema)",
+    "default": "{}"
+  }
+}} />
+
+{/* #endregion options */}
