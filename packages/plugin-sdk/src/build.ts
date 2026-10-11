@@ -17,7 +17,13 @@ import { $ } from 'bun';
 import { optionsWit } from './options-wit';
 import { optionsType, typedExports } from './typed-exports';
 
-/** The WIT plugins implement: `wit_bindgen::generate!({ world: "operation", path: <this> })`. */
+/**
+ * The directory with the WIT plugins implement, `tscad-plugin.wit`. A plugin crate in a package that
+ * depends on this one points wit-bindgen at it:
+ * `wit_bindgen::generate!({ world: "operation", path: "node_modules/@tscad/plugin-sdk/wit" })`.
+ *
+ * @category Building
+ */
 export const WIT_DIRECTORY = path.join(import.meta.dir, '../wit');
 
 /** jco's command line, run with the current runtime. */
@@ -34,9 +40,15 @@ type CargoMetadata = {
 
 type PackageJson = { name?: string; tscad?: { plugin?: string } };
 
+/**
+ * What `buildPlugin` built.
+ *
+ * @category Building
+ */
 export type BuildResult = {
   /** The plugin's name, from its `info()`. */
   name: string;
+  /** The world the plugin implements. */
   kind: 'operation' | 'exporter' | 'analysis';
   /** Where the transpiled component and the typed exports are. */
   outputDirectory: string;
@@ -55,7 +67,21 @@ function unavailableImports(): object {
   return new Proxy({}, { get: () => new Proxy({}, { get: () => kernelUnavailable }) });
 }
 
-/** Builds the plugin package in `directory` (with a Cargo.toml and a package.json). */
+/**
+ * Builds the plugin package in `directory`, which has a Cargo.toml and a package.json; this is what
+ * `tscad-plugin build` runs. Compiles the crate for `wasm32-unknown-unknown`, makes a component of
+ * it and transpiles that into the package's plugin directory (`"tscad": { "plugin": "./dist" }`).
+ * A plugin with options also gets them as WIT (`optionsWit`) and typed exports (`typedExports`).
+ *
+ * Needs `cargo` with the `wasm32-unknown-unknown` target.
+ *
+ * @example
+ * ```ts
+ * const result = await buildPlugin('plugins/grid');
+ * console.log(`${result.name} (${result.kind}) → ${result.outputDirectory}`);
+ * ```
+ * @category Building
+ */
 export async function buildPlugin(directory: string): Promise<BuildResult> {
   const packageDirectory = path.resolve(directory);
   const manifestPath = path.join(packageDirectory, 'Cargo.toml');

@@ -40,6 +40,23 @@ export type TypedExportsInput = {
   declarations: string;
 };
 
+/**
+ * A plugin package's typed exports, `index.js` and `index.d.ts`, from what `jco types` declares
+ * for its options WIT: the options as interfaces and, for an operation, a function that builds the
+ * plugin's node (`grid(options, ...children)`, with `pluginOperation` from `@tscad/modeling`),
+ * documented with the options record's doc comment.
+ *
+ * @example
+ * ```ts
+ * const { js, dts } = typedExports({
+ *   plugin: 'stack',
+ *   packageName: 'tscad-plugin-stack',
+ *   isOperation: true,
+ *   declarations: await Bun.file('types/interfaces/tscad-stack-options.d.ts').text(),
+ * });
+ * ```
+ * @category Code generation
+ */
 export function typedExports({
   plugin,
   packageName,

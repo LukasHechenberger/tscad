@@ -15,6 +15,7 @@
         ".next/**",
         "!.next/cache/**",
         "content/docs/api/modules/modeling/**",
+        "content/docs/api/modules/plugin-sdk/**",
         "public/reference/**",
         "public/sample.glb",
         "$TURBO_ROOT$/.vercel/output/**"

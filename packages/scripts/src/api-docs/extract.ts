@@ -58,7 +58,7 @@ export type ReferenceOption = {
 
 export type ReferenceEntry = {
   name: string;
-  kind: 'function' | 'class' | 'type';
+  kind: 'function' | 'class' | 'type' | 'constant';
   category: string;
   /** One line per overload, member or alias, as shown in the reference. */
   signature: string;
@@ -202,6 +202,16 @@ export function extractDocs(entries = API_MODULES.map((module) => module.entry))
         signature: `class ${symbol.name}`,
         options: [],
         members: methods,
+      });
+    } else if (ts.isVariableDeclaration(declaration)) {
+      const type = declaration.type
+        ? typeText(declaration.type)
+        : checker.typeToString(checker.getTypeAtLocation(declaration));
+      result.push({
+        ...base,
+        kind: 'constant',
+        signature: `const ${symbol.name}: ${type}`,
+        options: [],
       });
     } else if (ts.isTypeAliasDeclaration(declaration)) {
       const options = documentedProperties(checker.getTypeAtLocation(declaration));

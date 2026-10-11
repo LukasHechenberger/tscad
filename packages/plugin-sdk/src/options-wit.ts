@@ -72,7 +72,23 @@ function documentation(schema: Schema, indent: string): string[] {
   return lines.map((line) => `${indent}///${line ? ` ${line}` : ''}`);
 }
 
-/** The options record of `plugin` as a WIT package, or throws for schemas WIT cannot express. */
+/**
+ * The options of `plugin` as a WIT package with one record, `<plugin>-options`, from the JSON
+ * Schema its `info()` reports (as schemars derives it from the Rust options struct). Descriptions,
+ * ranges and defaults become doc comments. Throws for what WIT cannot express, like unions other
+ * than "T or null", or 64-bit integers, which do not survive JSON.
+ *
+ * @example
+ * ```ts
+ * optionsWit('stack', {
+ *   type: 'object',
+ *   properties: { count: { type: 'integer', format: 'uint32', minimum: 1, description: 'Copies' } },
+ *   required: ['count'],
+ * });
+ * // → package tscad:stack, with `record stack-options { count: u32 }` (documented)
+ * ```
+ * @category Code generation
+ */
 export function optionsWit(plugin: string, schema: Schema): string {
   const definitions: string[] = [];
   const defined = new Map<Schema, string>();

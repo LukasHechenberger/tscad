@@ -1,37 +1,89 @@
 /**
- * Generates the API reference for the docs site from the TSDoc of `@tscad/modeling` and the built
- * plugin packages: one MDX page per category, with every `@example` cell rendered to an SVG by the kernel.
+ * Generates the API reference for the docs site from TSDoc: for each module (`@tscad/modeling`
+ * with the built plugin packages, `@tscad/plugin-sdk`), an overview and one MDX page per
+ * category. Modeling examples are rendered to SVGs by the kernel.
  *
- *   build-api-docs   # → apps/docs/content/docs/api/modules/modeling, apps/docs/public/reference
+ *   build-api-docs   # → apps/docs/content/docs/api/modules/<module>, apps/docs/public/reference
  *
- * The output is generated (and git-ignored): edit the TSDoc in packages/modeling (or a plugin's
- * options struct) instead.
+ * The output is generated (and git-ignored): edit the TSDoc in the sources instead.
  */
 import { mkdirSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import { runExample } from './examples';
-import { CATEGORIES, extractDocs, ROOT, type ReferenceEntry } from './extract';
+import { API_MODULES, extractDocs, ROOT, type ReferenceEntry } from './extract';
 import { docsKernel, renderSvg } from './render';
 
-/** Page description per category (others get none). */
-const DESCRIPTIONS: Record<string, string> = {
-  '3D shapes': 'Solids to start from: boxes, spheres, cylinders and cones.',
-  '2D shapes': 'Shapes in the XY plane, to extrude into solids.',
-  Extrusions: 'Turning 2D shapes into solids.',
-  Transforms: 'Moving, turning, mirroring, scaling and coloring shapes.',
-  Booleans: 'Combining solids: union, difference and intersection.',
-  Parameters: "Models with parameters, for the preview's form and the CLI.",
-  Plugins: 'Operations implemented by WebAssembly plugins.',
-  Types: 'Vectors and the shape classes the functions return.',
+/** A package in the reference: the TSDoc of its exports, one page per `@category`. */
+export type ReferenceModule = {
+  /** The package name, the section's title. */
+  name: string;
+  /** The section's folder, under api/modules and public/reference. */
+  slug: string;
+  /** The source files whose exports are documented. */
+  entries: () => string[];
+  /** Categories in reading order, with each page's description. */
+  categories: Record<string, string>;
+  /** The section's overview page, above the cards for its categories. */
+  overview: { description: string; text: string };
+  /** Whether `@example`s are models, run and rendered (otherwise they are shown as code). */
+  renderExamples: boolean;
+  /** Where the documentation comes from, for the notice in generated pages. */
+  source: string;
 };
+
+export const MODULES: ReferenceModule[] = [
+  {
+    name: '@tscad/modeling',
+    slug: 'modeling',
+    entries: () => API_MODULES.map((module) => module.entry),
+    categories: {
+      '3D shapes': 'Solids to start from: boxes, spheres, cylinders and cones.',
+      '2D shapes': 'Shapes in the XY plane, to extrude into solids.',
+      Extrusions: 'Turning 2D shapes into solids.',
+      Transforms: 'Moving, turning, mirroring, scaling and coloring shapes.',
+      Booleans: 'Combining solids: union, difference and intersection.',
+      Parameters: "Models with parameters, for the preview's form and the CLI.",
+      Plugins: 'Operations implemented by WebAssembly plugins.',
+      Types: 'Vectors and the shape classes the functions return.',
+    },
+    overview: {
+      description: 'OpenSCAD-style modeling in TypeScript',
+      text: 'Models are TypeScript: function names follow OpenSCAD, but vectors and options are objects, so every number says what it is. Every picture is rendered by the kernel from the example next to it.',
+    },
+    renderExamples: true,
+    source: 'the TSDoc in packages/modeling and the plugin packages',
+  },
+  {
+    name: '@tscad/plugin-sdk',
+    slug: 'plugin-sdk',
+    entries: () => [path.join(ROOT, 'packages/plugin-sdk/src/index.ts')],
+    categories: {
+      Building: 'Turning a plugin package and its Rust crate into what tscad loads.',
+      'Code generation': "The WIT and TypeScript generated from a plugin's options.",
+    },
+    overview: {
+      description: 'Build tscad plugins',
+      text: [
+        'The package plugins are built with: it ships the WIT they implement (`wit/tscad-plugin.wit`, for `wit_bindgen::generate!`) and the `tscad-plugin` command. See [Writing a plugin](/docs/guides/plugins#writing-a-plugin) for a walkthrough.',
+        '```sh\ntscad-plugin build [directory]\n```',
+        'Builds the plugin package in `directory` (default: the current one) with `buildPlugin`. The functions below are its building blocks, for build tools of your own.',
+      ].join('\n\n'),
+    },
+    renderExamples: false,
+    source: 'the TSDoc in packages/plugin-sdk',
+  },
+];
 
 export type Output = { contentDir: string; publicDir: string; imageUrl: string };
 
-export const SITE: Output = {
-  contentDir: path.join(ROOT, 'apps/docs/content/docs/api/modules/modeling'),
-  publicDir: path.join(ROOT, 'apps/docs/public/reference/modeling'),
-  imageUrl: '/reference/modeling',
-};
+/** Where a module's pages and pictures go on the docs site. */
+export function siteOutput(module: ReferenceModule): Output {
+  return {
+    contentDir: path.join(ROOT, 'apps/docs/content/docs/api/modules', module.slug),
+    publicDir: path.join(ROOT, 'apps/docs/public/reference', module.slug),
+    imageUrl: `/reference/${module.slug}`,
+  };
+}
 
 const slug = (category: string) => category.toLowerCase().replaceAll(/\W+/g, '-');
 
@@ -59,7 +111,7 @@ async function entryMdx(
   entry: ReferenceEntry,
   links: ReadonlyMap<string, string>,
   output: Output,
-  context: Awaited<ReturnType<typeof docsKernel>>,
+  context: Awaited<ReturnType<typeof docsKernel>> | undefined,
 ): Promise<string> {
   const parts = [`## ${entry.name}`, fence(entry.signature)];
   if (entry.documentation) parts.push(prose(entry.documentation, links));
@@ -83,6 +135,10 @@ async function entryMdx(
       fence(entry.members.join('\n')),
     );
   for (const [exampleIndex, example] of entry.examples.entries()) {
+    if (!context) {
+      parts.push(fence(example));
+      continue;
+    }
     const results = await runExample(example);
     for (const [cellIndex, { code, value }] of results.entries()) {
       const file = `${entry.name}-${exampleIndex + 1}-${cellIndex + 1}.svg`;
@@ -105,14 +161,17 @@ async function entryMdx(
   return parts.join('\n\n');
 }
 
-export async function generateApiDocs(output: Output = SITE): Promise<number> {
+export async function generateApiDocs(
+  module: ReferenceModule,
+  output: Output = siteOutput(module),
+): Promise<number> {
   for (const directory of [output.contentDir, output.publicDir]) {
     rmSync(directory, { recursive: true, force: true });
     mkdirSync(directory, { recursive: true });
   }
-  const entries = extractDocs();
+  const entries = extractDocs(module.entries());
   const categories = [
-    ...new Set([...CATEGORIES, ...entries.map((entry) => entry.category)]),
+    ...new Set([...Object.keys(module.categories), ...entries.map((entry) => entry.category)]),
   ].filter((category) => entries.some((entry) => entry.category === category));
   const base = `/docs/${output.contentDir.split('/content/docs/')[1]!}`;
   const links = new Map(
@@ -121,21 +180,20 @@ export async function generateApiDocs(output: Output = SITE): Promise<number> {
       `${base}/${slug(entry.category)}#${entry.name.toLowerCase()}`,
     ]),
   );
-  const context = await docsKernel();
+  const context = module.renderExamples ? await docsKernel() : undefined;
 
   for (const category of categories) {
     const sections: string[] = [];
     for (const entry of entries.filter((candidate) => candidate.category === category))
       sections.push(await entryMdx(entry, links, output, context));
-    const description = DESCRIPTIONS[category];
+    const description = module.categories[category];
     const frontmatter = [
       '---',
       `title: ${category}`,
       ...(description ? [`description: ${JSON.stringify(description)}`] : []),
       '---',
     ].join('\n');
-    const notice =
-      '{/* Generated by build-api-docs (packages/scripts) from the TSDoc in packages/modeling and the plugin packages. Edit the source, not this file. */}';
+    const notice = `{/* Generated by build-api-docs (packages/scripts) from ${module.source}. Edit the source, not this file. */}`;
     await Bun.write(
       path.join(output.contentDir, `${slug(category)}.mdx`),
       `${frontmatter}\n\n${notice}\n\n${sections.join('\n\n')}\n`,
@@ -143,15 +201,15 @@ export async function generateApiDocs(output: Output = SITE): Promise<number> {
   }
   await Bun.write(
     path.join(output.contentDir, 'meta.json'),
-    `${JSON.stringify({ title: '@tscad/modeling', pages: ['index', ...categories.map((category) => slug(category))] }, undefined, 2)}\n`,
+    `${JSON.stringify({ title: module.name, pages: ['index', ...categories.map((category) => slug(category))] }, undefined, 2)}\n`,
   );
   const cards = categories.map(
     (category) =>
-      `  <Card title="${category}" href="${base}/${slug(category)}">${DESCRIPTIONS[category] ?? ''}</Card>`,
+      `  <Card title="${category}" href="${base}/${slug(category)}">${module.categories[category] ?? ''}</Card>`,
   );
   await Bun.write(
     path.join(output.contentDir, 'index.mdx'),
-    `---\ntitle: Overview\ndescription: "OpenSCAD-style modeling in TypeScript"\n---\n\nModels are TypeScript: function names follow OpenSCAD, but vectors and options are objects, so every number says what it is. Every picture is rendered by the kernel from the example next to it.\n\n<Cards>\n${cards.join('\n')}\n</Cards>\n`,
+    `---\ntitle: Overview\ndescription: ${JSON.stringify(module.overview.description)}\n---\n\n${module.overview.text}\n\n<Cards>\n${cards.join('\n')}\n</Cards>\n`,
   );
   return entries.length;
 }

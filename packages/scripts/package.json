@@ -31,6 +31,7 @@
     "@tscad/plugin-export-3mf": "workspace:*",
     "@tscad/plugin-grid": "workspace:*",
     "@tscad/plugin-printability": "workspace:*",
+    "@tscad/plugin-sdk": "workspace:*",
     "@types/bun": "^1.3.9"
   }
 }
