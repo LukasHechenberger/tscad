@@ -87,7 +87,7 @@ for (const command of cli.commands) {
     /---[^]*---/m,
     `---
 title: ${cli.name()} ${command.name()}
-description: ${command.description()}
+description: '${command.description().replaceAll("'", "''")}'
 ---`,
   );
 

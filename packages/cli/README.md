@@ -46,7 +46,7 @@ Commands:
   dev [options]        Start the development server, a live 3D preview with a parameter form that re-renders on save
   export [options]     Export the model to a file (.stl, .step, .glb, .png, .svg, or a format an exporter plugin adds, e.g. .3mf)
   analyze [options]    Run the analysis plugins on the model
-  plugins [directory]  List the plugins models in a directory get: plugin dependencies and tscad.json
+  plugins [directory]  List the plugins available to models in a directory (plugin dependencies and tscad.json)
   help [command]       Display help for command
 
 ```

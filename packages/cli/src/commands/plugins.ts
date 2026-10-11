@@ -3,7 +3,9 @@ import { loadKernel } from '@tscad/kernel';
 import { loadPlugins } from '@/lib/plugins';
 
 export const pluginsCommand = new Command('plugins')
-  .description('List the plugins models in a directory get: plugin dependencies and tscad.json')
+  .description(
+    'List the plugins available to models in a directory (plugin dependencies and tscad.json)',
+  )
   .argument('[directory]', 'Where to look for package.json and tscad.json', '.')
   .action(async (directory: string) => {
     const host = await loadPlugins(await loadKernel(), directory);
