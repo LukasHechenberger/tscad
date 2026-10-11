@@ -5,12 +5,16 @@
     "build": {
       "inputs": [
         "build.ts",
+        "options-wit.ts",
         "*/src/**",
         "*/Cargo.toml",
         "$TURBO_ROOT$/wit/**",
         "$TURBO_ROOT$/Cargo.lock"
       ],
       "outputs": ["*/dist/**"]
+    },
+    "check:types": {
+      "dependsOn": ["^build", "build"]
     }
   }
 }

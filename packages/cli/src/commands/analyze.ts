@@ -5,7 +5,7 @@ import { ModelCommand } from '@/lib/commander';
 import { loadPlugins } from '@/lib/plugins';
 
 export const analyzeCommand = new ModelCommand('analyze')
-  .description('Run the analysis plugins listed in tscad.json on the model')
+  .description('Run the analysis plugins on the model')
   .option('--plugin <name>', 'Only run this analysis plugin')
   .option('--options <json>', "Options for the plugin, as JSON (see the plugin's schema)", '{}')
   .action(async function runAnalyzeCommand({
@@ -25,7 +25,8 @@ export const analyzeCommand = new ModelCommand('analyze')
           .list()
           .filter((loaded) => loaded.kind === 'analysis')
           .map((loaded) => loaded.info.name);
-    if (names.length === 0) this.error('No analysis plugins loaded (list them in tscad.json)');
+    if (names.length === 0)
+      this.error('No analysis plugins loaded (add a plugin package or list one in tscad.json)');
 
     try {
       const shape = await buildModel(options as ModelOptions);

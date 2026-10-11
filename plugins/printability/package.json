@@ -1,0 +1,26 @@
+{
+  "name": "@tscad/plugin-printability",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Overhangs, bed contact and fit for 3D printing: an analysis plugin for tscad",
+  "homepage": "https://tscad.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasHechenberger/tscad.git",
+    "directory": "plugins/printability"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "tscad": {
+    "plugin": "./dist"
+  },
+  "devDependencies": {
+    "@tscad/plugins": "workspace:*"
+  }
+}

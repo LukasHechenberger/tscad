@@ -31,7 +31,7 @@ const repoPlugin = definePlugin({
         },
         '@toolsync/builtin/vscode': {
           extensions: {
-            recommendations: ['oxc.oxc-vscode'],
+            recommendations: ['oxc.oxc-vscode', 'bytecodealliance.wit-idl'],
           },
         },
         '@toolsync/builtin/github-actions': {

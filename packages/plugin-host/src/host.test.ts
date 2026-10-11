@@ -1,9 +1,16 @@
 import { describe, expect, test } from 'bun:test';
-import { existsSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync, symlinkSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { loadKernel } from '@tscad/kernel';
 import { cube, plugin, sphere, translate, union } from '@tscad/modeling';
-import { PluginHost, pluginFromDirectory, type PluginSource } from './bun';
+import {
+  PluginHost,
+  pluginDependencies,
+  pluginFromDirectory,
+  pluginFromOutput,
+  type PluginSource,
+} from './bun';
 
 const pluginsDirectory = path.join(import.meta.dir, '../../../plugins');
 const built = ['grid', 'export-3mf', 'printability'].every((name) =>
@@ -51,8 +58,11 @@ describe.if(built)('built plugins', () => {
       'plugin grid: needs at least one child',
     );
     expect(h.lower(plugin('grid', { nx: 1 }, cube(1)).node)).rejects.toThrow(
-      'plugin grid: invalid arguments',
+      'plugin grid: invalid options: missing field `ny`',
     );
+    await expect(
+      h.lower(plugin('grid', { nx: 1, ny: 1, dx: 1, dy: 1, dz: 1 }, cube(1)).node),
+    ).rejects.toThrow('plugin grid: invalid options: unknown field `dz`');
     expect(h.lower(plugin('nope', {}, cube(1)).node)).rejects.toThrow(
       'no operation plugin "nope" (loaded: grid)',
     );
@@ -88,6 +98,13 @@ describe.if(built)('built plugins', () => {
     const ball = await h.analyze(sphere({ r: 10 }).node, 'printability', { bed: [15, 15, 15] });
     expect(ball).toMatchObject({ needsSupport: true, fitsBed: false, bedContactArea: 0 });
     expect(ball.warnings).toHaveLength(3);
+
+    // camelCase keys, as in the TypeScript API
+    const steep = await h.analyze(t.node, 'printability', { overhangAngle: 90 });
+    expect(steep.overhangArea).toBe(0);
+    await expect(h.analyze(t.node, 'printability', { overhangAngel: 90 })).rejects.toThrow(
+      'unknown field `overhangAngel`',
+    );
   });
 
   test('kernel errors reach the plugin and come back named', async () => {
@@ -136,4 +153,32 @@ test('rejects components that are not tscad plugins, and duplicate names', async
   expect(h.add(fake({}))).rejects.toThrow('not a tscad plugin');
   await h.add(fake({ analyze: () => '{}' }));
   expect(h.add(fake({ analyze: () => '{}' }))).rejects.toThrow('plugin x is loaded twice');
+});
+
+describe.if(built)('plugin packages', () => {
+  test('are found among the dependencies of the nearest package.json', async () => {
+    const project = mkdtempSync(path.join(tmpdir(), 'tscad-plugin-dependencies-'));
+    try {
+      await Bun.write(
+        path.join(project, 'package.json'),
+        JSON.stringify({ dependencies: { '@tscad/plugin-grid': '*', zod: '*' } }),
+      );
+      mkdirSync(path.join(project, 'node_modules/@tscad'), { recursive: true });
+      symlinkSync(
+        path.join(pluginsDirectory, 'grid'),
+        path.join(project, 'node_modules/@tscad/plugin-grid'),
+      );
+      mkdirSync(path.join(project, 'models/parts'), { recursive: true });
+
+      const found = pluginDependencies(path.join(project, 'models/parts'));
+      expect(found).toEqual([
+        { name: '@tscad/plugin-grid', output: path.join(pluginsDirectory, 'grid/dist') },
+      ]);
+      const h = new PluginHost(await loadKernel());
+      const loaded = await h.add(await pluginFromOutput(found[0]!.output, found[0]!.name));
+      expect([loaded.info.name, loaded.origin]).toEqual(['grid', '@tscad/plugin-grid']);
+    } finally {
+      rmSync(project, { recursive: true, force: true });
+    }
+  });
 });
