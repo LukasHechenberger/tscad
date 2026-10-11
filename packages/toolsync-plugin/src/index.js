@@ -43,6 +43,15 @@ const repoPlugin = definePlugin({
                       },
                     },
                     {
+                      '@insert': {
+                        after: 'install',
+                        data: {
+                          name: 'Add the Rust target for plugins',
+                          run: 'rustup target add wasm32-unknown-unknown',
+                        },
+                      },
+                    },
+                    {
                       '@update': {
                         id: 'checks',
                         data: {

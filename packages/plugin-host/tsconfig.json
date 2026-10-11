@@ -1,0 +1,8 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "types": ["bun"],
+    "customConditions": ["bun"]
+  },
+  "include": ["src", "../kernel/src/assets.d.ts"]
+}

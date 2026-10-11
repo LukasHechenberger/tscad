@@ -4,3 +4,4 @@ packages:
   - examples/*
   - packages/*
   - apps/*
+  - plugins
