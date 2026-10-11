@@ -63,8 +63,9 @@ A plugin that is both a dependency and listed in `tscad.json` is loaded once.
 ## Writing a plugin
 
 A plugin is an npm package with a Rust crate in it. [`@tscad/plugin-sdk`](https://www.npmjs.com/package/@tscad/plugin-sdk)
-provides the WIT to implement and `tscad-plugin build`, which compiles the crate into what tscad
-loads. You need Rust with the WebAssembly target:
+provides `tscad-plugin.wit`, the plugin interface your crate implements (hand-written; wit-bindgen
+generates the Rust bindings from it), and `tscad-plugin build`, which compiles the crate into what
+tscad loads. You need Rust with the WebAssembly target:
 
 ```sh
 rustup target add wasm32-unknown-unknown
@@ -188,7 +189,7 @@ bun run build
 | -------------------------------- | ------------------------------------------------------------------------- |
 | `plugin.js`, `plugin.core*.wasm` | The component, transpiled by jco. This is what tscad loads.               |
 | `plugin.component.wasm`          | The component itself (not needed in the published package)                |
-| `<name>.wit`                     | Your options as a WIT record, generated from the options schema           |
+| `<name>.wit`                     | Your options as a WIT record, generated from your Rust options struct     |
 | `index.d.ts`, `index.js`         | Your options as TypeScript interfaces; for an operation, a typed function |
 
 For `stack`, the package exports a `StackOptions` interface and `stack(options, ...children)`.
@@ -206,7 +207,8 @@ goes into the `members` of the root `Cargo.toml`.
 
 ### What options can use
 
-The build turns the options schema into WIT, so options are limited to what WIT can express:
+Your Rust options struct is the source: the build derives `<name>.wit` from it (through the schema
+`info()` reports), and the TypeScript from that WIT. So options are limited to what WIT can express:
 
 | Rust                                   | WIT                        | TypeScript               |
 | -------------------------------------- | -------------------------- | ------------------------ |

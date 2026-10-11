@@ -5,7 +5,7 @@
 
 [![NPM Version](https://img.shields.io/npm/v/@tscad/plugin-sdk)](https://www.npmjs.com/package/@tscad/plugin-sdk) [![Homepage](https://img.shields.io/badge/docs-default)](https://tscad.vercel.app)
 
-Build tscad plugins: the WIT they implement and tscad-plugin build
+Build tscad plugins: the plugin interface (WIT) and tscad-plugin build
 
 <!-- #endregion header -->
 

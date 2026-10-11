@@ -18,8 +18,10 @@ import { optionsWit } from './options-wit';
 import { optionsType, typedExports } from './typed-exports';
 
 /**
- * The directory with the WIT plugins implement, `tscad-plugin.wit`. A plugin crate in a package that
- * depends on this one points wit-bindgen at it:
+ * The directory with `tscad-plugin.wit`, the hand-written plugin interface (worlds and the kernel
+ * API) that plugins implement. Not to be confused with a plugin's options WIT, which the build
+ * generates (`optionsWit`). A plugin crate in a package that depends on this one points wit-bindgen
+ * at it:
  * `wit_bindgen::generate!({ world: "operation", path: "node_modules/@tscad/plugin-sdk/wit" })`.
  *
  * @category Building
@@ -71,7 +73,8 @@ function unavailableImports(): object {
  * Builds the plugin package in `directory`, which has a Cargo.toml and a package.json; this is what
  * `tscad-plugin build` runs. Compiles the crate for `wasm32-unknown-unknown`, makes a component of
  * it and transpiles that into the package's plugin directory (`"tscad": { "plugin": "./dist" }`).
- * A plugin with options also gets them as WIT (`optionsWit`) and typed exports (`typedExports`).
+ * A plugin with options also gets them as WIT, generated from its Rust options struct
+ * (`optionsWit`), and typed exports generated from that WIT (`typedExports`).
  *
  * Needs `cargo` with the `wasm32-unknown-unknown` target.
  *

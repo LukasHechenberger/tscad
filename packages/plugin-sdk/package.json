@@ -1,7 +1,7 @@
 {
   "name": "@tscad/plugin-sdk",
   "version": "0.0.0",
-  "description": "Build tscad plugins: the WIT they implement and tscad-plugin build",
+  "description": "Build tscad plugins: the plugin interface (WIT) and tscad-plugin build",
   "homepage": "https://tscad.vercel.app",
   "repository": {
     "type": "git",

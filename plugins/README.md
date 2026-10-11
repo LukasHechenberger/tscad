@@ -1,7 +1,8 @@
 # Plugins
 
 The plugins maintained with tscad, each its own package. Plugins are WebAssembly components written
-in Rust that implement one world of [`tscad-plugin.wit`](../packages/plugin-sdk/wit/tscad-plugin.wit).
+in Rust that implement one world of [`tscad-plugin.wit`](../packages/plugin-sdk/wit/tscad-plugin.wit),
+the hand-written plugin interface; each plugin's options WIT is generated from its Rust options struct.
 They run sandboxed: a plugin can only call the kernel's shape API, with no file or network access.
 
 | Package                                      | World       | What it does                                                    |

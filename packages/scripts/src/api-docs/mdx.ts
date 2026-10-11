@@ -59,14 +59,15 @@ export const MODULES: ReferenceModule[] = [
     entries: () => [path.join(ROOT, 'packages/plugin-sdk/src/index.ts')],
     categories: {
       Building: 'Turning a plugin package and its Rust crate into what tscad loads.',
-      'Code generation': "The WIT and TypeScript generated from a plugin's options.",
+      'Code generation':
+        "The options WIT and TypeScript generated from a plugin's Rust options struct.",
     },
     overview: {
       description: 'Build tscad plugins',
       text: [
-        'The package plugins are built with: it ships the WIT they implement (`wit/tscad-plugin.wit`, for `wit_bindgen::generate!`) and the `tscad-plugin` command. See [Writing a plugin](/docs/guides/plugins#writing-a-plugin) for a walkthrough.',
+        'What plugins are built with. It ships `wit/tscad-plugin.wit`, the hand-written plugin interface a plugin crate implements (wit-bindgen generates the Rust bindings from it), and the `tscad-plugin` command. See [Writing a plugin](/docs/guides/plugins#writing-a-plugin) for a walkthrough.',
         '```sh\ntscad-plugin build [directory]\n```',
-        'Builds the plugin package in `directory` (default: the current one) with `buildPlugin`. The functions below are its building blocks, for build tools of your own.',
+        "Builds the plugin package in `directory` (default: the current one) with `buildPlugin`. For a plugin with options, it also generates a second WIT, the plugin's options as a record, from its Rust options struct, and the package's typed exports from that. The functions below are its building blocks, for build tools of your own.",
       ].join('\n\n'),
     },
     renderExamples: false,
