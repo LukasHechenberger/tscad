@@ -6,6 +6,13 @@
         "build"
       ]
     },
+    "test": {
+      "dependsOn": [
+        "^build",
+        "test:transit"
+      ],
+      "outputs": []
+    },
     "build": {
       "dependsOn": [
         "^build"
@@ -39,12 +46,6 @@
         "check:types",
         "check:exports",
         "//#check:format"
-      ]
-    },
-    "test": {
-      "outputs": [],
-      "dependsOn": [
-        "test:transit"
       ]
     },
     "test:transit": {

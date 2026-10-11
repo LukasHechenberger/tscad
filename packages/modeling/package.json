@@ -1,7 +1,7 @@
 {
   "name": "@tscad/modeling",
   "version": "0.5.0",
-  "description": "Typescript friendly re-exports of `@jscad/modeling`",
+  "description": "OpenSCAD-style modeling in TypeScript: shapes as a CSG tree for the tscad kernel",
   "homepage": "https://tscad.vercel.app",
   "repository": {
     "type": "git",
@@ -15,26 +15,6 @@
       "types": "./out/index.d.ts",
       "require": "./out/index.cjs",
       "default": "./out/index.js"
-    },
-    "./runtime": {
-      "types": "./out/runtime/index.d.ts",
-      "require": "./out/runtime/index.cjs",
-      "default": "./out/runtime/index.js"
-    },
-    "./colors": {
-      "types": "./out/colors/index.d.ts",
-      "require": "./out/colors/index.cjs",
-      "default": "./out/colors/index.js"
-    },
-    "./convert": {
-      "types": "./out/convert/index.d.ts",
-      "require": "./out/convert/index.cjs",
-      "default": "./out/convert/index.js"
-    },
-    "./primitives": {
-      "types": "./out/primitives/index.d.ts",
-      "require": "./out/primitives/index.cjs",
-      "default": "./out/primitives/index.js"
     }
   },
   "scripts": {
@@ -42,30 +22,17 @@
     "check:exports": "publint",
     "check:types": "tsc --noEmit",
     "dev": "rslib dev --watch",
-    "lint": "oxlint --deny-warnings"
-  },
-  "dependencies": {
-    "@jscad/modeling": "^2.12.6",
-    "json-schema-to-ts": "^3.1.1",
-    "three": "^0.181.2"
+    "lint": "oxlint --deny-warnings",
+    "test": "bun test"
   },
   "devDependencies": {
-    "@microsoft/api-extractor": "^7.55.0",
-    "@microsoft/tsdoc": "^0.16.0",
-    "@repo/scripts": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@rslib/core": "^0.17.2",
-    "@toolsync/template": "^0.1.1",
+    "@types/bun": "^1.3.9",
     "@types/node": "catalog:",
-    "@types/three": "^0.181.0",
-    "ajv": "^8.17.1",
-    "esbuild-autodoc": "workspace:*",
-    "markdown-table": "^3.0.4",
     "publint": "catalog:",
-    "rsbuild-exec": "workspace:*",
-    "slugify": "^1.6.6",
-    "ts-morph": "^26.0.0",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "zod": "^4.6.5"
   },
   "publishConfig": {
     "access": "public"
