@@ -1,5 +1,6 @@
 import { color, difference, type Size3, translate, union, type Vec2 } from '@tscad/modeling';
-import { pattern, roundedBox } from './lib/modeling';
+import { grid } from '@tscad/plugin-grid';
+import { roundedBox } from './lib/modeling';
 import { slopedCuboid } from './lib/sloped-cuboid';
 
 // Specs: https://gridfinity.xyz/specification/
@@ -43,7 +44,7 @@ export type GridfinityBaseplateOptions = {
 };
 
 export function gridfinityBaseplate({
-  grid,
+  grid: cells,
   size: _size,
   outerPadding = true,
 }: GridfinityBaseplateOptions) {
@@ -52,8 +53,8 @@ export function gridfinityBaseplate({
   const size: Size3 = _size
     ? { z: gridfinity.baseplateHeight, ..._size }
     : {
-        x: gridfinity.baseplateDimensions.x * grid.x + padding,
-        y: gridfinity.baseplateDimensions.y * grid.y + padding,
+        x: gridfinity.baseplateDimensions.x * cells.x + padding,
+        y: gridfinity.baseplateDimensions.y * cells.y + padding,
         z: gridfinity.baseplateHeight,
       };
 
@@ -67,16 +68,23 @@ export function gridfinityBaseplate({
         radius: gridfinity.baseplateRadius + padding / 2,
       }),
 
-      // Cutout for the baseplate
-      ...pattern(
+      // Cutout for the baseplate: one per cell, centered in XY
+      translate(
         {
-          cells: grid,
-          cellSize: gridfinity.baseplateDimensions,
-
+          x: ((1 - cells.x) / 2) * gridfinity.baseplateDimensions.x,
+          y: ((1 - cells.y) / 2) * gridfinity.baseplateDimensions.y,
           // 4.65 = Cutout height -> align with the top of the baseplate
-          center: { z: size.z - 4.65 },
+          z: size.z - 4.65,
         },
-        baseplateCutout(),
+        grid(
+          {
+            nx: cells.x,
+            ny: cells.y,
+            dx: gridfinity.baseplateDimensions.x,
+            dy: gridfinity.baseplateDimensions.y,
+          },
+          baseplateCutout(),
+        ),
       ),
     ),
   );
