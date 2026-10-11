@@ -28,6 +28,10 @@ const repoPlugin = definePlugin({
         '@toolsync/builtin/github-actions': {
           workflows: {
             ci: {
+              // Also pull requests stacked on other branches, not only those into main.
+              on: {
+                pull_request: { branches: ['**'] },
+              },
               jobs: {
                 build: {
                   // The kernel's release build (Rust + OCCT) takes a few minutes.
