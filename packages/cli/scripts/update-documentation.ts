@@ -51,8 +51,8 @@ const getOptionsDocumentation = (command: Command) =>
     2,
   )}} />`;
 
-/** The CLI's section of the API reference, next to the modules' generated pages. */
-const documentationDirectory = '../../apps/docs/content/docs/api/cli';
+/** The CLI's section of the docs, under Reference next to the API. */
+const documentationDirectory = '../../apps/docs/content/docs/cli';
 
 /** Text for MDX: braces and angle brackets would be read as expressions and JSX. */
 const mdxText = (text: string) => text.replaceAll(/[{}]/g, String.raw`\$&`).replaceAll('<', '&lt;');
@@ -145,7 +145,7 @@ ${
 // The section's title, order and overview page.
 await writeFile(
   `${documentationDirectory}/meta.json`,
-  `${JSON.stringify({ title: '@tscad/cli', pages: ['index', ...cli.commands.map((command) => command.name())] }, undefined, 2)}\n`,
+  `${JSON.stringify({ title: 'CLI', pagesIndex: 'index', pages: cli.commands.map((command) => command.name()) }, undefined, 2)}\n`,
 );
 await writeFile(
   `${documentationDirectory}/index.mdx`,
@@ -162,7 +162,7 @@ The \`${cli.name()}\` command line, from \`@tscad/cli\`. A new project created w
 ${cli.commands
   .map(
     (command) =>
-      `  <Card title="${cli.name()} ${command.name()}" href="/docs/api/cli/${command.name()}">${mdxText(command.description())}</Card>`,
+      `  <Card title="${cli.name()} ${command.name()}" href="/docs/cli/${command.name()}">${mdxText(command.description())}</Card>`,
   )
   .join('\n')}
 </Cards>
@@ -170,5 +170,5 @@ ${cli.commands
 );
 // Formatted like the rest of the repository, so check:format passes on the generated files.
 // (oxfmt takes no paths with `..`, so it runs from the repository root.)
-await $`node_modules/.bin/oxfmt apps/docs/content/docs/api/cli`.cwd('../..').quiet();
+await $`node_modules/.bin/oxfmt apps/docs/content/docs/cli`.cwd('../..').quiet();
 console.timeEnd(`${logPrefix} ⚡️ Build succeeded`);

@@ -9,12 +9,12 @@ const config = {
   transpilePackages: ['three', '@tscad/viewer'],
   serverExternalPackages: ['typescript', 'twoslash'],
 
-  // The command pages moved from /docs/<command> to the @tscad/cli reference.
+  // The command pages moved from /docs/<command> to /docs/cli/<command>.
   async redirects() {
     return [
       {
         source: '/docs/:command(analyze|dev|export|plugins)',
-        destination: '/docs/api/cli/:command',
+        destination: '/docs/cli/:command',
         permanent: true,
       },
     ];

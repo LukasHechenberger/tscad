@@ -10,18 +10,17 @@ tscad is a TypeScript library published via npm. If you want to run it locally, 
 **Modules available:**
 
 <Cards>
-  {source.pageTree.children
-    .flatMap((item) => {
-      // A section's overview: its index page, or its first page where meta.json lists "index".
-      const overview =
-        item.type === 'folder'
-          ? (item.index ?? item.children.find((child) => child.type === 'page'))
-          : undefined;
-      return overview?.url.startsWith('/docs/api/') ? [{ folder: item, overview }] : [];
-    })
-    .map(({ folder, overview }) => (
-      <Card href={overview.url} key={overview.url} title={folder.name}>
-        {overview.description}
-      </Card>
-    ))}
+  {(function sections(items) {
+    // Every folder with an overview page in the API or CLI reference, wherever the sidebar puts it.
+    return items.flatMap((item) => {
+      if (item.type !== 'folder') return [];
+      const overview = item.index ?? item.children.find((child) => child.type === 'page');
+      const isSection = /^\/docs\/(api\/modules|cli)\/?/.test(overview?.url ?? '');
+      return [...(isSection ? [{ folder: item, overview }] : []), ...sections(item.children)];
+    });
+  })(source.pageTree.children).map(({ folder, overview }) => (
+    <Card href={overview.url} key={overview.url} title={folder.name}>
+      {overview.description}
+    </Card>
+  ))}
 </Cards>

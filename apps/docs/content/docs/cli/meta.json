@@ -1,0 +1,5 @@
+{
+  "title": "CLI",
+  "pagesIndex": "index",
+  "pages": ["dev", "export", "analyze", "plugins"]
+}

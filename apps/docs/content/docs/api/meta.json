@@ -1,1 +1,1 @@
-{ "pages": ["index", "!modules", "!cli", "..."] }
+{ "title": "API", "pagesIndex": "modules/index", "pages": ["...modules"] }

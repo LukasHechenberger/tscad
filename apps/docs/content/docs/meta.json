@@ -1,13 +1,3 @@
 {
-  "pages": [
-    "---Introduction---",
-    "index",
-    "what-is-tscad",
-    "---Guides---",
-    "api/index",
-    "...guides",
-    "---API---",
-    "api/cli",
-    "...api/modules"
-  ]
+  "pages": ["index", "what-is-tscad", "---Guides---", "...guides", "---Reference---", "cli", "api"]
 }

@@ -202,7 +202,7 @@ export async function generateApiDocs(
   }
   await Bun.write(
     path.join(output.contentDir, 'meta.json'),
-    `${JSON.stringify({ title: module.name, pages: ['index', ...categories.map((category) => slug(category))] }, undefined, 2)}\n`,
+    `${JSON.stringify({ title: module.name, pages: categories.map((category) => slug(category)) }, undefined, 2)}\n`,
   );
   const cards = categories.map(
     (category) =>
