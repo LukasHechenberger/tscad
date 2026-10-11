@@ -42,7 +42,7 @@
     "check:exports": "publint",
     "check:types": "tsc --noEmit",
     "dev": "rslib dev --watch",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "oxlint --deny-warnings"
   },
   "dependencies": {
     "@jscad/modeling": "^2.12.6",
@@ -52,7 +52,6 @@
   "devDependencies": {
     "@microsoft/api-extractor": "^7.55.0",
     "@microsoft/tsdoc": "^0.16.0",
-    "@repo/eslint-config": "workspace:*",
     "@repo/scripts": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@rslib/core": "^0.17.2",
@@ -61,7 +60,6 @@
     "@types/three": "^0.181.0",
     "ajv": "^8.17.1",
     "esbuild-autodoc": "workspace:*",
-    "eslint": "catalog:",
     "markdown-table": "^3.0.4",
     "publint": "catalog:",
     "rsbuild-exec": "workspace:*",

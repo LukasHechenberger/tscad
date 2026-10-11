@@ -181,6 +181,7 @@ class ApiItemFormatter {
         shortTitle: `\`function ${item.displayName}{:ts}\``,
 
         body: [
+          // eslint-disable-next-line unicorn/no-useless-spread -- keeps the shape of the other kinds' bodies
           ...(item.parameters.length > 0
             ? [
                 `**Parameters**`,

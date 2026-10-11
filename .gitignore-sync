@@ -18,5 +18,4 @@ temp
 .vscode/settings.json
 .vscode/extensions.json
 .prettierignore
-.prettierrc.json
 .changeset/README.md

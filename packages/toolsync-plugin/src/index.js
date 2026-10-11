@@ -10,6 +10,21 @@ const repoPlugin = definePlugin({
     return {
       config: {
         '@repo/toolsync-plugin': {},
+        // oxfmt and oxlint replace prettier and eslint (`.oxfmtrc.json`, `.oxlintrc.json`); this
+        // keeps the format check the prettier builtin used to set up.
+        '@toolsync/builtin/turbo': {
+          tasks: {
+            '//#check:format': {},
+            check: {
+              dependsOn: ['//#check:format'],
+            },
+          },
+        },
+        '@toolsync/builtin/vscode': {
+          extensions: {
+            recommendations: ['oxc.oxc-vscode'],
+          },
+        },
         '@toolsync/builtin/github-actions': {
           workflows: {
             ci: {

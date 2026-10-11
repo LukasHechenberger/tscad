@@ -19,7 +19,7 @@
     "check:types": "tsc --noEmit",
     "dev": "rslib dev --watch",
     "dev:on-success": "PORT=3999 node out/bin.js dev ../../examples/gridfinity-generator/src/model.ts",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "oxlint --deny-warnings"
   },
   "dependencies": {
     "@jscad/3mf-serializer": "^2.1.15",
@@ -35,7 +35,6 @@
     "vite": "^7.2.2"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@rslib/core": "^0.17.2",
     "@toolsync/template": "^0.1.1",
@@ -43,7 +42,6 @@
     "@tscad/modeling": "workspace:*",
     "@types/debug": "^4.1.12",
     "@types/node": "catalog:",
-    "eslint": "catalog:",
     "publint": "catalog:",
     "rsbuild-exec": "workspace:*",
     "typescript": "catalog:"

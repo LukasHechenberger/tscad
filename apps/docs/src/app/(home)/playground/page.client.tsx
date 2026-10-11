@@ -316,7 +316,7 @@ export function PlaygroundEditor({
 }) {
   const { resolvedTheme } = useTheme();
   const { code, setCode, error } = useContext(PlaygroundContext);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, unicorn/no-useless-undefined -- useRef needs an argument
   const modelReference = useRef<any | undefined>(undefined);
   const monaco = useMonaco();
 

@@ -16,7 +16,7 @@
   },
   "scripts": {
     "check:types": "tsc --noEmit",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "oxlint --deny-warnings"
   },
   "dependencies": {
     "@microsoft/api-documenter": "^7.28.0",
@@ -28,10 +28,8 @@
     "ts-morph": "^26.0.0"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "catalog:",
-    "eslint": "catalog:",
     "fumadocs-ui": "16.0.11",
     "typescript": "catalog:"
   }
