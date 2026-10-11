@@ -4,6 +4,8 @@ packages/*/.gitignore
 
 [inline]
 node_modules
+# Rust (crates/*)
+target
 out
 .turbo
 coverage

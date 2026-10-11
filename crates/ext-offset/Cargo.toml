@@ -1,0 +1,12 @@
+[package]
+name = "tscad-ext-offset"
+version = "0.1.0"
+edition = "2024"
+description = "Kernel extension: OpenSCAD-style 2D offset (round `r` / sharp `delta`) via OCCT's BRepOffsetAPI_MakeOffset"
+
+[dependencies]
+cadrum = { version = "0.9.0", default-features = false }
+cxx = "1"
+
+[build-dependencies]
+cxx-build = "1"
