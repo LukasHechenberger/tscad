@@ -1,6 +1,6 @@
 ---
 title: tscad export
-description: Export the model to a file
+description: Export the model to a file (.stl, .step, .glb, .png, .svg, or a format an exporter plugin adds, e.g. .3mf)
 ---
 
 ## Overview
@@ -11,16 +11,12 @@ Use `tscad export` to export your tscad model to a file format suitable for 3D p
 {/* This section is generated. Do not edit manually! */}
 
 ```ansi title="Terminal"
-[1mUsage:[22m [1m[35mtscad[39m[22m [1m[35mexport[39m[22m [36m[options][39m [36m[params...][39m
+[1mUsage:[22m [1m[35mtscad[39m[22m [1m[35mexport[39m[22m [36m[options][39m
 
-[2m> Export the model to a file[22m
-
-[1mArguments:[22m
-  [36mparams[39m               Parameters to pass to the model
+[2m> Export the model to a file (.stl, .step, .glb, .png, .svg, or a format an exporter plugin adds, e.g. .3mf)[22m
 
 [1mOptions:[22m
   [36m--model [model][39m      Where to find the tscad model (default: "src/model.ts")
-  [36m--parts[39m              Export each part to a separate file (default: false)
   [36m--output <filename>[39m  The output file (default: "./out/model.stl")
   [36m--slice <slicer>[39m     Open the result in a slicer (default: false)
   [36m-h, --help[39m           Display help for command
@@ -37,19 +33,10 @@ import { TypeTable } from 'fumadocs-ui/components/type-table';
 ## API
 
 ```ansi title="Terminal"
-[2m$[22m[22m [1m[35mtscad[39m[22m [1m[35mexport[39m[22m [36m[options][39m [36m[params...][39m
+[2m$[22m[22m [1m[35mtscad[39m[22m [1m[35mexport[39m[22m [36m[options][39m
 ```
 
-### Arguments [!toc]
-
-{/* prettier-ignore */}
-<TypeTable type={{
-  "params": {
-    "type": "string",
-    "required": false,
-    "description": "Parameters to pass to the model"
-  }
-}} />
+{/* No arguments available. */}
 
 {/* #endregion arguments */}
 
@@ -65,12 +52,6 @@ import { TypeTable } from 'fumadocs-ui/components/type-table';
     "required": false,
     "description": "Where to find the tscad model",
     "default": "src/model.ts"
-  },
-  "--parts": {
-    "type": "boolean",
-    "required": false,
-    "description": "Export each part to a separate file",
-    "default": false
   },
   "--output": {
     "type": "string",

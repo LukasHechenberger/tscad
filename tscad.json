@@ -1,0 +1,3 @@
+{
+  "plugins": ["plugins/grid", "plugins/export-3mf", "plugins/printability"]
+}
