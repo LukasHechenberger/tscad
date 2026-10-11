@@ -1,0 +1,222 @@
+/* @tscad/viewer: everything is scoped to the viewer's root, which fills its container. */
+.tscad-viewer {
+  --tscad-bg: #f4f5f7;
+  --tscad-panel: rgb(255 255 255 / 85%);
+  --tscad-text: #1d2330;
+  --tscad-muted: #6b7385;
+  --tscad-error-bg: #fdecec;
+  --tscad-error-text: #9b1c1c;
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--tscad-bg);
+  color: var(--tscad-text);
+  color-scheme: light;
+  font:
+    13px/1.4 ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+.tscad-viewer[data-theme='dark'] {
+  --tscad-bg: #16181d;
+  --tscad-panel: rgb(30 33 40 / 85%);
+  --tscad-text: #e6e8ee;
+  --tscad-muted: #8e95a6;
+  --tscad-error-bg: #3a1d1f;
+  --tscad-error-text: #ffb4b4;
+
+  color-scheme: dark;
+}
+.tscad-viewer canvas {
+  display: block;
+}
+.tscad-viewer a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 2px;
+}
+.tscad-viewer a:hover {
+  text-decoration-color: currentColor;
+}
+
+.tscad-status {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: var(--tscad-panel);
+  color: var(--tscad-muted);
+  backdrop-filter: blur(6px);
+}
+.tscad-status:empty {
+  display: none;
+}
+.tscad-status b {
+  color: var(--tscad-text);
+  font-weight: 600;
+}
+
+.tscad-error {
+  position: absolute;
+  inset: 12px 12px auto;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: var(--tscad-error-bg);
+  color: var(--tscad-error-text);
+  font:
+    12px/1.45 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  white-space: pre-wrap;
+  max-height: 50%;
+  overflow: auto;
+}
+.tscad-error:empty {
+  display: none;
+}
+.tscad-viewer:has(.tscad-sidebar > section:not([hidden])) .tscad-error {
+  right: 288px;
+}
+
+/* Right column: parameter form and analysis reports, stacked. */
+.tscad-sidebar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 264px;
+  max-height: calc(100% - 24px);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tscad-sidebar > section {
+  box-sizing: border-box;
+  padding: 10px 12px 12px;
+  border-radius: 8px;
+  background: var(--tscad-panel);
+  backdrop-filter: blur(6px);
+}
+.tscad-sidebar > section[hidden] {
+  display: none;
+}
+.tscad-sidebar header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.tscad-parameters .reset {
+  border: 0;
+  background: none;
+  color: var(--tscad-muted);
+  font: inherit;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.tscad-parameters .reset:hover {
+  color: var(--tscad-text);
+}
+
+.tscad-viewer .field {
+  display: grid;
+  grid-template-columns: 1fr 72px;
+  gap: 4px 8px;
+  align-items: center;
+  padding: 6px 0;
+}
+.tscad-viewer .field .name {
+  grid-column: 1 / -1;
+  color: var(--tscad-muted);
+}
+.tscad-viewer .field.ranged input[type='range'] {
+  grid-column: 1;
+  grid-row: 2;
+  width: 100%;
+  margin: 0;
+}
+.tscad-viewer .field.ranged input[type='number'] {
+  grid-column: 2;
+  grid-row: 2;
+}
+.tscad-viewer .field:not(.ranged, .inline) > :not(.name) {
+  grid-column: 1 / -1;
+}
+.tscad-viewer .field.inline {
+  grid-template-columns: 1fr auto;
+}
+.tscad-viewer .field.inline .name {
+  grid-column: 1;
+}
+.tscad-viewer .field.inline input {
+  grid-column: 2;
+}
+.tscad-viewer .field input[type='number'],
+.tscad-viewer .field input[type='text'],
+.tscad-viewer .field select {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 3px 6px;
+  border: 1px solid color-mix(in srgb, var(--tscad-muted) 40%, transparent);
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+/* Analysis reports */
+.tscad-viewer .report + .report {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--tscad-muted) 25%, transparent);
+}
+.tscad-viewer .report h3 {
+  margin: 0 0 4px;
+  font-size: inherit;
+  font-weight: 600;
+}
+.tscad-viewer .report dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  margin: 0;
+}
+.tscad-viewer .report dt {
+  color: var(--tscad-muted);
+}
+.tscad-viewer .report dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.tscad-viewer .report .warning,
+.tscad-viewer .report .failure {
+  margin: 6px 0 0;
+  padding: 4px 6px;
+  border-radius: 4px;
+  background: var(--tscad-error-bg);
+  color: var(--tscad-error-text);
+}
+.tscad-viewer .report .ok {
+  margin: 6px 0 0;
+  color: var(--tscad-muted);
+}
+
+@media (max-width: 640px) {
+  .tscad-sidebar {
+    top: auto;
+    bottom: 52px;
+    width: calc(100% - 24px);
+    max-height: 40%;
+  }
+  .tscad-viewer:has(.tscad-sidebar > section:not([hidden])) .tscad-error {
+    right: 12px;
+  }
+}

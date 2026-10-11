@@ -9,34 +9,30 @@
     "directory": "packages/viewer"
   },
   "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/viewer.ts",
+    "./style.css": "./src/viewer.css",
+    "./preview.html": "./src/preview/index.html",
+    "./protocol": "./src/protocol.ts",
+    "./report": "./src/report.ts"
+  },
   "scripts": {
     "check:exports": "publint",
     "check:types": "tsc --noEmit",
-    "dev": "echo 'Add dev script here'",
-    "lint": "oxlint --deny-warnings"
+    "lint": "oxlint --deny-warnings",
+    "test": "bun test"
   },
   "dependencies": {
-    "@react-three/drei": "^10.7.7",
-    "@react-three/fiber": "^9.4.0",
     "@tscad/modeling": "workspace:*",
-    "json-schema-to-ts": "^3.1.1",
-    "leva": "^0.10.1",
-    "react-error-boundary": "^6.0.0"
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
-    "@types/three": "^0.181.0",
+    "@types/bun": "^1.3.9",
+    "@types/three": "^0.186.0",
     "publint": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "three": "^0.181.2",
     "typescript": "catalog:"
-  },
-  "peerDependencies": {
-    "react": "catalog:",
-    "react-dom": "catalog:"
   },
   "publishConfig": {
     "access": "public"
