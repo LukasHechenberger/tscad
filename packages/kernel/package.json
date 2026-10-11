@@ -13,12 +13,25 @@
   "type": "module",
   "exports": {
     ".": {
-      "bun": "./src/bun.ts",
-      "default": "./src/index.ts"
-    }
+      "bun": {
+        "types": "./out/types/bun.d.ts",
+        "default": "./out/bun.js"
+      },
+      "node": {
+        "types": "./out/types/node.d.ts",
+        "default": "./out/node.js"
+      },
+      "types": "./out/types/index.d.ts",
+      "default": "./out/index.js"
+    },
+    "./kernel.wasm": "./kernel.wasm"
   },
+  "files": [
+    "out",
+    "kernel.wasm"
+  ],
   "scripts": {
-    "build": "bun scripts/build.ts native",
+    "build": "bun scripts/build.ts js native",
     "build:wasm": "bun scripts/build.ts wasm",
     "check:types": "tsc --noEmit",
     "lint": "oxlint --deny-warnings",

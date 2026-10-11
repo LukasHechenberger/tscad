@@ -4,5 +4,5 @@
     "types": ["bun"],
     "customConditions": ["bun"]
   },
-  "include": ["src", "../kernel/src/assets.d.ts"]
+  "include": ["src"]
 }

@@ -9,10 +9,19 @@ import path from 'node:path';
 import type { Kernel } from './protocol';
 import { createWasmKernel } from './wasm';
 
-export * from './index';
+export { createWasmKernel } from './wasm';
+export {
+  FORMATS,
+  type CacheStats,
+  type Format,
+  type Kernel,
+  type KernelShape,
+  type MeshData,
+  type ShapeInfo,
+} from './protocol';
 export { createNativeKernel } from './native';
 
-/** Where `bun run build:kernel:native` puts the library for the current platform. */
+/** Where `bun run build` (scripts/build.ts) puts the library for the current platform. */
 export const nativeLibraryPath = path.join(
   import.meta.dir,
   '../native',
@@ -26,8 +35,7 @@ export async function loadKernel(prefer = process.env.TSCAD_KERNEL): Promise<Ker
   }
   if (prefer === 'native')
     throw new Error(
-      `no native kernel at ${nativeLibraryPath}; run \`bun run build:kernel:native\``,
+      `no native kernel at ${nativeLibraryPath}; run \`bun run build\` in packages/kernel`,
     );
-  const { default: path } = await import('../kernel.wasm', { with: { type: 'file' } });
-  return createWasmKernel(await Bun.file(path).arrayBuffer());
+  return createWasmKernel(await Bun.file(new URL('../kernel.wasm', import.meta.url)).arrayBuffer());
 }

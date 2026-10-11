@@ -1,4 +1,4 @@
-import { createWasmKernel, type Kernel } from '@tscad/kernel';
+import { type Kernel, loadKernel } from '@tscad/kernel';
 import { evaluateModel, Model, type ModelExport, type ParametersJsonSchema } from '@tscad/modeling';
 import * as zod from 'zod';
 
@@ -10,15 +10,9 @@ import * as zod from 'zod';
 let model: ModelExport;
 let kernel: Promise<Kernel> | undefined;
 
-/** The wasm kernel (OpenCASCADE, ~20 MB), loaded once on first use. */
-function loadKernel() {
-  // Absolute: bundled workers may not resolve root-relative URLs against the page.
-  kernel ??= fetch(new URL('/playground/resources/kernel.wasm', self.location.origin))
-    .then((response) => {
-      if (!response.ok) throw new Error(`Failed to load the kernel: ${response.statusText}`);
-      return response.arrayBuffer();
-    })
-    .then((wasm) => createWasmKernel(wasm));
+/** The wasm kernel (OpenCASCADE, ~20 MB), loaded once on first use from `@tscad/kernel`'s kernel.wasm. */
+function getKernel() {
+  kernel ??= loadKernel();
   return kernel;
 }
 
@@ -84,7 +78,7 @@ globalThis.addEventListener(
         );
         if (result.error !== undefined) throw new Error(result.error);
         const started = performance.now();
-        const engine = await loadKernel();
+        const engine = await getKernel();
         // A copy owning its buffer, transferred to the page.
         const glb = new Uint8Array(engine.render(result.tree, 'glb')).buffer;
         const renderMs = Math.round(performance.now() - started);

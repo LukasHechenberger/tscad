@@ -6,7 +6,7 @@ const withMDX = createMDX();
 const config = {
   reactStrictMode: true,
   // Workspace packages that publish TypeScript sources
-  transpilePackages: ['three', '@tscad/kernel', '@tscad/viewer'],
+  transpilePackages: ['three', '@tscad/viewer'],
   serverExternalPackages: ['typescript', 'twoslash'],
 
   // We lint in the ci workflow anyway

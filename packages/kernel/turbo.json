@@ -5,11 +5,13 @@
     "build": {
       "inputs": [
         "scripts/build.ts",
+        "src/**",
+        "tsconfig*.json",
         "$TURBO_ROOT$/crates/**",
         "$TURBO_ROOT$/Cargo.toml",
         "$TURBO_ROOT$/Cargo.lock"
       ],
-      "outputs": ["native/**"]
+      "outputs": ["native/**", "out/**"]
     },
     // Runs cargo in cadrum's cross-compile image, so it needs Docker.
     "build:wasm": {

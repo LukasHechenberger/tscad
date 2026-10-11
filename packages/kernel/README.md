@@ -10,19 +10,27 @@ The tscad CAD kernel: evaluates modeling trees with OpenCASCADE, natively in Bun
 <!-- #endregion header -->
 
 The kernel is Rust ([`crates/kernel`](../../crates/kernel)) on [cadrum](https://docs.rs/cadrum),
-which statically links a headless OpenCASCADE. One C ABI serves both builds:
+which statically links a headless OpenCASCADE. One C ABI serves two builds: WebAssembly
+(`kernel.wasm`, part of this package) and a native library for Bun (`native/`, about 3× faster).
+`loadKernel()` picks what the runtime supports:
 
-- **native** (`native/libtscad_kernel.*`, `bun run build`): loaded through `bun:ffi` by the CLI;
-- **WebAssembly** (`kernel.wasm`, `bun run build:wasm`, needs Docker): for browsers, and Bun as a
-  fallback.
+| Runtime                 | Entry          | Kernel                                                                                                     |
+| ----------------------- | -------------- | ---------------------------------------------------------------------------------------------------------- |
+| Browsers (and bundlers) | `out/index.js` | `kernel.wasm`, fetched; Vite, webpack and Turbopack emit it as an asset                                    |
+| Node                    | `out/node.js`  | `kernel.wasm`, read from the package                                                                       |
+| Bun                     | `out/bun.js`   | the native library if built for this platform, else `kernel.wasm` (`TSCAD_KERNEL=wasm\|native` forces one) |
 
 ```ts
-import { loadKernel } from '@tscad/kernel'; // Bun: native if built, else wasm
-import { cube, sphere, difference } from '@tscad/modeling';
+import { loadKernel } from '@tscad/kernel';
+import { cube, difference, sphere } from '@tscad/modeling';
 
-const kernel = await loadKernel();
+const kernel = await loadKernel(); // or loadKernel('https://example.com/kernel.wasm')
 const stl = kernel.render(difference(cube(10, { center: true }), sphere({ r: 6.5 })), 'stl');
 ```
+
+`bun run build` bundles the entries with `Bun.build` (declarations by `tsc`) and builds the native
+library with cargo; `bun run build:wasm` builds `kernel.wasm` in cadrum's cross-compile image
+(Docker).
 
 A kernel is a session: `kernel.evaluate(model)` returns a shape handle (`export`, `mesh`, `info`,
 `release`), and evaluated subtrees stay cached across evaluations, so re-rendering a model after a
