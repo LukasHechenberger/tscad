@@ -5,7 +5,7 @@ import type { PluginSource } from './index';
 
 export * from './index';
 
-/** A plugin directory as `@tscad/plugins`' build leaves it: `<dir>/dist/plugin.js` + core wasm. */
+/** A plugin directory as `tscad-plugin build` leaves it: `<dir>/dist/plugin.js` + core wasm. */
 export async function pluginFromDirectory(directory: string): Promise<PluginSource> {
   return pluginFromOutput(path.join(path.resolve(directory), 'dist'), directory);
 }
@@ -18,7 +18,7 @@ export async function pluginFromOutput(
   const entry = path.join(outputDirectory, 'plugin.js');
   if (!existsSync(entry))
     throw new Error(
-      `plugin ${origin} is not built (no ${entry}); run \`bun run build --filter=@tscad/plugins\``,
+      `plugin ${origin} is not built (no ${entry}); run \`tscad-plugin build\` in it`,
     );
   const { instantiate } = await import(entry);
   return {
@@ -59,13 +59,15 @@ function findInstalled(name: string, directory: string): string | undefined {
  * The plugin packages among the dependencies of the package containing `directory`: those with a
  * `"tscad": { "plugin": "./dist" }` field in their package.json, pointing at their build output.
  */
-export function pluginDependencies(directory: string): { name: string; output: string }[] {
+export function pluginDependencies(
+  directory: string,
+): { name: string; directory: string; output: string }[] {
   const found = findPackage(directory);
   if (!found) return [];
   const { dependencies = {}, devDependencies = {} } = found.json;
   return Object.keys({ ...dependencies, ...devDependencies }).flatMap((name) => {
     const installed = findInstalled(name, found.directory);
     const plugin = installed && findPackage(installed)?.json.tscad?.plugin;
-    return plugin ? [{ name, output: path.join(installed, plugin) }] : [];
+    return plugin ? [{ name, directory: installed, output: path.join(installed, plugin) }] : [];
   });
 }

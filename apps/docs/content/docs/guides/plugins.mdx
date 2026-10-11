@@ -3,8 +3,8 @@ title: Plugins
 description: New operations, export formats and analyses, as sandboxed WebAssembly components.
 ---
 
-Plugins are WebAssembly components (built from Rust here) that implement one of the interfaces
-in `wit/tscad-plugin.wit`. They run sandboxed: they can call the kernel's shape API, but have no
+Plugins are WebAssembly components, written in Rust, that implement one of the worlds in
+`tscad-plugin.wit` (shipped in [`@tscad/plugin-sdk`](#writing-a-plugin)). They run sandboxed: they can call the kernel's shape API, but have no
 file or network access. The same plugin runs in the CLI, the preview and the browser.
 
 | Kind      | What it does                                                   | Example                                     |
@@ -18,13 +18,8 @@ file or network access. The same plugin runs in the CLI, the preview and the bro
 Add the plugin's package to your model's dependencies. tscad finds plugin packages among the
 dependencies of the package.json nearest to the model, so there is nothing else to configure:
 
-```json title="package.json"
-{
-  "dependencies": {
-    "@tscad/modeling": "workspace:*",
-    "@tscad/plugin-grid": "workspace:*"
-  }
-}
+```sh
+bun add @tscad/plugin-grid
 ```
 
 An operation plugin's package exports it as a typed function, documented in the
@@ -37,15 +32,10 @@ import { grid } from '@tscad/plugin-grid';
 export default grid({ nx: 3, ny: 2, dx: 10, dy: 10 }, cylinder({ h: 4, r: 3 }));
 ```
 
-<Callout>
-  The plugin packages are not published yet: depend on them from inside the tscad workspace, as
-  `workspace:*`.
-</Callout>
-
-Exporters and analyses need no import: once loaded, they are available to the CLI and the preview.
+Exporters and analyses need no import: once installed, they are available to the CLI and the
+preview.
 
 ```sh
-bun run build --filter=@tscad/plugins       # build the plugins in this repo
 tscad plugins                               # the plugins your models get
 tscad export --output model.3mf             # an exporter plugin's format
 tscad analyze                               # run the analysis plugins
@@ -72,20 +62,37 @@ A plugin that is both a dependency and listed in `tscad.json` is loaded once.
 
 ## Writing a plugin
 
-Plugins live in the `plugins/` folder of the tscad repository. Its build, the private
-`@tscad/plugins` package, compiles every crate in that folder.
+A plugin is an npm package with a Rust crate in it. [`@tscad/plugin-sdk`](https://www.npmjs.com/package/@tscad/plugin-sdk)
+provides the WIT to implement and `tscad-plugin build`, which compiles the crate into what tscad
+loads. You need Rust with the WebAssembly target:
 
-<Callout>
-  `@tscad/plugins` is not published yet, and its build only finds the plugins in its own folder.
-  Until that changes, write your plugin inside a clone of the repository.
-</Callout>
+```sh
+rustup target add wasm32-unknown-unknown
+```
 
-### 1. Create the crate
+### 1. Create the package
 
-Make a folder `plugins/<name>` with a library crate called `tscad-plugin-<name>`, and add the
-folder to `members` in the root `Cargo.toml`:
+```json title="package.json"
+{
+  "name": "tscad-plugin-stack",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "files": ["dist", "!dist/plugin.component.wasm"],
+  "tscad": { "plugin": "./dist" },
+  "scripts": { "build": "tscad-plugin build" },
+  "peerDependencies": { "@tscad/modeling": "^0.5.0" },
+  "devDependencies": { "@tscad/plugin-sdk": "^0.1.0" }
+}
+```
 
-```toml title="plugins/stack/Cargo.toml"
+The `tscad.plugin` field is what makes tscad load the package, and `exports` points at the typed
+function the build generates. An exporter or analysis has no `exports` unless it has options, and
+needs no `peerDependencies`.
+
+Next to it, a library crate:
+
+```toml title="Cargo.toml"
 [package]
 name = "tscad-plugin-stack"
 version = "0.1.0"
@@ -99,22 +106,27 @@ wit-bindgen = "0.62"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 schemars = "1"
+
+# Smaller components; in a Cargo workspace, set this in the workspace's Cargo.toml.
+[profile.release]
+opt-level = "s"
+lto = true
 ```
 
 ### 2. Implement a world
 
-Pick the world for your kind of plugin from `wit/tscad-plugin.wit`: `operation`, `exporter` or
+Pick the world for your kind of plugin from `tscad-plugin.wit`: `operation`, `exporter` or
 `analysis`. Then implement its exports. A plugin works with geometry only through the `kernel`
 interface: it can compose shapes and query them (`volume`, `bounds`, `mesh`, …).
 
 Declare the options as a Rust struct. It is the single source for the options: serde parses
 them, and schemars derives the JSON Schema that `info()` reports.
 
-```rust title="plugins/stack/src/lib.rs"
+```rust title="src/lib.rs"
 use schemars::JsonSchema;
 use serde::Deserialize;
 
-wit_bindgen::generate!({ world: "operation", path: "../../wit" });
+wit_bindgen::generate!({ world: "operation", path: "node_modules/@tscad/plugin-sdk/wit" });
 
 use tscad::plugin::kernel::union;
 use tscad::plugin::types::Vec3;
@@ -141,7 +153,7 @@ struct Stack;
 impl Guest for Stack {
 	fn info() -> PluginInfo {
 		PluginInfo {
-			name: "stack".into(), // must match the folder name
+			name: "stack".into(), // models use it as stack(…) or plugin("stack", …)
 			version: env!("CARGO_PKG_VERSION").into(),
 			description: "Stacks copies of its children.".into(),
 			options_schema: schemars::schema_for!(Options).to_value().to_string(),
@@ -166,48 +178,31 @@ Return errors as `Err(message)`. The host adds the plugin's name to the message.
 ### 3. Build it
 
 ```sh
-bun run build --filter=@tscad/plugins
+bun install
+bun run build
 ```
 
-This writes `plugins/<name>/dist/`:
+`tscad-plugin build` compiles the crate and writes the package's plugin directory, `dist/`:
 
-| File                             | What it is                                                                     |
-| -------------------------------- | ------------------------------------------------------------------------------ |
-| `plugin.js`, `plugin.core*.wasm` | The component, transpiled by jco. This is what tscad loads.                    |
-| `plugin.component.wasm`          | The component itself                                                           |
-| `<name>.wit`                     | Your options as a WIT record, generated from the options schema                |
-| `index.ts`                       | Your options as a TypeScript interface; for an operation, a typed function too |
+| File                             | What it is                                                                |
+| -------------------------------- | ------------------------------------------------------------------------- |
+| `plugin.js`, `plugin.core*.wasm` | The component, transpiled by jco. This is what tscad loads.               |
+| `plugin.component.wasm`          | The component itself (not needed in the published package)                |
+| `<name>.wit`                     | Your options as a WIT record, generated from the options schema           |
+| `index.d.ts`, `index.js`         | Your options as TypeScript interfaces; for an operation, a typed function |
 
-For `stack`, `index.ts` exports a `StackOptions` interface and
-`stack(options, ...children)`. Your doc comments become TSDoc, and so do ranges (`At least 1.`)
-and defaults (`@defaultValue 2`).
+For `stack`, the package exports a `StackOptions` interface and `stack(options, ...children)`.
+Your doc comments become TSDoc, and so do ranges (`At least 1.`) and defaults (`@defaultValue 2`).
 
-### 4. Make it a package
+### 4. Use and publish it
 
-Give the folder a `package.json`. The `tscad.plugin` field is what makes tscad load it, and
-`exports` points at the typed functions the build generated:
+Add the package to a model's dependencies (`bun add ../tscad-plugin-stack` while developing; it
+copies the package, so reinstall after rebuilding),
+check that it loads with `tscad plugins`, and use it: `stack({ count: 3 }, cube(5))`. When it
+works, `bun publish` it like any package.
 
-```json title="plugins/stack/package.json"
-{
-  "name": "@tscad/plugin-stack",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "exports": { ".": "./dist/index.ts" },
-  "files": ["dist"],
-  "tscad": { "plugin": "./dist" },
-  "peerDependencies": { "@tscad/modeling": "workspace:*" },
-  "devDependencies": { "@tscad/plugins": "workspace:*" }
-}
-```
-
-The dev dependency on `@tscad/plugins` makes turbo build the plugins before anything that depends
-on yours. An exporter or analysis has no `exports` unless it has options, and needs no
-`peerDependencies`.
-
-Then add `@tscad/plugin-stack` to a model's dependencies, check that it loads with
-`tscad plugins`, and use it: `stack({ count: 3 }, cube(5))`. If you skip the package, list the folder in
-`tscad.json` instead and use `plugin('stack', { count: 3 }, cube(5))`.
+The plugins in the tscad repository (`plugins/`) are built the same way. There, a new plugin also
+goes into the `members` of the root `Cargo.toml`.
 
 ### What options can use
 

@@ -1,0 +1,42 @@
+{
+  "name": "@tscad/plugin-sdk",
+  "version": "0.0.0",
+  "description": "Build tscad plugins: the WIT they implement and tscad-plugin build",
+  "homepage": "https://tscad.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasHechenberger/tscad.git",
+    "directory": "packages/plugin-sdk"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "bin": {
+    "tscad-plugin": "./src/bin.ts"
+  },
+  "files": [
+    "src",
+    "!src/**/*.test.ts",
+    "wit"
+  ],
+  "scripts": {
+    "check:exports": "publint",
+    "check:types": "tsc --noEmit",
+    "lint": "oxlint --deny-warnings",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@bytecodealliance/jco": "1.37.0"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/bun": "^1.3.9",
+    "publint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

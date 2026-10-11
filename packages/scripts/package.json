@@ -28,6 +28,9 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@tscad/plugin-export-3mf": "workspace:*",
+    "@tscad/plugin-grid": "workspace:*",
+    "@tscad/plugin-printability": "workspace:*",
     "@types/bun": "^1.3.9"
   }
 }

@@ -19,17 +19,16 @@ export type Cell = { code: string };
 export type Result = { code: string; value: Shape | Shape2D };
 
 /** The exports of each built plugin package, by import specifier. */
-export const PLUGIN_SCOPES: { specifier: string; entry: string; names: string[] }[] =
-  await Promise.all(
-    pluginModules().map(async (module) => ({
-      ...module,
-      names: Object.keys(await import(module.entry)),
-    })),
-  );
+export const PLUGIN_SCOPES: { specifier: string; names: string[] }[] = await Promise.all(
+  pluginModules().map(async ({ specifier }) => ({
+    specifier,
+    names: Object.keys(await import(specifier)),
+  })),
+);
 
 /** Names an example can use without importing them. */
 export const SCOPE: Record<string, unknown> = { ...api, z };
-for (const { entry } of PLUGIN_SCOPES) Object.assign(SCOPE, await import(entry));
+for (const { specifier } of PLUGIN_SCOPES) Object.assign(SCOPE, await import(specifier));
 
 /** Splits an example into cells, each ending with an expression whose value is shown. */
 export function cells(code: string): {

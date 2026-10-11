@@ -5,7 +5,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-wit_bindgen::generate!({ world: "analysis", path: "../../wit" });
+wit_bindgen::generate!({ world: "analysis", path: "node_modules/@tscad/plugin-sdk/wit" });
 
 use tscad::plugin::types::Mesh;
 

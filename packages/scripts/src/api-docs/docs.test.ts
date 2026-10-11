@@ -43,7 +43,7 @@ test('examples type-check against the API', () => {
     `import { ${names.join(', ')} } from "@tscad/modeling";`,
     `import { z } from "zod";`,
     ...PLUGIN_SCOPES.map(
-      ({ names, entry }) => `import { ${names.join(', ')} } from "${entry.replace(/\.ts$/, '')}";`,
+      ({ names, specifier }) => `import { ${names.join(', ')} } from "${specifier}";`,
     ),
     ...examples.map(
       ({ code }, index) =>

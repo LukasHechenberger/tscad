@@ -95,7 +95,9 @@ async function entryMdx(
         if (!message.includes('was not expanded'))
           throw new Error(`${entry.name}, example ${exampleIndex + 1}: ${message}`);
         // eslint-disable-next-line no-console
-        console.warn(`${entry.name}: no picture (${message}); build the plugins (@tscad/plugins)`);
+        console.warn(
+          `${entry.name}: no picture (${message}); build the plugins (bun run build --filter='./plugins/*')`,
+        );
         parts.push(`<Example>\n\n${fence(code)}\n\n</Example>`);
       }
     }
