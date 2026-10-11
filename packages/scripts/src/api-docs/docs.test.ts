@@ -71,7 +71,7 @@ test('examples type-check against the API', () => {
     return `${label}: ${ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')}`;
   });
   expect(errors).toEqual([]);
-});
+}, 30_000); // a full type-check of the API, slow on a busy CI runner
 
 describe('examples render', async () => {
   const context = await docsKernel();
