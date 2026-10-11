@@ -41,7 +41,7 @@ export const cli = program
 
     try {
       const isDefaultModel = thisCommand.getOptionValueSource('model') === 'default';
-      const sourcePath = path.join(process.cwd(), model);
+      const sourcePath = path.resolve(model);
 
       if (!existsSync(sourcePath)) {
         if (isDefaultModel) {
