@@ -5,7 +5,7 @@
 use std::collections::HashMap;
 use std::fmt::Write;
 
-wit_bindgen::generate!({ world: "exporter", path: "../../wit" });
+wit_bindgen::generate!({ world: "exporter", path: "node_modules/@tscad/plugin-sdk/wit" });
 
 struct Export3mf;
 

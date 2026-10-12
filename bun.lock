@@ -24,6 +24,7 @@
       "dependencies": {
         "@legendapp/state": "3.0.0-beta.31",
         "@monaco-editor/react": "^4.7.0",
+        "@shikijs/monaco": "3.15.0",
         "@tscad/kernel": "workspace:*",
         "@tscad/modeling": "workspace:*",
         "@tscad/viewer": "workspace:*",
@@ -171,6 +172,22 @@
         "typescript": "catalog:",
       },
     },
+    "packages/plugin-sdk": {
+      "name": "@tscad/plugin-sdk",
+      "version": "0.0.0",
+      "bin": {
+        "tscad-plugin": "./src/bin.ts",
+      },
+      "dependencies": {
+        "@bytecodealliance/jco": "1.37.0",
+      },
+      "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
+        "@types/bun": "^1.3.9",
+        "publint": "catalog:",
+        "typescript": "catalog:",
+      },
+    },
     "packages/scripts": {
       "name": "@repo/scripts",
       "version": "0.0.0",
@@ -186,6 +203,10 @@
       },
       "devDependencies": {
         "@repo/typescript-config": "workspace:*",
+        "@tscad/plugin-export-3mf": "workspace:*",
+        "@tscad/plugin-grid": "workspace:*",
+        "@tscad/plugin-printability": "workspace:*",
+        "@tscad/plugin-sdk": "workspace:*",
         "@types/bun": "^1.3.9",
       },
     },
@@ -236,39 +257,31 @@
         "typescript": "catalog:",
       },
     },
-    "plugins": {
-      "name": "@tscad/plugins",
-      "version": "0.0.0",
-      "devDependencies": {
-        "@bytecodealliance/jco": "1.37.0",
-        "@repo/typescript-config": "workspace:*",
-        "@tscad/modeling": "workspace:*",
-        "@types/bun": "^1.3.9",
-        "typescript": "catalog:",
-      },
-    },
     "plugins/export-3mf": {
       "name": "@tscad/plugin-export-3mf",
-      "version": "0.1.0",
+      "version": "0.0.0",
       "devDependencies": {
-        "@tscad/plugins": "workspace:*",
+        "@tscad/plugin-sdk": "workspace:*",
+        "publint": "catalog:",
       },
     },
     "plugins/grid": {
       "name": "@tscad/plugin-grid",
-      "version": "0.1.0",
+      "version": "0.0.0",
       "devDependencies": {
-        "@tscad/plugins": "workspace:*",
+        "@tscad/plugin-sdk": "workspace:*",
+        "publint": "catalog:",
       },
       "peerDependencies": {
-        "@tscad/modeling": "workspace:*",
+        "@tscad/modeling": "workspace:^",
       },
     },
     "plugins/printability": {
       "name": "@tscad/plugin-printability",
-      "version": "0.1.0",
+      "version": "0.0.0",
       "devDependencies": {
-        "@tscad/plugins": "workspace:*",
+        "@tscad/plugin-sdk": "workspace:*",
+        "publint": "catalog:",
       },
     },
   },
@@ -1006,6 +1019,8 @@
 
     "@shikijs/langs": ["@shikijs/langs@3.15.0", "", { "dependencies": { "@shikijs/types": "3.15.0" } }, "sha512-WpRvEFvkVvO65uKYW4Rzxs+IG0gToyM8SARQMtGGsH4GDMNZrr60qdggXrFOsdfOVssG/QQGEl3FnJ3EZ+8w8A=="],
 
+    "@shikijs/monaco": ["@shikijs/monaco@3.15.0", "", { "dependencies": { "@shikijs/core": "3.15.0", "@shikijs/types": "3.15.0", "@shikijs/vscode-textmate": "^10.0.2" } }, "sha512-MKURaG5ehas44DBOfw0szEp89fA3WTERl7B6MjWcRQMIvHd++OQmPLyk1wcWbqZ3Jcvj0QBCJw+5tR/IBW016g=="],
+
     "@shikijs/rehype": ["@shikijs/rehype@3.15.0", "", { "dependencies": { "@shikijs/types": "3.15.0", "@types/hast": "3.0.4", "hast-util-to-string": "3.0.1", "shiki": "3.15.0", "unified": "11.0.5", "unist-util-visit": "5.0.0" } }, "sha512-U+tqD1oxL+85N8FaW5XYIlMZ8KAa2g9IdplEZxPWflGRJf2gQRiBMMrpdG1USz3PN350YnMUHWcz9Twt3wJjXQ=="],
 
     "@shikijs/themes": ["@shikijs/themes@3.15.0", "", { "dependencies": { "@shikijs/types": "3.15.0" } }, "sha512-8ow2zWb1IDvCKjYb0KiLNrK4offFdkfNVPXb1OZykpLCzRU6j+efkY+Y7VQjNlNFXonSw+4AOdGYtmqykDbRiQ=="],
@@ -1098,7 +1113,7 @@
 
     "@tscad/plugin-printability": ["@tscad/plugin-printability@workspace:plugins/printability"],
 
-    "@tscad/plugins": ["@tscad/plugins@workspace:plugins"],
+    "@tscad/plugin-sdk": ["@tscad/plugin-sdk@workspace:packages/plugin-sdk"],
 
     "@tscad/viewer": ["@tscad/viewer@workspace:packages/viewer"],
 
@@ -2866,7 +2881,7 @@
 
     "@tscad/plugin-host/typescript": ["typescript@7.0.2", "", { "optionalDependencies": { "@typescript/typescript-aix-ppc64": "7.0.2", "@typescript/typescript-darwin-arm64": "7.0.2", "@typescript/typescript-darwin-x64": "7.0.2", "@typescript/typescript-freebsd-arm64": "7.0.2", "@typescript/typescript-freebsd-x64": "7.0.2", "@typescript/typescript-linux-arm": "7.0.2", "@typescript/typescript-linux-arm64": "7.0.2", "@typescript/typescript-linux-loong64": "7.0.2", "@typescript/typescript-linux-mips64el": "7.0.2", "@typescript/typescript-linux-ppc64": "7.0.2", "@typescript/typescript-linux-riscv64": "7.0.2", "@typescript/typescript-linux-s390x": "7.0.2", "@typescript/typescript-linux-x64": "7.0.2", "@typescript/typescript-netbsd-arm64": "7.0.2", "@typescript/typescript-netbsd-x64": "7.0.2", "@typescript/typescript-openbsd-arm64": "7.0.2", "@typescript/typescript-openbsd-x64": "7.0.2", "@typescript/typescript-sunos-x64": "7.0.2", "@typescript/typescript-win32-arm64": "7.0.2", "@typescript/typescript-win32-x64": "7.0.2" }, "bin": { "tsc": "bin/tsc" } }, "sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA=="],
 
-    "@tscad/plugins/typescript": ["typescript@7.0.2", "", { "optionalDependencies": { "@typescript/typescript-aix-ppc64": "7.0.2", "@typescript/typescript-darwin-arm64": "7.0.2", "@typescript/typescript-darwin-x64": "7.0.2", "@typescript/typescript-freebsd-arm64": "7.0.2", "@typescript/typescript-freebsd-x64": "7.0.2", "@typescript/typescript-linux-arm": "7.0.2", "@typescript/typescript-linux-arm64": "7.0.2", "@typescript/typescript-linux-loong64": "7.0.2", "@typescript/typescript-linux-mips64el": "7.0.2", "@typescript/typescript-linux-ppc64": "7.0.2", "@typescript/typescript-linux-riscv64": "7.0.2", "@typescript/typescript-linux-s390x": "7.0.2", "@typescript/typescript-linux-x64": "7.0.2", "@typescript/typescript-netbsd-arm64": "7.0.2", "@typescript/typescript-netbsd-x64": "7.0.2", "@typescript/typescript-openbsd-arm64": "7.0.2", "@typescript/typescript-openbsd-x64": "7.0.2", "@typescript/typescript-sunos-x64": "7.0.2", "@typescript/typescript-win32-arm64": "7.0.2", "@typescript/typescript-win32-x64": "7.0.2" }, "bin": { "tsc": "bin/tsc" } }, "sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA=="],
+    "@tscad/plugin-sdk/typescript": ["typescript@7.0.2", "", { "optionalDependencies": { "@typescript/typescript-aix-ppc64": "7.0.2", "@typescript/typescript-darwin-arm64": "7.0.2", "@typescript/typescript-darwin-x64": "7.0.2", "@typescript/typescript-freebsd-arm64": "7.0.2", "@typescript/typescript-freebsd-x64": "7.0.2", "@typescript/typescript-linux-arm": "7.0.2", "@typescript/typescript-linux-arm64": "7.0.2", "@typescript/typescript-linux-loong64": "7.0.2", "@typescript/typescript-linux-mips64el": "7.0.2", "@typescript/typescript-linux-ppc64": "7.0.2", "@typescript/typescript-linux-riscv64": "7.0.2", "@typescript/typescript-linux-s390x": "7.0.2", "@typescript/typescript-linux-x64": "7.0.2", "@typescript/typescript-netbsd-arm64": "7.0.2", "@typescript/typescript-netbsd-x64": "7.0.2", "@typescript/typescript-openbsd-arm64": "7.0.2", "@typescript/typescript-openbsd-x64": "7.0.2", "@typescript/typescript-sunos-x64": "7.0.2", "@typescript/typescript-win32-arm64": "7.0.2", "@typescript/typescript-win32-x64": "7.0.2" }, "bin": { "tsc": "bin/tsc" } }, "sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA=="],
 
     "@tscad/viewer/typescript": ["typescript@7.0.2", "", { "optionalDependencies": { "@typescript/typescript-aix-ppc64": "7.0.2", "@typescript/typescript-darwin-arm64": "7.0.2", "@typescript/typescript-darwin-x64": "7.0.2", "@typescript/typescript-freebsd-arm64": "7.0.2", "@typescript/typescript-freebsd-x64": "7.0.2", "@typescript/typescript-linux-arm": "7.0.2", "@typescript/typescript-linux-arm64": "7.0.2", "@typescript/typescript-linux-loong64": "7.0.2", "@typescript/typescript-linux-mips64el": "7.0.2", "@typescript/typescript-linux-ppc64": "7.0.2", "@typescript/typescript-linux-riscv64": "7.0.2", "@typescript/typescript-linux-s390x": "7.0.2", "@typescript/typescript-linux-x64": "7.0.2", "@typescript/typescript-netbsd-arm64": "7.0.2", "@typescript/typescript-netbsd-x64": "7.0.2", "@typescript/typescript-openbsd-arm64": "7.0.2", "@typescript/typescript-openbsd-x64": "7.0.2", "@typescript/typescript-sunos-x64": "7.0.2", "@typescript/typescript-win32-arm64": "7.0.2", "@typescript/typescript-win32-x64": "7.0.2" }, "bin": { "tsc": "bin/tsc" } }, "sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA=="],
 

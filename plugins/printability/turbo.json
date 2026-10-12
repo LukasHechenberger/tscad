@@ -1,0 +1,13 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/Cargo.lock"],
+      "outputs": ["dist/**"]
+    },
+    "check:exports": {
+      "dependsOn": ["build"]
+    }
+  }
+}

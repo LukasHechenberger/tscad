@@ -4,7 +4,7 @@
 use schemars::JsonSchema;
 use serde::Deserialize;
 
-wit_bindgen::generate!({ world: "operation", path: "../../wit" });
+wit_bindgen::generate!({ world: "operation", path: "node_modules/@tscad/plugin-sdk/wit" });
 
 use tscad::plugin::kernel::union;
 use tscad::plugin::types::Vec3;

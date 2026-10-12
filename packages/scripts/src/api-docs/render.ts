@@ -3,17 +3,15 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { loadKernel, type Kernel } from '@tscad/kernel';
 import { linear_extrude, Shape2D, type Shape } from '@tscad/modeling';
-import { PluginHost, pluginFromDirectory } from '@tscad/plugin-host';
-import { ROOT } from './extract';
+import { PluginHost, pluginDependencies, pluginFromOutput } from '@tscad/plugin-host';
 
-/** Kernel plus the plugins from the repo's tscad.json that are built (examples may use them). */
+/** Kernel plus the built plugin packages this package depends on (examples may use them). */
 export async function docsKernel(): Promise<{ kernel: Kernel; host: PluginHost }> {
   const kernel = await loadKernel();
   const host = new PluginHost(kernel);
-  const config = (await Bun.file(path.join(ROOT, 'tscad.json')).json()) as { plugins?: string[] };
-  for (const plugin of config.plugins ?? []) {
-    if (existsSync(path.join(ROOT, plugin, 'dist/plugin.js')))
-      await host.add(await pluginFromDirectory(path.join(ROOT, plugin)));
+  for (const { name, output } of pluginDependencies(import.meta.dir)) {
+    if (existsSync(path.join(output, 'plugin.js')))
+      await host.add(await pluginFromOutput(output, name));
   }
   return { kernel, host };
 }

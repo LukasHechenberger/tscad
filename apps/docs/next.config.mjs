@@ -9,6 +9,17 @@ const config = {
   transpilePackages: ['three', '@tscad/viewer'],
   serverExternalPackages: ['typescript', 'twoslash'],
 
+  // The command pages moved from /docs/<command> to /docs/cli/<command>.
+  async redirects() {
+    return [
+      {
+        source: '/docs/:command(analyze|dev|export|plugins)',
+        destination: '/docs/cli/:command',
+        permanent: true,
+      },
+    ];
+  },
+
   // We lint in the ci workflow anyway
   typescript: {
     ignoreBuildErrors: true,

@@ -3,7 +3,13 @@
   "extends": ["//"],
   "tasks": {
     "test": {
-      "dependsOn": ["@tscad/plugins#build", "@tscad/kernel#build", "test:transit"]
+      "dependsOn": [
+        "@tscad/plugin-grid#build",
+        "@tscad/plugin-export-3mf#build",
+        "@tscad/plugin-printability#build",
+        "@tscad/kernel#build",
+        "test:transit"
+      ]
     }
   }
 }

@@ -12,23 +12,20 @@
   "license": "MIT",
   "author": "Lukas Hechenberger <npm@ls-age.com> (https://ls-age.com/)",
   "type": "module",
-  "workspaces": {
-    "packages": [
-      "apps/*",
-      "examples/*",
-      "packages/*",
-      "plugins",
-      "plugins/*"
-    ],
-    "catalog": {
-      "@types/node": "22.19.1",
-      "@types/react": "^19.2.6",
-      "@types/react-dom": "^19.2.3",
-      "publint": "0.3.15",
-      "react": "^19.2.0",
-      "react-dom": "^19.2.0",
-      "typescript": "7.0.2"
-    }
+  "workspaces": [
+    "apps/*",
+    "examples/*",
+    "packages/*",
+    "plugins/*"
+  ],
+  "catalog": {
+    "@types/node": "22.19.1",
+    "@types/react": "^19.2.6",
+    "@types/react-dom": "^19.2.3",
+    "publint": "0.3.15",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "7.0.2"
   },
   "scripts": {
     "build": "turbo run build",

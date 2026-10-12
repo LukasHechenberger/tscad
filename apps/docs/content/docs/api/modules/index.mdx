@@ -3,7 +3,6 @@ title: Reference
 description: tscad API reference
 ---
 
-import { getPageTreePeers } from 'fumadocs-core/page-tree';
 import { source } from '@/lib/source';
 
 tscad is a TypeScript library published via npm. If you want to run it locally, you can use the API directly by installing some modules.
@@ -11,12 +10,17 @@ tscad is a TypeScript library published via npm. If you want to run it locally, 
 **Modules available:**
 
 <Cards>
-  {source.pageTree.children
-    .find((item) => item.index?.url === '/docs/api/modules')
-    ?.children?.map((child) => child.index ?? child)
-    .map((child) => (
-      <Card href={child?.url} key={child?.url} title={child?.name}>
-        {child?.description}
-      </Card>
-    ))}
+  {(function sections(items) {
+    // Every folder with an overview page in the API or CLI reference, wherever the sidebar puts it.
+    return items.flatMap((item) => {
+      if (item.type !== 'folder') return [];
+      const overview = item.index ?? item.children.find((child) => child.type === 'page');
+      const isSection = /^\/docs\/(api\/modules|cli)\/?/.test(overview?.url ?? '');
+      return [...(isSection ? [{ folder: item, overview }] : []), ...sections(item.children)];
+    });
+  })(source.pageTree.children).map(({ folder, overview }) => (
+    <Card href={overview.url} key={overview.url} title={folder.name}>
+      {overview.description}
+    </Card>
+  ))}
 </Cards>

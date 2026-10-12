@@ -1,7 +1,6 @@
 {
   "name": "@tscad/plugin-export-3mf",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.0.0",
   "description": "3MF export with merged vertices and colors: an exporter plugin for tscad",
   "homepage": "https://tscad.vercel.app",
   "repository": {
@@ -12,12 +11,21 @@
   "license": "MIT",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "!dist/plugin.component.wasm"
   ],
   "tscad": {
     "plugin": "./dist"
   },
+  "scripts": {
+    "build": "tscad-plugin build",
+    "check:exports": "publint"
+  },
   "devDependencies": {
-    "@tscad/plugins": "workspace:*"
+    "@tscad/plugin-sdk": "workspace:*",
+    "publint": "catalog:"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

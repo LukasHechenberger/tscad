@@ -4,6 +4,7 @@ import path from 'node:path';
 import ts from 'typescript';
 import { cells, PLUGIN_SCOPES, runExample, SCOPE } from './examples';
 import { compilerOptions, extractDocs, ROOT } from './extract';
+import { MODULES } from './mdx';
 import { docsKernel, renderSvg } from './render';
 
 const entries = extractDocs();
@@ -11,20 +12,25 @@ const examples = entries.flatMap((entry) =>
   entry.examples.map((code, index) => ({ label: `${entry.name} example ${index + 1}`, code })),
 );
 
-test('every documented function and class has text, and every function an example', () => {
-  expect(entries.length).toBeGreaterThan(20);
-  for (const entry of entries.filter((entry) => entry.kind !== 'type')) {
-    expect({ name: entry.name, hasText: entry.documentation.length > 0 }).toEqual({
-      name: entry.name,
-      hasText: true,
-    });
-    if (entry.kind === 'function')
-      expect({ name: entry.name, examples: entry.examples.length > 0 }).toEqual({
+test.each(MODULES.map((module) => [module.name, module] as const))(
+  '%s: every documented function and class has text, and every function an example',
+  (_, module) => {
+    const entries = extractDocs(module.entries());
+    expect(entries.length).toBeGreaterThan(module.renderExamples ? 20 : 3);
+    expect(entries.every((entry) => entry.category in module.categories)).toBe(true);
+    for (const entry of entries.filter((entry) => entry.kind !== 'type')) {
+      expect({ name: entry.name, hasText: entry.documentation.length > 0 }).toEqual({
         name: entry.name,
-        examples: true,
+        hasText: true,
       });
-  }
-});
+      if (entry.kind === 'function')
+        expect({ name: entry.name, examples: entry.examples.length > 0 }).toEqual({
+          name: entry.name,
+          examples: true,
+        });
+    }
+  },
+);
 
 test('examples split into one cell per shown expression', () => {
   const code = 'const a = cube(1);\nunion(a, a) // pair\n\nsphere({ r: 1 })';
@@ -43,7 +49,7 @@ test('examples type-check against the API', () => {
     `import { ${names.join(', ')} } from "@tscad/modeling";`,
     `import { z } from "zod";`,
     ...PLUGIN_SCOPES.map(
-      ({ names, entry }) => `import { ${names.join(', ')} } from "${entry.replace(/\.ts$/, '')}";`,
+      ({ names, specifier }) => `import { ${names.join(', ')} } from "${specifier}";`,
     ),
     ...examples.map(
       ({ code }, index) =>

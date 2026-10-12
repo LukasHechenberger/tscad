@@ -24,7 +24,7 @@ async function host() {
   return host;
 }
 
-// Needs the plugins built: `bun run build --filter=@tscad/plugins`.
+// Needs the plugins built: `bun run build --filter='./plugins/*'`.
 describe.if(built)('built plugins', () => {
   test('loads plugins with their kind and info', async () => {
     const loaded = await host();
@@ -172,7 +172,11 @@ describe.if(built)('plugin packages', () => {
 
       const found = pluginDependencies(path.join(project, 'models/parts'));
       expect(found).toEqual([
-        { name: '@tscad/plugin-grid', output: path.join(pluginsDirectory, 'grid/dist') },
+        {
+          name: '@tscad/plugin-grid',
+          directory: path.join(pluginsDirectory, 'grid'),
+          output: path.join(pluginsDirectory, 'grid/dist'),
+        },
       ]);
       const h = new PluginHost(await loadKernel());
       const loaded = await h.add(await pluginFromOutput(found[0]!.output, found[0]!.name));

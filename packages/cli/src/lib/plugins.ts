@@ -6,7 +6,7 @@ import { PluginHost, pluginDependencies, pluginFromOutput } from '@tscad/plugin-
 /** `tscad.json`: project settings, found next to a model or in a parent folder. */
 export type Config = {
   /**
-   * Local plugin directories (as built by `@tscad/plugins`), relative to the config file. Plugin
+   * Local plugin directories (as built by `tscad-plugin build`), relative to the config file. Plugin
    * packages need no entry: they are found among the model's dependencies.
    */
   plugins?: string[];

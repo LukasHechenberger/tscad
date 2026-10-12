@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-# plugins/ also holds the @tscad/plugins workspace package (node_modules), so list them.
+# Plugins one by one: plugins/ also holds plain files (README.md, .gitignore).
 members = ["crates/*", "plugins/grid", "plugins/export-3mf", "plugins/printability"]
 
 # Size-oriented release profile for kernel.wasm (OCCT archives are prebuilt and unaffected).
