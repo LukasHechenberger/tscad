@@ -475,7 +475,6 @@
     "**/dist/**",
     "**/out/**",
     "**/coverage/**",
-    "**/tsup.config.bundled*.mjs",
     "**/.next/**",
     "**/build/**",
     "**/next-env.d.ts",

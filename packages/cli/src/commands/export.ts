@@ -29,7 +29,7 @@ export const exportCommand = new ModelCommand('export')
     // eslint-disable-next-line no-console
     console.log(`🫡  Exporting model at ${path.relative(process.cwd(), model)}...`);
 
-    const outPath = path.join(process.cwd(), output);
+    const outPath = path.resolve(output);
     const extension = path.extname(outPath).slice(1).toLowerCase();
 
     const kernel = await loadKernel();

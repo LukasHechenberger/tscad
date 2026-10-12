@@ -38,7 +38,6 @@ target
 out
 .turbo
 coverage
-tsup.config.bundled.*
 .vercel
 temp
 **/etc/**/*.api.json

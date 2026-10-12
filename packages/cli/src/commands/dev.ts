@@ -34,7 +34,7 @@ export const devCommand = new ModelCommand('dev')
   )
   .addOption(new Option('--open', 'Open the browser once started').default(false).env('OPEN'))
   .action(async function runDevelopmentCommand({ model, port, open: openBrowser }) {
-    const modelPath = path.join(process.cwd(), model);
+    const modelPath = path.resolve(model);
     if (!existsSync(modelPath)) {
       this.error(`Model file not found: ${model}`, { code: 'ENOENT' });
     }

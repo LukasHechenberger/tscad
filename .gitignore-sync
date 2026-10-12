@@ -9,7 +9,6 @@ target
 out
 .turbo
 coverage
-tsup.config.bundled.*
 .vercel
 
 # api-extractor

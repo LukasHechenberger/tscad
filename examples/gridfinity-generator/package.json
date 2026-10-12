@@ -27,6 +27,7 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@tscad/cli": "workspace:*",
+    "@tscad/plugins": "workspace:*",
     "@types/node": "catalog:",
     "picocolors": "^1.1.1",
     "typescript": "catalog:"

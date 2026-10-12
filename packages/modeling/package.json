@@ -18,16 +18,15 @@
     }
   },
   "scripts": {
-    "build": "rslib build",
+    "build": "bun scripts/build.ts",
     "check:exports": "publint",
     "check:types": "tsc --noEmit",
-    "dev": "rslib dev --watch",
+    "dev": "bun scripts/build.ts --watch",
     "lint": "oxlint --deny-warnings",
     "test": "bun test"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "@rslib/core": "^0.17.2",
     "@types/bun": "^1.3.9",
     "@types/node": "catalog:",
     "publint": "catalog:",
