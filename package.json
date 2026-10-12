@@ -17,7 +17,8 @@
       "apps/*",
       "examples/*",
       "packages/*",
-      "plugins"
+      "plugins",
+      "plugins/*"
     ],
     "catalog": {
       "@types/node": "22.19.1",

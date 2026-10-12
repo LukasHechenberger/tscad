@@ -1,6 +1,7 @@
 //! Analysis plugin: FDM printability. Reports overhanging area (downward faces steeper than the
 //! overhang angle, not resting on the bed), bed contact area, and whether the model fits the bed.
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -8,10 +9,12 @@ wit_bindgen::generate!({ world: "analysis", path: "../../wit" });
 
 use tscad::plugin::types::Mesh;
 
-#[derive(Deserialize)]
+/// Options of the FDM printability report (`tscad analyze --plugin printability`).
+#[derive(Deserialize, Serialize, JsonSchema)]
 #[serde(default, deny_unknown_fields, rename_all = "camelCase")]
 struct Options {
 	/// Maximum printable overhang, in degrees from vertical (45° is the usual rule of thumb).
+	#[schemars(range(min = 0, max = 90))]
 	overhang_angle: f64,
 	/// Build volume in millimeters.
 	bed: [f64; 3],
@@ -68,7 +71,7 @@ impl Guest for Printability {
 			name: "printability".into(),
 			version: env!("CARGO_PKG_VERSION").into(),
 			description: "FDM printability: overhangs needing support, bed contact, fit in the build volume.".into(),
-			options_schema: r#"{"type":"object","properties":{"overhangAngle":{"type":"number","minimum":0,"maximum":90,"default":45,"description":"Maximum overhang in degrees from vertical"},"bed":{"type":"array","items":{"type":"number"},"minItems":3,"maxItems":3,"default":[256,256,256],"description":"Build volume in mm"}}}"#.into(),
+			options_schema: schemars::schema_for!(Options).to_value().to_string(),
 		}
 	}
 

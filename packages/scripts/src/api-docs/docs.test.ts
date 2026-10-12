@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import ts from 'typescript';
-import { cells, runExample, SCOPE } from './examples';
+import { cells, PLUGIN_SCOPES, runExample, SCOPE } from './examples';
 import { compilerOptions, extractDocs, ROOT } from './extract';
 import { docsKernel, renderSvg } from './render';
 
@@ -37,10 +37,14 @@ test('examples split into one cell per shown expression', () => {
 test('examples type-check against the API', () => {
   // All examples as functions in one virtual module next to this file, importing what they may use.
   const file = path.join(import.meta.dir, '__examples__.ts');
-  const names = Object.keys(SCOPE).filter((name) => name !== 'z');
+  const fromPlugins = new Set(PLUGIN_SCOPES.flatMap((module) => module.names));
+  const names = Object.keys(SCOPE).filter((name) => name !== 'z' && !fromPlugins.has(name));
   const source = [
     `import { ${names.join(', ')} } from "@tscad/modeling";`,
     `import { z } from "zod";`,
+    ...PLUGIN_SCOPES.map(
+      ({ names, entry }) => `import { ${names.join(', ')} } from "${entry.replace(/\.ts$/, '')}";`,
+    ),
     ...examples.map(
       ({ code }, index) =>
         `export async function example${index}() {\n${code.replace(/^export default /m, 'return ')}\n}`,

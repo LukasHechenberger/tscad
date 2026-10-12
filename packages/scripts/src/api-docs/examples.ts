@@ -1,6 +1,6 @@
 /**
  * Runs `@example` blocks. An example is a few statements with the whole API (and zod's `z`) in
- * scope; every top-level expression (or `export default`) is a result to show, together with the
+ * scope, plugin packages included; every top-level expression (or `export default`) is a result to show, together with the
  * code since the previous one:
  *
  * ```ts
@@ -13,12 +13,23 @@ import * as api from '@tscad/modeling';
 import { evaluateModel, Shape, Shape2D, type ModelExport } from '@tscad/modeling';
 import ts from 'typescript';
 import { z } from 'zod';
+import { pluginModules } from './extract';
 
 export type Cell = { code: string };
 export type Result = { code: string; value: Shape | Shape2D };
 
+/** The exports of each built plugin package, by import specifier. */
+export const PLUGIN_SCOPES: { specifier: string; entry: string; names: string[] }[] =
+  await Promise.all(
+    pluginModules().map(async (module) => ({
+      ...module,
+      names: Object.keys(await import(module.entry)),
+    })),
+  );
+
 /** Names an example can use without importing them. */
 export const SCOPE: Record<string, unknown> = { ...api, z };
+for (const { entry } of PLUGIN_SCOPES) Object.assign(SCOPE, await import(entry));
 
 /** Splits an example into cells, each ending with an expression whose value is shown. */
 export function cells(code: string): {
